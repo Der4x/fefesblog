@@ -2,6 +2,7 @@ package de.fwpm.android.fefesblog;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,25 +10,26 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
+
 import static de.fwpm.android.fefesblog.HtmlParser.parseHtml;
 
 /**
  * Created by alex on 19.01.18.
  */
 
-public class DataFetcher extends AsyncTask<Void, Void, Void> {
-
-    private Context mContext;
-    private Document html;
+public class DataFetcher extends AsyncTask<String, Void, ArrayList<BlogPost>> {
 
     private static final String TAG = "DATAFETCHER";
     private static final String BASIC_URL = "https://blog.fefe.de/";
 
-    ArrayList<BlogPost> allPosts;
+    private Document html;
+    private NewPostsFragment container;
 
-    public DataFetcher(Context context) {
 
-        mContext = context;
+    public DataFetcher(NewPostsFragment fragment) {
+
+            this.container = fragment;
 
     }
 
@@ -37,12 +39,12 @@ public class DataFetcher extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected ArrayList<BlogPost> doInBackground(String... params) {
 
         try {
 
             html = Jsoup.connect(BASIC_URL).get();
-            allPosts = parseHtml(html);
+            return parseHtml(html);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,14 +54,14 @@ public class DataFetcher extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
+    protected void onPostExecute(ArrayList<BlogPost> allPosts) {
 
-        super.onPostExecute(aVoid);
-
-//        allPosts = parseHtml(html);
-
-
-        ((MainActivity) mContext).updateUi(allPosts);
+        super.onPostExecute(allPosts);
+        if(container!=null && container.getActivity()!=null) {
+            container.populateResult(allPosts);
+//            container.hideProgressBar();
+            this.container = null;
+        }
 
     }
 

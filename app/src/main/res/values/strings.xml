@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Fefes Blog</string>
+    <string name="newposts">Neu</string>
+    <string name="bookmarks">Lesezeichen</string>
 </resources>
