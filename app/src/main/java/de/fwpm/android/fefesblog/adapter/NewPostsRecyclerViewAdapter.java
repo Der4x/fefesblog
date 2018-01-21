@@ -4,9 +4,11 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,12 +20,16 @@ import java.util.Locale;
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.PinnedHeaderItemDecoration;
 import de.fwpm.android.fefesblog.R;
+import de.fwpm.android.fefesblog.database.AppDatabase;
 
 /**
  * Created by alex on 20.01.18.
  */
 
 public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRecyclerViewAdapter.ViewHolder> implements PinnedHeaderItemDecoration.PinnedHeaderAdapter {
+
+    private static final String TAG = "NPRecyclerViewAdapter";
+    private static int MAX_LINES = 6;
 
     ArrayList<BlogPost> mData;
     Context mContext;
@@ -115,16 +121,16 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         }
     }
 
-
-
     static class DataViewHolder extends ViewHolder {
         private TextView mContent;
         private ImageButton mExpand;
+        private ImageButton mBookmark;
 
         public DataViewHolder(View itemView, int viewType) {
             super(itemView, viewType);
             mContent = (TextView) itemView.findViewById(R.id.post_text);
             mExpand = (ImageButton) itemView.findViewById(R.id.expand);
+            mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
         }
 
         public void setClickListener(final int position) {
@@ -140,15 +146,42 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         }
 
         @Override
-        public void bindItem(NewPostsRecyclerViewAdapter adapter, BlogPost blogPost, int position) {
+        public void bindItem(final NewPostsRecyclerViewAdapter adapter, final BlogPost blogPost, int position) {
 
             mContent.setText(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1]));
             closeContent();
+            setBookmarkIcon(blogPost.isBookmarked());
+
+            mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    if(mContent.getLineCount() < MAX_LINES) mExpand.setVisibility(View.INVISIBLE);
+                    else mExpand.setVisibility(View.VISIBLE);
+                    return true;
+                }
+            });
+
+            mBookmark.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    blogPost.setBookmarked(blogPost.isBookmarked() ? false : true);
+                    setBookmarkIcon(blogPost.isBookmarked());
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            AppDatabase.getInstance(adapter.mContext).blogPostDao().updateBlogPost(blogPost);
+                        }
+                    }).start();
+
+                }
+            });
 
             mExpand.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(mContent.getMaxLines() == 6) {
+                    if(mContent.getMaxLines() == MAX_LINES) {
                         expandContent();
                     } else {
                         closeContent();
@@ -159,6 +192,13 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         }
 
+        private void setBookmarkIcon(boolean isBookmarked) {
+
+            if(isBookmarked) mBookmark.setImageResource(R.drawable.ic_bookmark_black_24dp);
+            else mBookmark.setImageResource(R.drawable.ic_bookmark_border_black_24dp);
+
+        }
+
         private void expandContent() {
             mContent.setMaxLines(Integer.MAX_VALUE);
             mContent.setEllipsize(null);
@@ -166,7 +206,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         }
 
         private void closeContent() {
-            mContent.setMaxLines(6);
+            mContent.setMaxLines(MAX_LINES);
             mContent.setEllipsize(TextUtils.TruncateAt.END);
             mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
         }
@@ -193,6 +233,5 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         }
     }
-
 
 }

@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,9 @@ public interface BlogPostDao {
     List<BlogPost> getAllPosts();
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public void insertList(ArrayList<BlogPost> listOfPosts);
+    void insertList(ArrayList<BlogPost> listOfPosts);
 
+    @Update
+    void updateBlogPost(BlogPost blogPost);
 
 }
