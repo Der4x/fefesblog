@@ -15,6 +15,7 @@ import java.util.HashMap;
 
 public class HtmlParser {
 
+
     private static final String TAG = "HTMLPARSER";
 
     public static ArrayList<BlogPost> parseHtml(Document doc) {
@@ -29,12 +30,6 @@ public class HtmlParser {
         for(Element listOfPosts : listsOfPosts) {
 
             Elements posts = listOfPosts.select("li");
-
-            //header for StartView List, TODO: Just for testing
-            BlogPost headerBlogPost = new BlogPost();
-            headerBlogPost.type = BlogPost.TYPE_SECTION;
-            headerBlogPost.setDate(dates.get(counter).text());
-            allPosts.add(headerBlogPost);
 
             for (Element post : posts) {
 

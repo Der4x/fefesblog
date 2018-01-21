@@ -1,5 +1,10 @@
 package de.fwpm.android.fefesblog;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,28 +15,45 @@ import java.util.Locale;
  * Created by alex on 19.01.18.
  */
 
+@Entity
 public class BlogPost {
 
     public final static int TYPE_SECTION = 0;
     public final static int TYPE_DATA = 1;
 
-    public int type;
-
-    private Date date;
-
-    private String text;
-
-    private String htmlText;
-
-    private HashMap<String, String> links;
-
+    @PrimaryKey
+    @NonNull
     private String url;
 
+    @ColumnInfo(name = "type")
+    public int type;
+
+    @ColumnInfo(name = "date")
+    private Date date;
+
+    @ColumnInfo(name = "text")
+    private String text;
+
+    @ColumnInfo(name = "html_ext")
+    private String htmlText;
+
+    @ColumnInfo(name = "links")
+    private HashMap<String, String> links;
+
+    @ColumnInfo(name = "has_been_read")
     private boolean hasBeenRead;
 
+    @ColumnInfo(name = "bookmarked")
     private boolean bookmarked;
 
     public BlogPost() {
+
+    }
+
+    public BlogPost(Date date, int type) {
+
+        this.date = date;
+        this.type = type;
 
     }
 
@@ -42,12 +64,20 @@ public class BlogPost {
     public void setDate(String dateAsString) {
 
         try {
-            this.date = new SimpleDateFormat("EEE MMM d yyyy", Locale.ENGLISH).parse(dateAsString);
+
+            Date date = new SimpleDateFormat("EEE MMM d yyyy", Locale.ENGLISH).parse(dateAsString);
+            date.setHours(new Date().getHours());
+            date.setMinutes(new Date().getMinutes());
+            this.date = date;
         } catch (ParseException e) {
             e.printStackTrace();
             this.date = null;
         }
-        ;
+
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getText() {
@@ -96,5 +126,13 @@ public class BlogPost {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
 
 import static de.fwpm.android.fefesblog.HtmlParser.parseHtml;
@@ -18,13 +19,15 @@ import static de.fwpm.android.fefesblog.HtmlParser.parseHtml;
  * Created by alex on 19.01.18.
  */
 
-public class DataFetcher extends AsyncTask<String, Void, ArrayList<BlogPost>> {
+public class DataFetcher extends AsyncTask<String, Void, Void> {
 
     private static final String TAG = "DATAFETCHER";
     private static final String BASIC_URL = "https://blog.fefe.de/";
 
     private Document html;
     private NewPostsFragment container;
+
+    private AppDatabase appDatabase;
 
 
     public DataFetcher(NewPostsFragment fragment) {
@@ -39,12 +42,17 @@ public class DataFetcher extends AsyncTask<String, Void, ArrayList<BlogPost>> {
     }
 
     @Override
-    protected ArrayList<BlogPost> doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
 
         try {
 
             html = Jsoup.connect(BASIC_URL).get();
-            return parseHtml(html);
+            ArrayList<BlogPost> allPosts = parseHtml(html);
+
+            appDatabase = AppDatabase.getInstance(container.getContext());
+            appDatabase.blogPostDao().insertList(allPosts);
+
+            return null;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,12 +62,12 @@ public class DataFetcher extends AsyncTask<String, Void, ArrayList<BlogPost>> {
     }
 
     @Override
-    protected void onPostExecute(ArrayList<BlogPost> allPosts) {
+    protected void onPostExecute(Void vVoid) {
 
-        super.onPostExecute(allPosts);
+        super.onPostExecute(vVoid);
+
         if(container!=null && container.getActivity()!=null) {
-            container.populateResult(allPosts);
-//            container.hideProgressBar();
+            container.populateResult();
             this.container = null;
         }
 
