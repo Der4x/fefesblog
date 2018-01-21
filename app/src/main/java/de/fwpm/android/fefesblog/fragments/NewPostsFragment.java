@@ -1,5 +1,6 @@
 package de.fwpm.android.fefesblog.fragments;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -34,15 +37,19 @@ public class NewPostsFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
     private static final String TAG = "NewsPostFragment";
 
-    private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private static RecyclerView mRecyclerView;
+    private static RecyclerView.LayoutManager mLayoutManager;
     private NewPostsRecyclerViewAdapter recyclerViewAdapter;
     private SwipeRefreshLayout mNewPostSwipeRefresh;
+    private static RecyclerView.SmoothScroller smoothScroller;
 
     private ArrayList<BlogPost> mData;
     private ArrayList<BlogPost> mListWithHeaders;
     private AppDatabase appDatabase;
     private Handler mHandler;
+
+    static Context context;
+    static NetworkUtils networkUtils;
 
     View view;
 
@@ -67,6 +74,9 @@ public class NewPostsFragment extends Fragment {
         mHandler = new Handler();
         appDatabase = AppDatabase.getInstance(getContext());
 
+        context = getContext();
+        networkUtils = new NetworkUtils(context);
+
         SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean firstStart = mPrefs.getBoolean("firstStart", true);
 
@@ -81,14 +91,13 @@ public class NewPostsFragment extends Fragment {
         startSync();
 
 
-
         return view;
 
     }
 
     private void startSync() {
 
-        if(new NetworkUtils(getContext()).isConnectingToInternet()) {
+        if(networkUtils.isConnectingToInternet()) {
             new DataFetcher(this).execute();
             setRefresh(true);
         }
@@ -107,13 +116,18 @@ public class NewPostsFragment extends Fragment {
 
                 mData = (ArrayList<BlogPost>) appDatabase.blogPostDao().getAllPosts();
 
-                mListWithHeaders = new ArrayList<>();
+                if(mListWithHeaders == null)
+                    mListWithHeaders = new ArrayList<>();
+                else mListWithHeaders.clear();
+
                 Date firstDate = mData.get(0).getDate();
                 addHeader(mListWithHeaders, firstDate);
 
+                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+
                 for (BlogPost blogPost : mData) {
 
-                    if (blogPost.getDate().equals(firstDate)) {
+                    if (fmt.format(blogPost.getDate()).equals(fmt.format(firstDate))) {
 
                         mListWithHeaders.add(blogPost);
 
@@ -135,6 +149,7 @@ public class NewPostsFragment extends Fragment {
     }
 
     private void initView() {
+
         mNewPostSwipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.new_posts_swipe_refresh);
         mNewPostSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -148,6 +163,29 @@ public class NewPostsFragment extends Fragment {
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        smoothScroller = new LinearSmoothScroller(context) {
+            @Override protected int getVerticalSnapPreference() {
+                return LinearSmoothScroller.SNAP_TO_START;
+            }
+        };
+
+    }
+
+    public static void jumpToPosition(int position) {
+
+        smoothScroller.setTargetPosition(position);
+        mLayoutManager.startSmoothScroll(smoothScroller);
+
+//        mRecyclerView.scrollToPosition(position);
+
+    }
+
+    public void update() {
+
+        startSync();
+        jumpToPosition(0);
+        
     }
 
     private void setRefresh(boolean bool) {
@@ -172,6 +210,9 @@ public class NewPostsFragment extends Fragment {
                                 @Override
                                 public void onItemClick(int position) {
                                     Log.d(TAG, "onItemClick" + position);
+                                    mListWithHeaders.get(position).setUpdate(false);
+                                    recyclerViewAdapter.notifyDataSetChanged();
+                                    //TODO: Update in DB
                                 }
                             },
                             new NewPostsRecyclerViewAdapter.OnBottomReachListener() {

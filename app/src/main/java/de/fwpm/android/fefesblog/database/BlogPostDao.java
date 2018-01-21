@@ -1,5 +1,6 @@
 package de.fwpm.android.fefesblog.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -21,10 +22,14 @@ public interface BlogPostDao {
     @Query("SELECT * FROM blogpost ORDER BY date DESC")
     List<BlogPost> getAllPosts();
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertList(ArrayList<BlogPost> listOfPosts);
 
     @Update
     void updateBlogPost(BlogPost blogPost);
+
+    @Query("SELECT * FROM blogpost WHERE url LIKE :url")
+    BlogPost getPostByUrl(String url);
+
 
 }

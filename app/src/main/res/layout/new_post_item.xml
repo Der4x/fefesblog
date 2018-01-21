@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
+    android:animateLayoutChanges="true"
     android:orientation="vertical">
 
     <TextView
@@ -12,6 +13,7 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:ellipsize="end"
+        android:animateLayoutChanges="true"
         android:textColor="@color/colorPrimary"
         android:textColorLink="@color/colorAccent"
         android:maxLines="6"/>
@@ -38,6 +40,16 @@
             android:layout_toEndOf="@+id/bookmark"
             android:backgroundTint="@color/colorSecondary"
             android:src="@drawable/ic_share_black_24dp" />
+
+        <TextView
+            android:id="@+id/update_banner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/expand"
+            android:paddingRight="8dp"
+            android:visibility="gone"
+            android:text="Update!" />
 
         <ImageButton
             android:id="@+id/expand"

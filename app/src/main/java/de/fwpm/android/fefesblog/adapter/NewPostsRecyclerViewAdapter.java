@@ -21,6 +21,9 @@ import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.PinnedHeaderItemDecoration;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
+
+import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 
 /**
  * Created by alex on 20.01.18.
@@ -109,7 +112,11 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
     @Override
     public int getItemViewType(int position) {
-        return mData.get(position).type;
+
+        if(mData.size() > position) return mData.get(position).type;
+        else return BlogPost.TYPE_DATA;
+        //TODO: Debug error
+
     }
 
     @Override
@@ -123,6 +130,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
     static class DataViewHolder extends ViewHolder {
         private TextView mContent;
+        private TextView mUpdateBanner;
         private ImageButton mExpand;
         private ImageButton mBookmark;
 
@@ -131,6 +139,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mContent = (TextView) itemView.findViewById(R.id.post_text);
             mExpand = (ImageButton) itemView.findViewById(R.id.expand);
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
+            mUpdateBanner = (TextView) itemView.findViewById(R.id.update_banner);
         }
 
         public void setClickListener(final int position) {
@@ -146,9 +155,10 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         }
 
         @Override
-        public void bindItem(final NewPostsRecyclerViewAdapter adapter, final BlogPost blogPost, int position) {
+        public void bindItem(final NewPostsRecyclerViewAdapter adapter, final BlogPost blogPost, final int position) {
 
             mContent.setText(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1]));
+            setUpdateBanner(blogPost.isUpdate());
             closeContent();
             setBookmarkIcon(blogPost.isBookmarked());
 
@@ -181,15 +191,35 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mExpand.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    if(blogPost.isUpdate()) {
+
+                        blogPost.setUpdate(false);
+                        setUpdateBanner(false);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                AppDatabase.getInstance(adapter.mContext).blogPostDao().updateBlogPost(blogPost);
+                            }
+                        }).start();
+
+                    }
+
                     if(mContent.getMaxLines() == MAX_LINES) {
                         expandContent();
                     } else {
                         closeContent();
+                        jumpToPosition((position == 0) ? 0 : position-1);
                     }
 
                 }
             });
 
+        }
+
+        private void setUpdateBanner(boolean isUpdate) {
+            if(isUpdate) mUpdateBanner.setVisibility(View.VISIBLE);
+            else mUpdateBanner.setVisibility(View.INVISIBLE);
         }
 
         private void setBookmarkIcon(boolean isBookmarked) {

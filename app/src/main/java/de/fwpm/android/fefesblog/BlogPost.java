@@ -46,6 +46,9 @@ public class BlogPost {
     @ColumnInfo(name = "bookmarked")
     private boolean bookmarked;
 
+    @ColumnInfo(name= "update")
+    private boolean update;
+
     public BlogPost() {
 
     }
@@ -128,11 +131,11 @@ public class BlogPost {
         this.url = url;
     }
 
-    public int getType() {
-        return type;
+    public boolean isUpdate() {
+        return update;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setUpdate(boolean update) {
+        this.update = update;
     }
 }

@@ -3,11 +3,13 @@ package de.fwpm.android.fefesblog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.database.AppDatabase;
@@ -46,10 +48,26 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
 
         try {
 
+            appDatabase = AppDatabase.getInstance(container.getContext());
             html = Jsoup.connect(BASIC_URL).get();
+
             ArrayList<BlogPost> allPosts = parseHtml(html);
 
-            appDatabase = AppDatabase.getInstance(container.getContext());
+            for(BlogPost post : allPosts) {
+
+                BlogPost oldEntry = appDatabase.blogPostDao().getPostByUrl(post.getUrl());
+
+                if(oldEntry != null) {
+
+                    post.setDate(oldEntry.getDate());
+
+                    if(!oldEntry.getText().equals(post.getText())) post.setUpdate(true);
+                    else post.setUpdate(oldEntry.isUpdate());
+
+                }
+
+            }
+
             appDatabase.blogPostDao().insertList(allPosts);
 
             return null;
