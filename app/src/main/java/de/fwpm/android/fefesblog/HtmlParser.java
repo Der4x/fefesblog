@@ -30,6 +30,12 @@ public class HtmlParser {
 
             Elements posts = listOfPosts.select("li");
 
+            //header for StartView List, TODO: Just for testing
+            BlogPost headerBlogPost = new BlogPost();
+            headerBlogPost.type = BlogPost.TYPE_SECTION;
+            headerBlogPost.setDate(dates.get(counter).text());
+            allPosts.add(headerBlogPost);
+
             for (Element post : posts) {
 
                 Elements links = post.select("a[href]");
@@ -37,6 +43,7 @@ public class HtmlParser {
                 Log.d(TAG, post.toString());
 
                 BlogPost blogPost = new BlogPost();
+                blogPost.type = BlogPost.TYPE_DATA;
 
                 blogPost.setHtmlText(post.toString());
                 blogPost.setText(post.text());
@@ -54,6 +61,7 @@ public class HtmlParser {
                 }
 
                 blogPost.setLinks(postLinks);
+
 
                 allPosts.add(blogPost);
 

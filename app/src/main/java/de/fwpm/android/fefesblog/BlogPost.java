@@ -12,13 +12,18 @@ import java.util.Locale;
 
 public class BlogPost {
 
+    public final static int TYPE_SECTION = 0;
+    public final static int TYPE_DATA = 1;
+
+    public int type;
+
     private Date date;
 
     private String text;
 
     private String htmlText;
 
-    private HashMap<String,String> links;
+    private HashMap<String, String> links;
 
     private String url;
 

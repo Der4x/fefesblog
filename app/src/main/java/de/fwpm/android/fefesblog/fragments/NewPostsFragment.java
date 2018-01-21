@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DataFetcher;
+import de.fwpm.android.fefesblog.PinnedHeaderItemDecoration;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
 
@@ -65,7 +66,6 @@ public class NewPostsFragment extends Fragment {
 
         }
 
-
     }
 
     private void initRecyclerView(ArrayList<BlogPost> allPosts) {
@@ -75,6 +75,7 @@ public class NewPostsFragment extends Fragment {
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration());
 
         recyclerViewAdapter
                 = new NewPostsRecyclerViewAdapter(getContext(),
@@ -87,7 +88,7 @@ public class NewPostsFragment extends Fragment {
                 new NewPostsRecyclerViewAdapter.OnBottomReachListener() {
                     @Override
                     public void onBottom(int position) {
-
+                        Log.d(TAG, "onBottom" + position);
                     }
                 },
                 allPosts);
