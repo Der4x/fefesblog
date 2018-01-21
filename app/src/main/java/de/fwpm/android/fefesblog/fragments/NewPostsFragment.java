@@ -2,6 +2,7 @@ package de.fwpm.android.fefesblog.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -29,6 +30,7 @@ public class NewPostsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private NewPostsRecyclerViewAdapter recyclerViewAdapter;
+    private SwipeRefreshLayout mNewPostSwipeRefresh;
 
     private ArrayList<BlogPost> mData;
 
@@ -52,10 +54,23 @@ public class NewPostsFragment extends Fragment {
 
         view =  inflater.inflate(R.layout.fragment_newposts, container, false);
 
+        mNewPostSwipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.new_posts_swipe_refresh);
+        mNewPostSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                setRefresh(false);
+            }
+        });
+
         new DataFetcher(this).execute();
+        setRefresh(true);
 
         return view;
 
+    }
+
+    private void setRefresh(boolean bool) {
+        mNewPostSwipeRefresh.setRefreshing(bool);
     }
 
     public void populateResult(ArrayList<BlogPost> allPosts) {
@@ -93,7 +108,10 @@ public class NewPostsFragment extends Fragment {
                 },
                 allPosts);
         mRecyclerView.setAdapter(recyclerViewAdapter);
+        setRefresh(false);
 
     }
+
+
 
 }

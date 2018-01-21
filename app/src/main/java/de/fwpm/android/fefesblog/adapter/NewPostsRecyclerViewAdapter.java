@@ -11,7 +11,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.PinnedHeaderItemDecoration;
@@ -185,7 +187,10 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         @Override
         public void bindItem(NewPostsRecyclerViewAdapter adapter, BlogPost blogPost, int position) {
-            mSectionLabel.setText(blogPost.getDate().toString());
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
+            mSectionLabel.setText(dateFormat.format(blogPost.getDate()));
+
         }
     }
 
