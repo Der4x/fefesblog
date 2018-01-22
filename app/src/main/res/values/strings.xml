@@ -2,5 +2,8 @@
     <string name="app_name">Fefes Blog</string>
     <string name="newposts">Neu</string>
     <string name="bookmarks">Lesezeichen</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="search_title">Suchbegriff</string>
+    <string name="search">Suche</string>
 
 </resources>

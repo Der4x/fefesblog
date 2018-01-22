@@ -25,6 +25,9 @@ public interface BlogPostDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertList(ArrayList<BlogPost> listOfPosts);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertBlogPost(BlogPost blogPost);
+
     @Update
     void updateBlogPost(BlogPost blogPost);
 

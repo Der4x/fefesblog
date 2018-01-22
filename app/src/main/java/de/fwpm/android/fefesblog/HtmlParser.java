@@ -21,7 +21,8 @@ public class HtmlParser {
     public static ArrayList<BlogPost> parseHtml(Document doc) {
 
         Elements dates = doc.select("h3");
-        Elements listsOfPosts = doc.select("ul");
+
+        Elements listsOfPosts = doc.select("body > ul"); //select("ul"); -> Der Bug war richtig fies!!
 
         ArrayList<BlogPost> allPosts = new ArrayList<>();
 
@@ -29,13 +30,11 @@ public class HtmlParser {
 
         for(Element listOfPosts : listsOfPosts) {
 
-            Elements posts = listOfPosts.select("li");
+            Elements posts = listOfPosts.children();//select("li");
 
             for (Element post : posts) {
 
                 Elements links = post.select("a[href]");
-
-                Log.d(TAG, post.toString());
 
                 BlogPost blogPost = new BlogPost();
                 blogPost.type = BlogPost.TYPE_DATA;
@@ -57,18 +56,14 @@ public class HtmlParser {
 
                 blogPost.setLinks(postLinks);
 
-
                 allPosts.add(blogPost);
 
             }
 
             counter++;
+            if(counter == dates.size()) return allPosts;
 
         }
-
-        Log.d(TAG, "" + counter);
         return allPosts;
-
     }
-
 }
