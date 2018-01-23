@@ -23,27 +23,18 @@ import de.fwpm.android.fefesblog.database.AppDatabase;
  * Created by alex on 20.01.18.
  */
 
-public class BookmarkFragment extends Fragment {
+public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
     public static final String ARG_ITEM_ID = "item_id";
-    private LinearLayout mLinearLayout;
-    private static RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     private BookmarkRecyclerViewAdapter recyclerViewAdapter;
     private ArrayList<BlogPost> mList;
     private static String TAG = "BookmarkFragment";
     private Context mContext;
     private Handler mHandler;
-    private AppDatabase appDatabase;
     private RecyclerView.LayoutManager mLayoutManager;
     View view;
 
-
-
-//    @Override
-//    public void onResume() {
-//        updateUI();
-//        super.onResume();
-//    }
 
     public BookmarkFragment() {
         // Required empty public constructor
@@ -67,12 +58,10 @@ public class BookmarkFragment extends Fragment {
                     mList = new ArrayList<>();
                 }else mList.clear();
 
-                if(appDatabase.blogPostDao().getAllBookmarkedPosts().size()>0){
-                    mList = (ArrayList<BlogPost>) appDatabase.blogPostDao().getAllBookmarkedPosts();
-                    Log.d("mList Bookmarks", mList.get(0).getText() );
+                mList.addAll((ArrayList<BlogPost>) AppDatabase.getInstance(getContext()).blogPostDao().getAllBookmarkedPosts());
 
-                    updateUI();
-                }
+                updateUI();
+
             }
         }).start();
 
@@ -84,25 +73,8 @@ public class BookmarkFragment extends Fragment {
             @Override
             public void run() {
 
-                if(recyclerViewAdapter == null) {
+                recyclerViewAdapter.notifyDataSetChanged();
 
-                    recyclerViewAdapter = new BookmarkRecyclerViewAdapter(mContext,
-                            new BookmarkRecyclerViewAdapter.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(int position) {
-                                    Log.d(TAG, "onItemClick" + position);
-                                    mList.get(position).setUpdate(false);
-                                    recyclerViewAdapter.notifyDataSetChanged();
-                                }
-                            },mList);
-
-                    mRecyclerView.setAdapter(recyclerViewAdapter);
-
-                } else {
-
-                    recyclerViewAdapter.notifyDataSetChanged();
-
-                }
             }
         });
 
@@ -115,11 +87,8 @@ public class BookmarkFragment extends Fragment {
         view =  inflater.inflate(R.layout.fragment_bookmarks, container, false);
 
         mHandler = new Handler();
-        appDatabase = AppDatabase.getInstance(getContext());
 
         mContext = getContext();
-
-        mLinearLayout = (LinearLayout) view.findViewById(R.id.bookmarkFragment);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.bookmark_recyclerview);
         mRecyclerView.setHasFixedSize(true);
@@ -127,10 +96,35 @@ public class BookmarkFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        mList = new ArrayList<>();
+
+        recyclerViewAdapter = new BookmarkRecyclerViewAdapter(mContext,
+                new BookmarkRecyclerViewAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        Log.d(TAG, "onItemClick" + position);
+                        mList.get(position).setUpdate(false);
+                        recyclerViewAdapter.notifyDataSetChanged();
+                    }
+                },mList);
+
+        mRecyclerView.setAdapter(recyclerViewAdapter);
+
         getData();
 
 
         return view;
 
+    }
+
+    @Override
+    public void onPauseFragment() {
+
+    }
+
+    @Override
+    public void onResumeFragment() {
+        Log.d(TAG, "onResumeFragment: " + this);
+        this.getData();
     }
 }

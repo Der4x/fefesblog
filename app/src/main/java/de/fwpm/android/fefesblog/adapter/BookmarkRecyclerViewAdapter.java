@@ -77,8 +77,6 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         return new ViewHolder(view);
     }
 
-
-
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final BlogPost blogPost = mData.get(position);
@@ -109,7 +107,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        AppDatabase.getInstance(mContext).blogPostDao().insertBlogPost(blogPost);
+                        AppDatabase.getInstance(mContext).blogPostDao().updateBlogPost(blogPost);
                     }
                 }).start();
 
@@ -126,7 +124,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            AppDatabase.getInstance(mContext).blogPostDao().insertBlogPost(blogPost);
+                            AppDatabase.getInstance(mContext).blogPostDao().updateBlogPost(blogPost);
                         }
                     }).start();
 
@@ -153,8 +151,6 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         void onItemClick(int position);
     }
 
-
-
     private void setBookmarkIcon(BookmarkRecyclerViewAdapter.ViewHolder holder, BlogPost blogPost) {
         if (blogPost.isBookmarked())
             holder.mBookmark.setImageResource(R.drawable.ic_bookmark_black_24dp);
@@ -172,4 +168,5 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         holder.mContent.setEllipsize(TextUtils.TruncateAt.END);
         holder.mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
     }
+
 }

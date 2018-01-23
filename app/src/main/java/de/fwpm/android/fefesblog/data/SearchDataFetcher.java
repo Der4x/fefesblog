@@ -1,4 +1,4 @@
-package de.fwpm.android.fefesblog;
+package de.fwpm.android.fefesblog.data;
 
 import android.os.AsyncTask;
 
@@ -8,7 +8,10 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static de.fwpm.android.fefesblog.HtmlParser.parseHtml;
+import de.fwpm.android.fefesblog.BlogPost;
+import de.fwpm.android.fefesblog.SearchActivity;
+
+import static de.fwpm.android.fefesblog.data.HtmlParser.parseHtml;
 
 /**
  * Created by alex on 22.01.18.

@@ -1,4 +1,4 @@
-package de.fwpm.android.fefesblog;
+package de.fwpm.android.fefesblog.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

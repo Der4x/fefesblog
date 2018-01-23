@@ -1,12 +1,8 @@
 package de.fwpm.android.fefesblog;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +18,7 @@ import android.widget.ProgressBar;
 import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.adapter.SearchRecyclerViewAdapter;
+import de.fwpm.android.fefesblog.data.SearchDataFetcher;
 
 public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 

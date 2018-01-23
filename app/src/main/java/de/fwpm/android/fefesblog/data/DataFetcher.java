@@ -1,21 +1,18 @@
-package de.fwpm.android.fefesblog;
+package de.fwpm.android.fefesblog.data;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
+import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
 
-import static de.fwpm.android.fefesblog.HtmlParser.parseHtml;
+import static de.fwpm.android.fefesblog.data.HtmlParser.parseHtml;
 
 /**
  * Created by alex on 19.01.18.

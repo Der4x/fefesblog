@@ -17,6 +17,10 @@ public class StartScreenPagerAdapter extends FragmentPagerAdapter {
 
     private static final int PAGE_COUNT = 2;
 
+    NewPostsFragment newPostsFragment = new NewPostsFragment();
+
+    BookmarkFragment bookmarkFragment = new BookmarkFragment();
+
     Context mContext;
 
     public StartScreenPagerAdapter(Context context, FragmentManager fm) {
@@ -28,9 +32,9 @@ public class StartScreenPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return NewPostsFragment.newInstance(position);
+                return newPostsFragment;
             case 1:
-                return BookmarkFragment.newInstance(position);
+                return bookmarkFragment;
             default:
                 return null;
         }

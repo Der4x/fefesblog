@@ -1,20 +1,13 @@
 package de.fwpm.android.fefesblog;
 
 
-import android.app.Fragment;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.nfc.Tag;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -23,33 +16,36 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import de.fwpm.android.fefesblog.adapter.StartScreenPagerAdapter;
-import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
+import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
+import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.update;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MAINACTIVITY";
     private static final long SYNC_INTERVALL = 1000 * 60 * 15; //15 minutes
 
+    private ViewPager viewPager;
+    private StartScreenPagerAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        scheduleJob();
+//        scheduleJob();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.container);
-        final StartScreenPagerAdapter adapter = new StartScreenPagerAdapter(this, getSupportFragmentManager());
+        viewPager = (ViewPager) findViewById(R.id.container);
+        adapter = new StartScreenPagerAdapter(this, getSupportFragmentManager());
         viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(pageChangeListener);
+
+        Log.d(TAG,"" + viewPager.getCurrentItem());
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -58,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 Log.d(TAG, "onTabSelected: " + tab.getText());
+
             }
 
             @Override
@@ -84,8 +81,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        update();
+
 
     }
+
+    private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+
+        int currentPosition = 0;
+
+        @Override
+        public void onPageSelected(int newPosition) {
+
+            FragmentLifecycle fragmentToShow = (FragmentLifecycle) adapter.getItem(newPosition);
+            fragmentToShow.onResumeFragment();
+
+            FragmentLifecycle fragmentToHide = (FragmentLifecycle) adapter.getItem(currentPosition);
+            fragmentToHide.onPauseFragment();
+
+            currentPosition = newPosition;
+        }
+
+        @Override
+        public void onPageScrolled(int arg0, float arg1, int arg2) { }
+
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+
+    };
     
     @Override
     public void onResume() {

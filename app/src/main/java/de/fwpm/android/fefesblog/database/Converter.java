@@ -28,23 +28,27 @@ public class Converter {
 
         StringBuilder links = new StringBuilder();
 
-        for(Map.Entry<String,String> entry : map.entrySet()) {
+        if(map != null) {
 
-            links.append(entry.getKey());
-            links.append("/;/");
-            links.append(entry.getValue());
-            links.append("/;/");
+            for(Map.Entry<String,String> entry : map.entrySet()) {
 
-        }
+                links.append(entry.getKey());
+                links.append("/;/");
+                links.append(entry.getValue());
+                links.append("/;/");
 
-        return links.toString();
+            }
+
+            return links.toString();
+
+        }else return "";
 
     }
 
     @TypeConverter
     public static HashMap<String, String> fromStringToMap(String string) {
 
-        String[] keysAndValues = string.split("/;/");
+        String[] keysAndValues = (string != null) ? string.split("/;/") : new String[1];
         HashMap<String, String> links = new HashMap<>();
 
         if(keysAndValues.length > 1) {

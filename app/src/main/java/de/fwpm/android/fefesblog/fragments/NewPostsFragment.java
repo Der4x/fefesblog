@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.fwpm.android.fefesblog.BlogPost;
-import de.fwpm.android.fefesblog.DataFetcher;
-import de.fwpm.android.fefesblog.NetworkUtils;
-import de.fwpm.android.fefesblog.PinnedHeaderItemDecoration;
+import de.fwpm.android.fefesblog.data.DataFetcher;
+import de.fwpm.android.fefesblog.utils.NetworkUtils;
+import de.fwpm.android.fefesblog.utils.PinnedHeaderItemDecoration;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
@@ -32,7 +32,7 @@ import de.fwpm.android.fefesblog.database.AppDatabase;
  * Created by alex on 20.01.18.
  */
 
-public class NewPostsFragment extends Fragment {
+public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final String TAG = "NewsPostFragment";
@@ -45,7 +45,6 @@ public class NewPostsFragment extends Fragment {
 
     private ArrayList<BlogPost> mData;
     private ArrayList<BlogPost> mListWithHeaders;
-    private AppDatabase appDatabase;
     private Handler mHandler;
 
     static Context context;
@@ -72,7 +71,6 @@ public class NewPostsFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_newposts, container, false);
 
         mHandler = new Handler();
-        appDatabase = AppDatabase.getInstance(getContext());
 
         context = getContext();
         networkUtils = new NetworkUtils(context);
@@ -94,6 +92,14 @@ public class NewPostsFragment extends Fragment {
         return view;
 
     }
+    
+    @Override
+    public void onPause() {
+        
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+        
+    }
 
     private void startSync() {
 
@@ -114,7 +120,7 @@ public class NewPostsFragment extends Fragment {
             @Override
             public void run() {
 
-                mData = (ArrayList<BlogPost>) appDatabase.blogPostDao().getAllPosts();
+                mData = (ArrayList<BlogPost>) AppDatabase.getInstance(context).blogPostDao().getAllPosts();
 
                 if(mListWithHeaders == null)
                     mListWithHeaders = new ArrayList<>();
@@ -176,16 +182,11 @@ public class NewPostsFragment extends Fragment {
 
         smoothScroller.setTargetPosition(position);
         mLayoutManager.startSmoothScroll(smoothScroller);
-
-//        mRecyclerView.scrollToPosition(position);
-
-    }
-
-    public void update() {
-
-        startSync();
-        jumpToPosition(0);
         
+    }
+    
+    public static void update() {
+        Log.d(TAG, "update: ");
     }
 
     private void setRefresh(boolean bool) {
@@ -219,6 +220,8 @@ public class NewPostsFragment extends Fragment {
                                 @Override
                                 public void onBottom(int position) {
                                     Log.d(TAG, "onBottom" + position);
+                                    loadMoreData();
+
                                 }
                             },
                             mListWithHeaders);
@@ -239,10 +242,32 @@ public class NewPostsFragment extends Fragment {
 
     }
 
+    private void loadMoreData() {
+
+//        if(networkUtils.isConnectingToInternet()) {
+//            new DataFetcher(this).execute();
+//            setRefresh(true);
+//        }
+//        else {
+//            Toast.makeText(getContext(), "Kein Internet!", Toast.LENGTH_LONG).show();
+//            setRefresh(false);
+//        }
+
+    }
+
     private void addHeader(ArrayList<BlogPost> listWithHeaders, Date firstDate) {
         BlogPost headerBlogPost = new BlogPost(firstDate, BlogPost.TYPE_SECTION);
         listWithHeaders.add(headerBlogPost);
     }
 
 
+    @Override
+    public void onPauseFragment() {
+    }
+
+    @Override
+    public void onResumeFragment() {
+        Log.d(TAG, "onResumeFragment: " + this);
+        this.getData();
+    }
 }

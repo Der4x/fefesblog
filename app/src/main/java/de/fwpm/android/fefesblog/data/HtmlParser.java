@@ -1,5 +1,6 @@
-package de.fwpm.android.fefesblog;
+package de.fwpm.android.fefesblog.data;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.jsoup.nodes.Document;
@@ -9,6 +10,8 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import de.fwpm.android.fefesblog.BlogPost;
+
 /**
  * Created by alex on 19.01.18.
  */
@@ -17,6 +20,9 @@ public class HtmlParser {
 
 
     private static final String TAG = "HTMLPARSER";
+
+    private SharedPreferences mPrefs;
+    private SharedPreferences.Editor editor;
 
     public static ArrayList<BlogPost> parseHtml(Document doc) {
 

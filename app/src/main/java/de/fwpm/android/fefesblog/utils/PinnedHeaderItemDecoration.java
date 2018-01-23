@@ -1,4 +1,4 @@
-package de.fwpm.android.fefesblog;
+package de.fwpm.android.fefesblog.utils;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
