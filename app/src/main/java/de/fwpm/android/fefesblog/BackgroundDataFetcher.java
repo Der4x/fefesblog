@@ -1,19 +1,17 @@
 package de.fwpm.android.fefesblog;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.database.AppDatabase;
-import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
 
 import static de.fwpm.android.fefesblog.HtmlParser.parseHtml;
 
@@ -21,20 +19,24 @@ import static de.fwpm.android.fefesblog.HtmlParser.parseHtml;
  * Created by alex on 19.01.18.
  */
 
-public class DataFetcher extends AsyncTask<String, Void, Void> {
+public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
 
-    private static final String TAG = "DATAFETCHER";
+    private static final String TAG = "SYNC";
     private static final String BASIC_URL = "https://blog.fefe.de/";
 
     private Document html;
-    private NewPostsFragment container;
+    private Context mContext;
 
     private AppDatabase appDatabase;
+    private int postsCounter;
+    private int updateCounter;
 
 
-    public DataFetcher(NewPostsFragment fragment) {
+    public BackgroundDataFetcher(Context context) {
 
-            this.container = fragment;
+            postsCounter = 0;
+            updateCounter = 0;
+            mContext = context;
 
     }
 
@@ -44,11 +46,11 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected Boolean doInBackground(String... params) {
 
         try {
 
-            appDatabase = AppDatabase.getInstance(container.getContext());
+            appDatabase = AppDatabase.getInstance(mContext);
             html = Jsoup.connect(BASIC_URL).get();
 
             ArrayList<BlogPost> allPosts = parseHtml(html);
@@ -62,33 +64,38 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
                     post.setDate(oldEntry.getDate());
                     post.setBookmarked(oldEntry.isBookmarked());
 
-                    if(!oldEntry.getText().equals(post.getText())) post.setUpdate(true);
+                    if(!oldEntry.getText().equals(post.getText())) {
+
+                        post.setUpdate(true);
+                        updateCounter++;
+                    }
                     else post.setUpdate(oldEntry.isUpdate());
 
-                }
+                } else postsCounter++;
+
 
             }
 
             appDatabase.blogPostDao().insertList(allPosts);
 
-            return null;
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        Intent intent = new Intent(mContext, SyncReceiver.class);
+        intent.putExtra("Update", updateCounter);
+        intent.putExtra("New",postsCounter);
+        mContext.sendBroadcast(intent);
+
+        Log.d(TAG, "doInBackground: " + postsCounter + ", " + updateCounter);
+        return true;
     }
 
     @Override
-    protected void onPostExecute(Void vVoid) {
+    protected void onPostExecute(Boolean success) {
 
-        super.onPostExecute(vVoid);
-
-        if(container!=null && container.getActivity()!=null) {
-            container.populateResult();
-            this.container = null;
-        }
+        Log.d(TAG, "onPostExecute: ");
+        super.onPostExecute(success);
 
     }
 
