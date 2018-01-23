@@ -44,14 +44,14 @@ public class SyncReceiver extends BroadcastReceiver {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notification = new Notification.Builder(mContext)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.logo)
                     .setContentTitle("Fefes Blog")
                     .setContentText("New Posts: " + newPosts + ", Updates: " + updates)
                     .setChannelId("my_channel_01")
                     .build();
         } else {
             notification = new Notification.Builder(mContext)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.logo)
                     .setContentTitle("Fefes Blog")
                     .setContentText("New Posts: " + newPosts + ", Updates: " + updates)
                     .build();
