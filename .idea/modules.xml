@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FefesBlog.iml" filepath="$PROJECT_DIR$/FefesBlog.iml" />
+      <module fileurl="file://C:\Users\Untiak\StudioProjects\g01_aries_eschenbacher_dornseif\FefesBlog.iml" filepath="C:\Users\Untiak\StudioProjects\g01_aries_eschenbacher_dornseif\FefesBlog.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Untiak\StudioProjects\g01_aries_eschenbacher_dornseif\app\app.iml" filepath="C:\Users\Untiak\StudioProjects\g01_aries_eschenbacher_dornseif\app\app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/g01_aries_eschenbacher_dornseif.iml" filepath="$PROJECT_DIR$/.idea/g01_aries_eschenbacher_dornseif.iml" />
     </modules>
   </component>
 </project>
