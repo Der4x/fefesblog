@@ -32,12 +32,14 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
     private AppDatabase appDatabase;
     private int postsCounter;
     private int updateCounter;
+    private StringBuilder newPosts;
 
 
     public BackgroundDataFetcher(Context context) {
 
             postsCounter = 0;
             updateCounter = 0;
+            newPosts = new StringBuilder();
             mContext = context;
 
     }
@@ -65,6 +67,7 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
 
                     post.setDate(oldEntry.getDate());
                     post.setBookmarked(oldEntry.isBookmarked());
+                    post.setHasBeenRead(oldEntry.isHasBeenRead());
 
                     if(!oldEntry.getText().equals(post.getText())) {
 
@@ -73,7 +76,12 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
                     }
                     else post.setUpdate(oldEntry.isUpdate());
 
-                } else postsCounter++;
+                } else  {
+                    postsCounter++;
+                    newPosts.append(post.getText().substring(0, 100));
+                    newPosts.append("/;/");
+
+                }
 
 
             }
@@ -88,7 +96,7 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
 
             Intent intent = new Intent(mContext, SyncReceiver.class);
             intent.putExtra("Update", updateCounter);
-            intent.putExtra("New",postsCounter);
+            intent.putExtra("NewPosts", newPosts.toString());
             mContext.sendBroadcast(intent);
 
         }

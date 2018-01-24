@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog;
 
 
+import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,6 +30,10 @@ import de.fwpm.android.fefesblog.fragments.BookmarkFragment;
 import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
 import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
 
+import static de.fwpm.android.fefesblog.NotificationHelper.NOTIFICATION_GROUP;
+import static de.fwpm.android.fefesblog.NotificationHelper.NOTIFICATION_ID;
+import static de.fwpm.android.fefesblog.NotificationHelper.createNotificationBuilder;
+import static de.fwpm.android.fefesblog.NotificationHelper.makeNotificationChannel;
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.update;
 
@@ -45,9 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        boolean firstStart = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true);
-
-        if(firstStart) {
+        if(((JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE)).getAllPendingJobs().size() == 0) {
 
             scheduleJob();
 
@@ -130,12 +134,35 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        makeNotificationChannel(mNotificationManager);
+
+        String[] testdata = new String[]{
+                "Das Pentagon hat eine metrische Tonne Rumsfeld-Memos veröffentlicht. Einige davon sind ganz interessant. (Danke, Markus) ",
+//                "Kurze Durchsage von CDU-Generalsekretär Peter Tauber: Konkret soll Tauber in einer",
+//                "Benutzt hier jemand 7-zip? Um RAR oder ZIP auszupacken? ",
+//                "NSA deletes \"honesty\" and \"openness\" from core values. Für mehr Ehrlichkeit in der Werbung! ",
+//                "Für mehr Ehrlichkeit in der Werbung! ",
+//                "Es gibt jetzt komplett durchsichtige Fingerabdrucksensoren. (Danke, Michael) ",
+//                "Habt ihr mitgekriegt, dass Erdogan im Dezember den Griechen mitgeteilt hatte, der Vertrag von Lausanne "
+        };
+
+        mNotificationManager.notify(NOTIFICATION_ID, createNotificationBuilder(this, testdata, 0).build());
+
+
+
         for(JobInfo jobInfo : ((JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE)).getAllPendingJobs()) {
 
             Log.d(TAG, "onResume: " + jobInfo.toString());
 
         }
+
     }
+
+
 
     private void scheduleJob() {
 
