@@ -49,6 +49,8 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     public interface OnItemClickListener {
         void onItemClick(int position, BlogPost blogPost);
 
+        void onShareClick(int position, BlogPost blogPost);
+
     }
 
     public interface OnBottomReachListener {
@@ -139,6 +141,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         private TextView mUpdateBanner;
         private ImageButton mExpand;
         private ImageButton mBookmark;
+        private ImageButton mShare;
 
         OnBlogPostClickListener onBlogPostlistener;
 
@@ -149,6 +152,8 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mExpand = (ImageButton) itemView.findViewById(R.id.expand);
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
             mUpdateBanner = (TextView) itemView.findViewById(R.id.update_banner);
+            mShare = (ImageButton) itemView.findViewById(R.id.share);
+
         }
 
         public void setClickListener(final BlogPost blogPost,final int position) {
@@ -158,11 +163,17 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                 @Override
                 public void onClick(View view) {
                     mListener.onItemClick(position,blogPost);
-//                    onBlogPostlistener.onBlogPostClick(blogPost);
+                }
+            };
 
+            final View.OnClickListener onShareListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onShareClick(position,blogPost);
                 }
             };
             mContent.setOnClickListener(onClickListener);
+            mShare.setOnClickListener(onShareListener);
         }
 
         @Override
@@ -246,6 +257,14 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
                 }
             });
+
+//            mShare.setOnClickListener(new View.OnClickListener() {
+//
+//                @Override
+//                public void onClick(View v) {
+//
+//                }
+//            });
 
         }
 

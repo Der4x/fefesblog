@@ -218,6 +218,15 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
                                     startActivity(intent);
 
                                 }
+
+                                @Override
+                                public void onShareClick(int position, BlogPost blogPost) {
+                                    Intent sendIntent = new Intent();
+                                    sendIntent.setAction(Intent.ACTION_SEND);
+                                    sendIntent.putExtra(Intent.EXTRA_TEXT, blogPost.getUrl());
+                                    sendIntent.setType("text/plain");
+                                    startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_to)));
+                                }
                             },
                             new NewPostsRecyclerViewAdapter.OnBottomReachListener() {
                                 @Override

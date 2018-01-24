@@ -47,6 +47,8 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         private TextView mContent;
         private ImageButton mExpand;
         private ImageButton mBookmark;
+        private ImageButton mShare;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -54,6 +56,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
             mDate = (TextView) itemView.findViewById(R.id.post_date);
             mExpand = (ImageButton) itemView.findViewById(R.id.expand);
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
+            mShare = (ImageButton) itemView.findViewById(R.id.share);
         }
 
         void setClickListener(final int position, final BlogPost blogPost) {
@@ -65,8 +68,15 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
                     mListener.onItemClick(position,blogPost);
                 }
             };
+            final View.OnClickListener onShareListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onShareClick(position,blogPost);
+                }
+            };
             mContent.setOnClickListener(onClickListener);
             mDate.setOnClickListener(onClickListener);
+            mShare.setOnClickListener(onShareListener);
         }
 
     }
@@ -151,6 +161,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
 
     public interface OnItemClickListener {
         void onItemClick(int position,BlogPost blogPost);
+        void onShareClick(int position, BlogPost blogPost);
     }
 
     private void setBookmarkIcon(BookmarkRecyclerViewAdapter.ViewHolder holder, BlogPost blogPost) {
