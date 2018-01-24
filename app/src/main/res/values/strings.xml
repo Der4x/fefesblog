@@ -5,5 +5,7 @@
     <string name="title_activity_search">SearchActivity</string>
     <string name="search_title">Suchbegriff</string>
     <string name="search">Suche</string>
+    <string name="bookmark">bookmark</string>
+    <string name="share">Item</string>
 
 </resources>

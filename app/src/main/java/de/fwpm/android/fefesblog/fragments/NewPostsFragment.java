@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,11 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import de.fwpm.android.fefesblog.BlogPost;
+import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.data.DataFetcher;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 import de.fwpm.android.fefesblog.utils.PinnedHeaderItemDecoration;
@@ -91,13 +94,13 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         return view;
 
     }
-    
+
     @Override
     public void onResume() {
-        
+
         super.onResume();
         startSync();
-        
+
     }
 
     private void startSync() {
@@ -181,9 +184,9 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
         smoothScroller.setTargetPosition(position);
         mLayoutManager.startSmoothScroll(smoothScroller);
-        
+
     }
-    
+
     public static void update() {
         Log.d(TAG, "update: ");
     }
@@ -208,8 +211,13 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
                             = new NewPostsRecyclerViewAdapter(getContext(),
                             new NewPostsRecyclerViewAdapter.OnItemClickListener() {
                                 @Override
-                                public void onItemClick(int position) {
+                                public void onItemClick(int position, BlogPost blogPost) {
                                     Log.d(TAG, "onItemClick" + position);
+//                                    mListWithHeaders.get(position).setUpdate(false);
+//                                    recyclerViewAdapter.notifyDataSetChanged();
+                                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                                    intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                                    startActivity(intent);
 
                                 }
                             },

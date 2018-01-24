@@ -36,6 +36,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     static OnItemClickListener mListener;
     OnBottomReachListener mOnBottomReachListener;
 
+
     public NewPostsRecyclerViewAdapter(Context context, final OnItemClickListener listener, final OnBottomReachListener onBottomReachListener ,final ArrayList<BlogPost> data) {
 
         mContext = context;
@@ -46,12 +47,20 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(int position, BlogPost blogPost);
+
     }
 
     public interface OnBottomReachListener {
         void onBottom(int position);
     }
+
+    public interface OnBlogPostClickListener {
+
+
+    }
+
+
 
     static abstract class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -82,7 +91,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         abstract public void bindItem(NewPostsRecyclerViewAdapter adapter, BlogPost blogPost, int position);
 
-        abstract public void setClickListener(final int position);
+        abstract public void setClickListener(final BlogPost blogPost,final int position);
     }
 
     @Override
@@ -98,7 +107,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         final BlogPost item = mData.get(position);
         viewHolder.bindItem(this, item, position);
-        viewHolder.setClickListener(position);
+        viewHolder.setClickListener(item,position);
 
     }
 
@@ -131,6 +140,9 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         private ImageButton mExpand;
         private ImageButton mBookmark;
 
+        OnBlogPostClickListener onBlogPostlistener;
+
+
         public DataViewHolder(View itemView, int viewType) {
             super(itemView, viewType);
             mContent = (TextView) itemView.findViewById(R.id.post_text);
@@ -139,13 +151,15 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mUpdateBanner = (TextView) itemView.findViewById(R.id.update_banner);
         }
 
-        public void setClickListener(final int position) {
+        public void setClickListener(final BlogPost blogPost,final int position) {
 
             final View.OnClickListener onClickListener = new View.OnClickListener() {
 
                 @Override
                 public void onClick(View view) {
-                    mListener.onItemClick(position);
+                    mListener.onItemClick(position,blogPost);
+//                    onBlogPostlistener.onBlogPostClick(blogPost);
+
                 }
             };
             mContent.setOnClickListener(onClickListener);
@@ -180,6 +194,14 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                     return true;
                 }
             });
+
+//            mContent.setOnClickListener(new View.OnClickListener(){
+//
+//                @Override
+//                public void onClick(View v) {
+//                    mListener.onBlogPostClick(blogPost);
+//                }
+//            });
 
             mBookmark.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -254,6 +276,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
         }
 
+
     }
 
     static class SectionViewHolder extends ViewHolder {
@@ -264,15 +287,17 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mSectionLabel = (TextView) itemView.findViewById(R.id.section_label);
         }
 
-        public void setClickListener(final int position) {
-
-        }
 
         @Override
         public void bindItem(NewPostsRecyclerViewAdapter adapter, BlogPost blogPost, int position) {
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
             mSectionLabel.setText(dateFormat.format(blogPost.getDate()));
+
+        }
+
+        @Override
+        public void setClickListener(BlogPost blogPost, int position) {
 
         }
     }

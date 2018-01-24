@@ -45,6 +45,8 @@ public class StartScreenPagerAdapter extends FragmentPagerAdapter {
         return PAGE_COUNT;
     }
 
+
+
     @Override
     public CharSequence getPageTitle(final int position) {
         switch (position) {

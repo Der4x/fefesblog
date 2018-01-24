@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,7 +17,7 @@ import java.util.Locale;
  */
 
 @Entity
-public class BlogPost {
+public class BlogPost implements Serializable {
 
     public final static int TYPE_SECTION = 0;
     public final static int TYPE_DATA = 1;

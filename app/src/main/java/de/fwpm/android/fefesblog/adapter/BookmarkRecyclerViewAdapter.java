@@ -56,13 +56,13 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
         }
 
-        void setClickListener(final int position) {
+        void setClickListener(final int position, final BlogPost blogPost) {
 
             final View.OnClickListener onClickListener = new View.OnClickListener() {
 
                 @Override
                 public void onClick(View view) {
-                    mListener.onItemClick(position);
+                    mListener.onItemClick(position,blogPost);
                 }
             };
             mContent.setOnClickListener(onClickListener);
@@ -93,6 +93,8 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
             holder.mContent.setText(blogPost.getText());
             Log.d(TAG, "onBindViewHolder: " + blogPost.getHtmlText());
         }
+
+        holder.setClickListener(position,blogPost);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
         holder.mDate.setText(dateFormat.format(blogPost.getDate()));
@@ -148,7 +150,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(int position,BlogPost blogPost);
     }
 
     private void setBookmarkIcon(BookmarkRecyclerViewAdapter.ViewHolder holder, BlogPost blogPost) {

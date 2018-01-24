@@ -1,6 +1,8 @@
 package de.fwpm.android.fefesblog.fragments;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -12,9 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import java.io.Serializable;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.BlogPost;
+import de.fwpm.android.fefesblog.DetailsActivity;
+import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
@@ -101,10 +107,15 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
         recyclerViewAdapter = new BookmarkRecyclerViewAdapter(mContext,
                 new BookmarkRecyclerViewAdapter.OnItemClickListener() {
                     @Override
-                    public void onItemClick(int position) {
+                    public void onItemClick(int position, BlogPost blogPost) {
                         Log.d(TAG, "onItemClick" + position);
                         mList.get(position).setUpdate(false);
                         recyclerViewAdapter.notifyDataSetChanged();
+                        //go to detail view
+                        Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                        intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                        startActivity(intent);
+
                     }
                 },mList);
 
