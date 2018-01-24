@@ -49,6 +49,9 @@ public class BlogPost {
     @ColumnInfo(name= "update")
     private boolean update;
 
+    @ColumnInfo(name= "nexturl")
+    private String nextUrl;
+
     public BlogPost() {
 
     }
@@ -137,5 +140,13 @@ public class BlogPost {
 
     public void setUpdate(boolean update) {
         this.update = update;
+    }
+
+    public String getNextUrl() {
+        return nextUrl;
+    }
+
+    public void setNextUrl(String nextUrl) {
+        this.nextUrl = nextUrl;
     }
 }

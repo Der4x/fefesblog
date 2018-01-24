@@ -46,7 +46,8 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
         try {
 
             appDatabase = AppDatabase.getInstance(container.getContext());
-            html = Jsoup.connect(BASIC_URL).get();
+            if(params.length > 0) html = Jsoup.connect(params[0]).get();
+            else html = Jsoup.connect(BASIC_URL).get();
 
             ArrayList<BlogPost> allPosts = parseHtml(html);
 
@@ -58,6 +59,7 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
 
                     post.setDate(oldEntry.getDate());
                     post.setBookmarked(oldEntry.isBookmarked());
+                    post.setHasBeenRead(oldEntry.isHasBeenRead());
 
                     if(!oldEntry.getText().equals(post.getText())) post.setUpdate(true);
                     else post.setUpdate(oldEntry.isUpdate());

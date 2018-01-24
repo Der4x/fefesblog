@@ -28,6 +28,8 @@ import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 
+import static de.fwpm.android.fefesblog.MainActivity.FIRST_START;
+
 /**
  * Created by alex on 20.01.18.
  */
@@ -43,7 +45,6 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
     private SwipeRefreshLayout mNewPostSwipeRefresh;
     private static RecyclerView.SmoothScroller smoothScroller;
 
-    private ArrayList<BlogPost> mData;
     private ArrayList<BlogPost> mListWithHeaders;
     private Handler mHandler;
 
@@ -76,17 +77,15 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         networkUtils = new NetworkUtils(context);
 
         SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean firstStart = mPrefs.getBoolean("firstStart", true);
+        boolean firstStart = mPrefs.getBoolean(FIRST_START, true);
 
         initView();
 
         if(firstStart) {
-            mPrefs.edit().putBoolean("firstStart", false).commit();
+            mPrefs.edit().putBoolean(FIRST_START, false).commit();
             Log.d(TAG, "firstStart");
         }
         else getData();
-
-        startSync();
 
 
         return view;
@@ -94,10 +93,10 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
     }
     
     @Override
-    public void onPause() {
+    public void onResume() {
         
-        super.onPause();
-        Log.d(TAG, "onPause: ");
+        super.onResume();
+        startSync();
         
     }
 
@@ -120,18 +119,18 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
             @Override
             public void run() {
 
-                mData = (ArrayList<BlogPost>) AppDatabase.getInstance(context).blogPostDao().getAllPosts();
+                ArrayList<BlogPost> data = (ArrayList<BlogPost>) AppDatabase.getInstance(context).blogPostDao().getAllPosts();
 
                 if(mListWithHeaders == null)
                     mListWithHeaders = new ArrayList<>();
                 else mListWithHeaders.clear();
 
-                Date firstDate = mData.get(0).getDate();
+                Date firstDate = data.get(0).getDate();
                 addHeader(mListWithHeaders, firstDate);
 
                 SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
 
-                for (BlogPost blogPost : mData) {
+                for (BlogPost blogPost : data) {
 
                     if (fmt.format(blogPost.getDate()).equals(fmt.format(firstDate))) {
 
@@ -211,9 +210,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
                                 @Override
                                 public void onItemClick(int position) {
                                     Log.d(TAG, "onItemClick" + position);
-                                    mListWithHeaders.get(position).setUpdate(false);
-                                    recyclerViewAdapter.notifyDataSetChanged();
-                                    //TODO: Update in DB
+
                                 }
                             },
                             new NewPostsRecyclerViewAdapter.OnBottomReachListener() {
@@ -244,14 +241,14 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
     private void loadMoreData() {
 
-//        if(networkUtils.isConnectingToInternet()) {
-//            new DataFetcher(this).execute();
-//            setRefresh(true);
-//        }
-//        else {
-//            Toast.makeText(getContext(), "Kein Internet!", Toast.LENGTH_LONG).show();
-//            setRefresh(false);
-//        }
+        if(networkUtils.isConnectingToInternet()) {
+            new DataFetcher(this).execute(mListWithHeaders.get(mListWithHeaders.size()-1).getNextUrl());
+            setRefresh(true);
+        }
+        else {
+            Toast.makeText(getContext(), "Kein Internet!", Toast.LENGTH_LONG).show();
+            setRefresh(false);
+        }
 
     }
 

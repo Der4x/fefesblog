@@ -30,6 +30,8 @@ public class HtmlParser {
 
         Elements listsOfPosts = doc.select("body > ul"); //select("ul"); -> Der Bug war richtig fies!!
 
+        String nextUrl = doc.select("div").select("a[href]").get(0).attr("abs:href");
+
         ArrayList<BlogPost> allPosts = new ArrayList<>();
 
         int counter = 0;
@@ -67,9 +69,10 @@ public class HtmlParser {
             }
 
             counter++;
-            if(counter == dates.size()) return allPosts;
+//            if(counter == dates.size()) return allPosts;
 
         }
+        allPosts.get(allPosts.size()-1).setNextUrl(nextUrl);
         return allPosts;
     }
 }

@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -25,7 +26,8 @@ import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.update;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MAINACTIVITY";
-    private static final long SYNC_INTERVALL = 1000 * 60 * 15; //15 minutes
+    private static final long SYNC_INTERVALL = 1000 * 60 * 60; //1 h
+    public static final String FIRST_START = "firststart";
 
     private ViewPager viewPager;
     private StartScreenPagerAdapter adapter;
@@ -35,6 +37,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        boolean firstStart = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true);
+
+        if(firstStart) {
+
+            scheduleJob();
+
+        }
 //        scheduleJob();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

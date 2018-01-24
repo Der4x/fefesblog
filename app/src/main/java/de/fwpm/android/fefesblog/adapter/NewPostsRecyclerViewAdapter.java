@@ -158,6 +158,19 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             setUpdateBanner(blogPost.isUpdate());
             closeContent();
             setBookmarkIcon(blogPost.isBookmarked());
+            if(!blogPost.isHasBeenRead()) {
+
+                mUpdateBanner.setText("NEU!");
+                mUpdateBanner.setVisibility(View.VISIBLE);
+                blogPost.setHasBeenRead(true);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AppDatabase.getInstance(adapter.mContext).blogPostDao().updateBlogPost(blogPost);
+                    }
+                }).start();
+
+            };
 
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -215,8 +228,11 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         }
 
         private void setUpdateBanner(boolean isUpdate) {
-            if(isUpdate) mUpdateBanner.setVisibility(View.VISIBLE);
-            else mUpdateBanner.setVisibility(View.INVISIBLE);
+            mUpdateBanner.setVisibility(View.INVISIBLE);
+            if(isUpdate) {
+                mUpdateBanner.setText("Update!");
+                mUpdateBanner.setVisibility(View.VISIBLE);
+            }
         }
 
         private void setBookmarkIcon(boolean isBookmarked) {

@@ -84,10 +84,15 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
             e.printStackTrace();
         }
 
-        Intent intent = new Intent(mContext, SyncReceiver.class);
-        intent.putExtra("Update", updateCounter);
-        intent.putExtra("New",postsCounter);
-        mContext.sendBroadcast(intent);
+        if(postsCounter != 0 || updateCounter != 0)  {
+
+            Intent intent = new Intent(mContext, SyncReceiver.class);
+            intent.putExtra("Update", updateCounter);
+            intent.putExtra("New",postsCounter);
+            mContext.sendBroadcast(intent);
+
+        }
+
 
         Log.d(TAG, "doInBackground: " + postsCounter + ", " + updateCounter);
         return true;
