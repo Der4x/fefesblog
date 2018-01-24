@@ -62,7 +62,14 @@ public class DetailsActivity extends AppCompatActivity {
                 }
             }).start();
         return true;
+        }else if (itemId == R.id.menu_share){
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, blogPost.getUrl());
+            sendIntent.setType("text/plain");
+            startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_to)));
         }
+
             return super.onOptionsItemSelected(item);
 
     }

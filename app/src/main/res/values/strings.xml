@@ -7,5 +7,6 @@
     <string name="search">Suche</string>
     <string name="bookmark">bookmark</string>
     <string name="share">Item</string>
+    <string name="share_to">Sende Blog Post via</string>
 
 </resources>
