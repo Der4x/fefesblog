@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.adapter.SearchRecyclerViewAdapter;
@@ -63,8 +65,11 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 = new SearchRecyclerViewAdapter(mContext,
                 new SearchRecyclerViewAdapter.OnItemClickListener() {
                     @Override
-                    public void onItemClick(int position) {
+                    public void onItemClick(int position, BlogPost blogPost) {
                         Log.d(TAG, "onItemClick" + position);
+                        Intent intent = new Intent(SearchActivity.this, DetailsActivity.class);
+                        intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                        startActivity(intent);
                     }
                 },
                 mListOfPosts);

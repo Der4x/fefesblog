@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -44,7 +43,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(int position,BlogPost blogPost);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -62,13 +61,13 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
         }
 
-        void setClickListener(final int position) {
+        void setClickListener(final int position,final BlogPost blogPost) {
 
             final View.OnClickListener onClickListener = new View.OnClickListener() {
 
                 @Override
                 public void onClick(View view) {
-                    mListener.onItemClick(position);
+                    mListener.onItemClick(position,blogPost);
                 }
             };
             mContent.setOnClickListener(onClickListener);
@@ -103,12 +102,13 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
         holder.mDate.setText(dateFormat.format(blogPost.getDate()));
+        holder.setClickListener(position,blogPost);
 
         holder.mBookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                blogPost.setBookmarked(blogPost.isBookmarked() ? false : true);
+                blogPost.setBookmarked(!blogPost.isBookmarked());
                 setBookmarkIcon(holder, blogPost);
 
                 new Thread(new Runnable() {

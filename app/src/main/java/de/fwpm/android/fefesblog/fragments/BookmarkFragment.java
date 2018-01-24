@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,11 +121,12 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
                     @Override
                     public void onShareClick(int position, BlogPost blogPost) {
-                        Intent sendIntent = new Intent();
-                        sendIntent.setAction(Intent.ACTION_SEND);
-                        sendIntent.putExtra(Intent.EXTRA_TEXT, blogPost.getUrl());
-                        sendIntent.setType("text/plain");
-                        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_to)));
+                        String pre = String.valueOf(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1])).substring(0,100);
+                        Intent share = new Intent();
+                        share.setAction(Intent.ACTION_SEND);
+                        share.putExtra(Intent.EXTRA_TEXT, pre+"...\n\n" +blogPost.getUrl());
+                        share.setType("text/plain");
+                        startActivity(Intent.createChooser(share, getResources().getText(R.string.share_to)));
                     }
                 },mList);
 

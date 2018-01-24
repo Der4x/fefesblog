@@ -143,8 +143,6 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         private ImageButton mBookmark;
         private ImageButton mShare;
 
-        OnBlogPostClickListener onBlogPostlistener;
-
 
         public DataViewHolder(View itemView, int viewType) {
             super(itemView, viewType);
