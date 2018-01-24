@@ -99,7 +99,7 @@ public class NotificationHelper {
             mChannel = new NotificationChannel(id, name, importance);
             mChannel.setDescription(description);
             mChannel.enableLights(true);
-            mChannel.setLightColor(Color.GREEN);
+            mChannel.setLightColor(Color.BLUE);
             mChannel.enableVibration(true);
             mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300});
             mNotificationManager.createNotificationChannel(mChannel);
