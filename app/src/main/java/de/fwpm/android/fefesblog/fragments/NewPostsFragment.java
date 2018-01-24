@@ -213,8 +213,6 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
                                 @Override
                                 public void onItemClick(int position, BlogPost blogPost) {
                                     Log.d(TAG, "onItemClick" + position);
-//                                    mListWithHeaders.get(position).setUpdate(false);
-//                                    recyclerViewAdapter.notifyDataSetChanged();
                                     Intent intent = new Intent(getActivity(), DetailsActivity.class);
                                     intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
                                     startActivity(intent);
@@ -249,8 +247,19 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
     private void loadMoreData() {
 
+        String nextUrl = new String();
+        int counter = mListWithHeaders.size()-1;
+        while (nextUrl.equals("")) {
+
+            if(mListWithHeaders.get(counter).getNextUrl() != null) {
+                nextUrl = mListWithHeaders.get(counter).getNextUrl();
+            }
+            counter--;
+
+        }
+
         if(networkUtils.isConnectingToInternet()) {
-            new DataFetcher(this).execute(mListWithHeaders.get(mListWithHeaders.size()-1).getNextUrl());
+            new DataFetcher(this).execute(nextUrl);
             setRefresh(true);
         }
         else {

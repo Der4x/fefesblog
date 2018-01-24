@@ -28,7 +28,6 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
 
     private AppDatabase appDatabase;
 
-
     public DataFetcher(NewPostsFragment fragment) {
 
             this.container = fragment;
@@ -49,7 +48,7 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
             if(params.length > 0) html = Jsoup.connect(params[0]).get();
             else html = Jsoup.connect(BASIC_URL).get();
 
-            ArrayList<BlogPost> allPosts = parseHtml(html);
+            ArrayList<BlogPost> allPosts = parseHtml(html, false);
 
             for(BlogPost post : allPosts) {
 

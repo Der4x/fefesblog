@@ -24,13 +24,18 @@ public class HtmlParser {
     private SharedPreferences mPrefs;
     private SharedPreferences.Editor editor;
 
-    public static ArrayList<BlogPost> parseHtml(Document doc) {
+    public static ArrayList<BlogPost> parseHtml(Document doc, boolean search) {
 
         Elements dates = doc.select("h3");
 
         Elements listsOfPosts = doc.select("body > ul"); //select("ul"); -> Der Bug war richtig fies!!
 
-        String nextUrl = doc.select("div").select("a[href]").get(0).attr("abs:href");
+        Elements div = doc.select("body > div");
+        String nextUrl = new String();
+
+        if( div.size() != 0 || !search) {
+            nextUrl = div.select("a[href]").get(0).attr("abs:href");
+        }
 
         ArrayList<BlogPost> allPosts = new ArrayList<>();
 
@@ -72,7 +77,9 @@ public class HtmlParser {
 //            if(counter == dates.size()) return allPosts;
 
         }
-        allPosts.get(allPosts.size()-1).setNextUrl(nextUrl);
+
+        if(!search) allPosts.get(allPosts.size()-1).setNextUrl(nextUrl);
+
         return allPosts;
     }
 }

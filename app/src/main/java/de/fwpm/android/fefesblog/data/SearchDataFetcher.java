@@ -43,7 +43,7 @@ public class SearchDataFetcher extends AsyncTask<String, Void, ArrayList<BlogPos
 
             html = Jsoup.connect(SEARCH_URL + params[0]).timeout(1000 * 15).get();
 
-            ArrayList<BlogPost> allPosts = parseHtml(html);
+            ArrayList<BlogPost> allPosts = parseHtml(html, true);
 
             return allPosts;
 

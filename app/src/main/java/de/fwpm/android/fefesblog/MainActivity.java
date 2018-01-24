@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
             scheduleJob();
 
         }
-//        scheduleJob();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -71,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 Log.d(TAG, "onTabSelected: " + tab.getText());
-                reloadTab(tab);
             }
 
             @Override
@@ -127,21 +125,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
-
-
-    private void reloadTab(TabLayout.Tab tab) {
-//        List<android.support.v4.app.Fragment> fragments = getSupportFragmentManager().getFragments();
-////        android.support.v4.app.Fragment fragment2 = getSupportFragmentManager().findFragmentById()
-//        for (android.support.v4.app.Fragment fragment : fragments){
-//        if (tab.getText().equals(R.string.newposts)){
-//            ((NewPostsFragment)fragment).reloadFragment();
-//            return;
-//        }else if (fragment instanceof BookmarkFragment){
-//            ((BookmarkFragment)fragment).reloadFragment();
-//            return;
-//        }
-//        }
-    }
 
     @Override
     public void onResume() {

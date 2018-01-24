@@ -55,7 +55,7 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
             appDatabase = AppDatabase.getInstance(mContext);
             html = Jsoup.connect(BASIC_URL).get();
 
-            ArrayList<BlogPost> allPosts = parseHtml(html);
+            ArrayList<BlogPost> allPosts = parseHtml(html, false);
 
             for(BlogPost post : allPosts) {
 
