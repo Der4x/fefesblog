@@ -1,19 +1,16 @@
 package de.fwpm.android.fefesblog;
 
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import de.fwpm.android.fefesblog.database.AppDatabase;
@@ -52,7 +49,7 @@ public class DetailsActivity extends AppCompatActivity {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_bookmark) {
 
-            blogPost.setBookmarked(blogPost.isBookmarked() ? false : true);
+            blogPost.setBookmarked(!blogPost.isBookmarked());
             setBookmarkIcon(blogPost.isBookmarked());
 
             new Thread(new Runnable() {
@@ -68,6 +65,7 @@ public class DetailsActivity extends AppCompatActivity {
             sendIntent.putExtra(Intent.EXTRA_TEXT, blogPost.getUrl());
             sendIntent.setType("text/plain");
             startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_to)));
+            return true;
         }
 
             return super.onOptionsItemSelected(item);

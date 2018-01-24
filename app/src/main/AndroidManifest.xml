@@ -17,7 +17,8 @@
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation">
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,6 +28,7 @@
         <activity
             android:name=".SearchActivity"
             android:configChanges="orientation"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -47,7 +49,12 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".DetailsActivity"></activity>
+        <activity
+            android:name=".DetailsActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
     </application>
 
 </manifest>
