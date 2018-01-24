@@ -60,11 +60,12 @@ public class DetailsActivity extends AppCompatActivity {
             }).start();
         return true;
         }else if (itemId == R.id.menu_share){
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, blogPost.getUrl());
-            sendIntent.setType("text/plain");
-            startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_to)));
+            String pre = String.valueOf(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1])).substring(0,100);
+            Intent share = new Intent();
+            share.setAction(Intent.ACTION_SEND);
+            share.putExtra(Intent.EXTRA_TEXT, pre+"...\n\n" +blogPost.getUrl());
+            share.setType("text/plain");
+            startActivity(Intent.createChooser(share, getResources().getText(R.string.share_to)));
             return true;
         }
 
