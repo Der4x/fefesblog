@@ -7,6 +7,7 @@ import android.util.Log;
 
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.SyncReceiver;
+import de.fwpm.android.fefesblog.data.BackgroundDataFetcher;
 
 
 /**
@@ -50,10 +51,10 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private void onAutomaticNotificationToggle(Boolean isEnabled) {
         if (isEnabled){
             Log.d(TAG, "Enable Notifications");
-            SyncReceiver.areNotificationsAllowed = true;
+            BackgroundDataFetcher.areNotificationsAllowed = true;
         }else{
             Log.d(TAG, "Enable Notifications");
-            SyncReceiver.areNotificationsAllowed = false;
+            BackgroundDataFetcher.areNotificationsAllowed = false;
 
         }
     }
@@ -61,9 +62,16 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private void onAutomaticUpdatesToggle(Boolean isEnabled) {
         if(isEnabled) {
             Log.d(TAG, "Enable Updates");
+            BackgroundDataFetcher.isBackgroundUpdateAllowed=true;
+            findPreference(automaticNotification).setEnabled(true);
+
+
+
         }
         else {
             Log.d(TAG, "Disable Updates");
+            BackgroundDataFetcher.isBackgroundUpdateAllowed=false;
+            findPreference(automaticNotification).setEnabled(false);
         }
     }
 }

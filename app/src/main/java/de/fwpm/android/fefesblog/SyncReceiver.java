@@ -21,14 +21,12 @@ import static de.fwpm.android.fefesblog.NotificationHelper.makeNotificationChann
  */
 
 public class SyncReceiver extends BroadcastReceiver {
-    public static boolean areNotificationsAllowed = true;
 
     private static final String TAG = "SYNC";
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if (areNotificationsAllowed) {
             int updates = intent.getIntExtra("Update", 0);
             String newPosts = intent.getStringExtra("NewPosts");
 
@@ -42,9 +40,7 @@ public class SyncReceiver extends BroadcastReceiver {
             mNotificationManager.notify(NOTIFICATION_ID, createNotificationBuilder(context, postsnippets, updates).build());
 
             Log.d(TAG, "onReceive: ");
-        } else {
-            Log.d(TAG, "Notifications are not allowed!");
-        }
+
     }
 
 }
