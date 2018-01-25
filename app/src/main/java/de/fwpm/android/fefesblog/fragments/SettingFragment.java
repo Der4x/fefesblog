@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.SwitchPreference;
 import android.util.Log;
 
 import de.fwpm.android.fefesblog.R;
@@ -91,6 +92,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         else {
             Log.d(TAG, "Disable Updates");
             findPreference(automaticNotification).setEnabled(false);
+            ((SwitchPreference)findPreference(automaticNotification)).setChecked(false);
             ((JobScheduler) getActivity().getSystemService(Context.JOB_SCHEDULER_SERVICE)).cancel(1234);
         }
     }
@@ -110,4 +112,16 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     public static void setPreviewSize(String newValue){
         previewSizeValue = Integer.parseInt(newValue);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!((SwitchPreference)findPreference(automaticUpdatesKey)).isChecked())
+            findPreference(automaticNotification).setEnabled(false);
+        else{
+            findPreference(automaticNotification).setEnabled(true);
+
+        }
+
+         }
 }
