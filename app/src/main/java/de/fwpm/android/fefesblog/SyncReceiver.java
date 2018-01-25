@@ -21,26 +21,29 @@ import static de.fwpm.android.fefesblog.NotificationHelper.makeNotificationChann
  */
 
 public class SyncReceiver extends BroadcastReceiver {
+    public static boolean areNotificationsAllowed = true;
 
     private static final String TAG = "SYNC";
 
     @Override
     public void onReceive(Context context, Intent intent) {
+if (areNotificationsAllowed) {
+    int updates = intent.getIntExtra("Update", 0);
+    String newPosts = intent.getStringExtra("NewPosts");
 
-        int updates = intent.getIntExtra("Update", 0);
-        String newPosts = intent.getStringExtra("NewPosts");
+    String[] postsnippets = (!newPosts.equals("") ? newPosts.split("/;/") : new String[]{});
 
-        String[] postsnippets = (!newPosts.equals("") ? newPosts.split("/;/") : new String[]{});
+    NotificationManager mNotificationManager =
+            (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        NotificationManager mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    makeNotificationChannel(mNotificationManager);
 
-        makeNotificationChannel(mNotificationManager);
+    mNotificationManager.notify(NOTIFICATION_ID, createNotificationBuilder(context, postsnippets, updates).build());
 
-        mNotificationManager.notify(NOTIFICATION_ID, createNotificationBuilder(context, postsnippets, updates).build());
-
-        Log.d(TAG, "onReceive: ");
-
+    Log.d(TAG, "onReceive: ");
+}else{
+    Log.d(TAG, "Notifications are not allowed!");
+}
     }
 
 }

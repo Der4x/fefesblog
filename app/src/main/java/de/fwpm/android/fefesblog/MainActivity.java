@@ -17,6 +17,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.io.Serializable;
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
     private StartScreenPagerAdapter adapter;
+    private MenuItem setting_item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +184,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return jobInfo;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_settings) {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+
+        setting_item = menu.findItem(R.id.menu_settings);
+
+        return true;
+
     }
 
 }
