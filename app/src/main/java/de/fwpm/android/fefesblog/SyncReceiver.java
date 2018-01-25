@@ -27,23 +27,24 @@ public class SyncReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-if (areNotificationsAllowed) {
-    int updates = intent.getIntExtra("Update", 0);
-    String newPosts = intent.getStringExtra("NewPosts");
 
-    String[] postsnippets = (!newPosts.equals("") ? newPosts.split("/;/") : new String[]{});
+        if (areNotificationsAllowed) {
+            int updates = intent.getIntExtra("Update", 0);
+            String newPosts = intent.getStringExtra("NewPosts");
 
-    NotificationManager mNotificationManager =
-            (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            String[] postsnippets = (!newPosts.equals("") ? newPosts.split("/;/") : new String[]{});
 
-    makeNotificationChannel(mNotificationManager);
+            NotificationManager mNotificationManager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-    mNotificationManager.notify(NOTIFICATION_ID, createNotificationBuilder(context, postsnippets, updates).build());
+            makeNotificationChannel(mNotificationManager);
 
-    Log.d(TAG, "onReceive: ");
-}else{
-    Log.d(TAG, "Notifications are not allowed!");
-}
+            mNotificationManager.notify(NOTIFICATION_ID, createNotificationBuilder(context, postsnippets, updates).build());
+
+            Log.d(TAG, "onReceive: ");
+        } else {
+            Log.d(TAG, "Notifications are not allowed!");
+        }
     }
 
 }

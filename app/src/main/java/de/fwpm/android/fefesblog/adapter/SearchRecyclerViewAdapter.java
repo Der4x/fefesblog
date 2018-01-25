@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -52,6 +53,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         private TextView mContent;
         private ImageButton mExpand;
         private ImageButton mBookmark;
+        private ImageButton mShare;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -59,6 +61,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
             mDate = (TextView) itemView.findViewById(R.id.post_date);
             mExpand = (ImageButton) itemView.findViewById(R.id.expand);
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
+            mShare = (ImageButton) itemView.findViewById(R.id.share);
         }
 
         void setClickListener(final int position,final BlogPost blogPost) {
@@ -144,6 +147,19 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
                     jumpToPosition((position == 0) ? 0 : position - 1);
                 }
 
+            }
+        });
+
+        holder.mShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String postText = blogPost.getText();
+                String preView = postText.length() > 99 ?  postText.substring(4,100) : postText.substring(4);
+                Intent share = new Intent();
+                share.setAction(Intent.ACTION_SEND);
+                share.putExtra(Intent.EXTRA_TEXT, preView +"...\n\n" +blogPost.getUrl());
+                share.setType("text/plain");
+                mContext.startActivity(Intent.createChooser(share, mContext.getResources().getText(R.string.share_to)));
             }
         });
 

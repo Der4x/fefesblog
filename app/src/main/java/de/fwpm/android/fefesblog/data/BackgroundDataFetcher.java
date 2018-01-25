@@ -78,7 +78,7 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
 
                 } else  {
                     postsCounter++;
-                    newPosts.append(post.getText().substring(0, 100));
+                    newPosts.append(post.getText().length() > 99 ? post.getText().substring(4, 100) : post.getText().substring(4));
                     newPosts.append("/;/");
 
                 }

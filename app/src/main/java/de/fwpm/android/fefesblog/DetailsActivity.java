@@ -60,10 +60,11 @@ public class DetailsActivity extends AppCompatActivity {
             }).start();
         return true;
         }else if (itemId == R.id.menu_share){
-            String pre = String.valueOf(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1])).substring(0,100);
+            String postText = blogPost.getText();
+            String preView = postText.length() > 99 ?  postText.substring(4,100) : postText.substring(4);
             Intent share = new Intent();
             share.setAction(Intent.ACTION_SEND);
-            share.putExtra(Intent.EXTRA_TEXT, pre+"...\n\n" +blogPost.getUrl());
+            share.putExtra(Intent.EXTRA_TEXT, preView + "...\n\n" +blogPost.getUrl());
             share.setType("text/plain");
             startActivity(Intent.createChooser(share, getResources().getText(R.string.share_to)));
             return true;

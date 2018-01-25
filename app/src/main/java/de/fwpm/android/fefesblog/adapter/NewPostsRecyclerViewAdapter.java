@@ -204,14 +204,6 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                 }
             });
 
-//            mContent.setOnClickListener(new View.OnClickListener(){
-//
-//                @Override
-//                public void onClick(View v) {
-//                    mListener.onBlogPostClick(blogPost);
-//                }
-//            });
-
             mBookmark.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -255,14 +247,6 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
                 }
             });
-
-//            mShare.setOnClickListener(new View.OnClickListener() {
-//
-//                @Override
-//                public void onClick(View v) {
-//
-//                }
-//            });
 
         }
 
