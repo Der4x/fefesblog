@@ -18,6 +18,7 @@ import java.util.Locale;
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.fragments.SettingFragment;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 
@@ -142,7 +143,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
 
                 }
 
-                if (holder.mContent.getMaxLines() == MAX_LINES) {
+                if (holder.mContent.getMaxLines() == SettingFragment.getPreviewSize()) {
                     expandContent(holder);
                 } else {
                     closeContent(holder);
@@ -177,7 +178,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
     }
 
     private void closeContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
-        holder.mContent.setMaxLines(MAX_LINES);
+        holder.mContent.setMaxLines(SettingFragment.getPreviewSize());
         holder.mContent.setEllipsize(TextUtils.TruncateAt.END);
         holder.mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
     }
