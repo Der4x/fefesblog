@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <SwitchPreference
+        android:key="@string/pref_background_update_key"
+        android:title="@string/pref_background_update_title"
+        android:summary="@string/pref_background_update_text"
+        android:defaultValue="@bool/pref_background_update_default"/>
+
+    <SwitchPreference
+        android:key="@string/pref_notification_key"
+        android:title="@string/pref_notification_title"
+        android:summary="@string/pref_notification_text"
+        android:defaultValue="@bool/pref_notification_default"/>
+
+    <ListPreference
+        android:key="@string/pref_preview_size_key"
+        android:title="@string/pref_preview_size_title"
+        android:dialogTitle="@string/pref_preview_size_title"
+        android:entries="@array/pref_preview_size_entries"
+        android:entryValues="@array/pref_preview_size_values"
+        android:defaultValue="@string/pref_preview_size_default"/>
+
+    <ListPreference
+        android:key="@string/pref_date_format_key"
+        android:title="@string/pref_date_format_title"
+        android:dialogTitle="@string/pref_date_format_title"
+        android:entries="@array/pref_date_format_entries"
+        android:entryValues="@array/pref_date_format_values"
+        android:defaultValue="@string/pref_date_format_default"/>
+
+
+</PreferenceScreen>

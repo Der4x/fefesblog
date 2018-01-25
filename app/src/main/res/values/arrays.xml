@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_preview_size_entries">
+        <item>6 Zeilen</item>
+        <item>8 Zeilen</item>
+        <item>kompletter Text</item>
+    </string-array>
+    <string-array name="pref_preview_size_values">
+        <item>6</item>
+        <item>8</item>
+        <item>100000</item>
+    </string-array>
+    <string-array name="pref_date_format_entries">
+    </string-array>
+
+    <string-array name="pref_date_format_values">
+    </string-array>
+
+</resources>
