@@ -31,7 +31,7 @@ import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRecyclerViewAdapter.ViewHolder> implements PinnedHeaderItemDecoration.PinnedHeaderAdapter {
 
     private static final String TAG = "NPRecyclerViewAdapter";
-    private static int MAX_LINES = 6;
+    private static int MAX_LINES = 7;
 
     ArrayList<BlogPost> mData;
     Context mContext;
@@ -61,10 +61,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
     public interface OnBlogPostClickListener {
 
-
     }
-
-
 
     static abstract class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -181,39 +178,19 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
 //            mContent.setText(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1]));
             setTextViewHTML(mContent, blogPost.getHtmlText().split("</a>", 2)[1]);
-            setUpdateBanner(blogPost.isUpdate());
+            setBanner(blogPost);
             closeContent();
             setBookmarkIcon(blogPost.isBookmarked());
-            if(!blogPost.isHasBeenRead()) {
-
-                mUpdateBanner.setText("NEU!");
-                mUpdateBanner.setVisibility(View.VISIBLE);
-                blogPost.setHasBeenRead(true);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppDatabase.getInstance(adapter.mContext).blogPostDao().updateBlogPost(blogPost);
-                    }
-                }).start();
-
-            };
 
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
                     if(mContent.getLineCount() < SettingFragment.getPreviewSize()) mExpand.setVisibility(View.INVISIBLE);
                     else mExpand.setVisibility(View.VISIBLE);
+                    //Todo: Handle new or update posts not expandable
                     return true;
                 }
             });
-
-//            mContent.setOnClickListener(new View.OnClickListener(){
-//
-//                @Override
-//                public void onClick(View v) {
-//                    mListener.onBlogPostClick(blogPost);
-//                }
-//            });
 
             mBookmark.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -236,10 +213,11 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                 @Override
                 public void onClick(View view) {
 
-                    if(blogPost.isUpdate()) {
+                    if(blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
 
                         blogPost.setUpdate(false);
-                        setUpdateBanner(false);
+                        blogPost.setHasBeenRead(true);
+                        setBanner(blogPost);
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -259,13 +237,16 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                 }
             });
 
-
-
         }
 
-        private void setUpdateBanner(boolean isUpdate) {
+        private void setBanner(BlogPost blogPost) {
+
             mUpdateBanner.setVisibility(View.INVISIBLE);
-            if(isUpdate) {
+            if(!blogPost.isHasBeenRead()) {
+                mUpdateBanner.setText("NEU!");
+                mUpdateBanner.setVisibility(View.VISIBLE);
+
+            } else if(blogPost.isUpdate()) {
                 mUpdateBanner.setText("Update!");
                 mUpdateBanner.setVisibility(View.VISIBLE);
             }
@@ -289,7 +270,6 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mContent.setEllipsize(TextUtils.TruncateAt.END);
             mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
         }
-
 
     }
 

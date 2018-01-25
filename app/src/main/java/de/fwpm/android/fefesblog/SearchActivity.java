@@ -127,7 +127,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 }
 
             }
-        }, 300);
+        }, 500);
 
 
         return false;

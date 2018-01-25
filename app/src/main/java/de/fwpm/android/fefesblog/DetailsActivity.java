@@ -101,6 +101,19 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        if(mWebContainer.getVisibility() == View.VISIBLE) {
+
+            mWebContainer.animate()
+                    .translationY(mWebContainer.getHeight())
+                    .setDuration(300);
+            mWebContainer.setVisibility(View.INVISIBLE);
+
+        } else super.onBackPressed();
+    }
+
     public void loadUrl(String url) {
 
         mWebView.loadUrl(url);

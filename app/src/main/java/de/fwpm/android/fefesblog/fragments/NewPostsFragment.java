@@ -91,7 +91,6 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         }
         else getData();
 
-
         return view;
 
     }
@@ -212,8 +211,19 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
                             = new NewPostsRecyclerViewAdapter(getContext(),
                             new NewPostsRecyclerViewAdapter.OnItemClickListener() {
                                 @Override
-                                public void onItemClick(int position, BlogPost blogPost) {
-                                    Log.d(TAG, "onItemClick" + position);
+                                public void onItemClick(int position, final BlogPost blogPost) {
+                                    if(blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
+
+                                        blogPost.setUpdate(false);
+                                        blogPost.setHasBeenRead(true);
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                AppDatabase.getInstance(context).blogPostDao().updateBlogPost(blogPost);
+                                            }
+                                        }).start();
+
+                                    }
                                     Intent intent = new Intent(getActivity(), DetailsActivity.class);
                                     intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
                                     startActivity(intent);
@@ -286,14 +296,12 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         listWithHeaders.add(headerBlogPost);
     }
 
-
     @Override
     public void onPauseFragment() {
     }
 
     @Override
     public void onResumeFragment() {
-        Log.d(TAG, "onResumeFragment: " + this);
         this.getData();
     }
 }
