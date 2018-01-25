@@ -2,7 +2,6 @@ package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import de.fwpm.android.fefesblog.BlogPost;
-import de.fwpm.android.fefesblog.fragments.SettingFragment;
-import de.fwpm.android.fefesblog.utils.PinnedHeaderItemDecoration;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.fragments.SettingFragment;
+import de.fwpm.android.fefesblog.utils.PinnedHeaderItemDecoration;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;

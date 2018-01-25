@@ -1,20 +1,13 @@
 package de.fwpm.android.fefesblog;
 
 
-import android.app.NotificationManager;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -22,29 +15,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.adapter.StartScreenPagerAdapter;
-import de.fwpm.android.fefesblog.fragments.BookmarkFragment;
 import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
-import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
-import de.fwpm.android.fefesblog.fragments.SettingFragment;
 
-import static de.fwpm.android.fefesblog.NotificationHelper.NOTIFICATION_GROUP;
-import static de.fwpm.android.fefesblog.NotificationHelper.NOTIFICATION_ID;
-import static de.fwpm.android.fefesblog.NotificationHelper.createNotificationBuilder;
-import static de.fwpm.android.fefesblog.NotificationHelper.makeNotificationChannel;
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
-import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.update;
+import static de.fwpm.android.fefesblog.utils.BackgroundTask.scheduleJob;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MAINACTIVITY";
-    private static final long SYNC_INTERVALL = 1000 * 60 * 60; //1 h
     public static final String FIRST_START = "firststart";
 
     private ViewPager viewPager;
@@ -55,12 +34,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if(((JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE)).getAllPendingJobs().size() == 0) {
-
-            scheduleJob();
-
-        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -105,9 +78,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        update();
+        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true)) {
 
+            scheduleJob(this);
 
+        }
     }
 
     private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -139,50 +114,6 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        for(JobInfo jobInfo : ((JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE)).getAllPendingJobs()) {
-
-            Log.d(TAG, "onResume: " + jobInfo.toString());
-
-        }
-
-    }
-
-    private void scheduleJob() {
-
-        final JobScheduler jobScheduler = (JobScheduler) getSystemService(
-                Context.JOB_SCHEDULER_SERVICE);
-
-        final ComponentName name = new ComponentName(this, SyncJobScheduler.class);
-        final int result = jobScheduler.schedule(getJobInfo(1234, SettingFragment.getUpdateSeq(), name));
-
-        if (result == JobScheduler.RESULT_SUCCESS) {
-            Log.d("SYNC", "Scheduled job successfully!");
-        }
-
-    }
-
-    private JobInfo getJobInfo(final int id, final long intervall, final ComponentName name) {
-        final boolean isPersistent = true; // persist through boot
-        final int networkType = JobInfo.NETWORK_TYPE_ANY;
-
-        final JobInfo jobInfo;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            jobInfo = new JobInfo.Builder(id, name)
-//                    .setMinimumLatency(1000 * 60 * 7)
-                    .setPeriodic(intervall)
-                    .setRequiredNetworkType(networkType)
-                    .setPersisted(isPersistent)
-                    .build();
-        } else {
-            jobInfo = new JobInfo.Builder(id, name)
-                    .setPeriodic(intervall)
-                    .setRequiredNetworkType(networkType)
-                    .setPersisted(isPersistent)
-                    .build();
-        }
-
-        return jobInfo;
     }
 
     @Override

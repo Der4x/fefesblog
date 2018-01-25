@@ -187,10 +187,6 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
     }
 
-    public static void update() {
-        Log.d(TAG, "update: ");
-    }
-
     private void setRefresh(boolean bool) {
         mNewPostSwipeRefresh.setRefreshing(bool);
     }

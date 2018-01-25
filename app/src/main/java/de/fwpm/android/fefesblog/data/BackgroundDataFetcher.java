@@ -23,7 +23,7 @@ import static de.fwpm.android.fefesblog.data.HtmlParser.parseHtml;
  */
 
 public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
-    public static boolean isBackgroundUpdateAllowed= true;
+
     public static boolean areNotificationsAllowed = true;
 
     private static final String TAG = "SYNC";
@@ -40,10 +40,10 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
 
     public BackgroundDataFetcher(Context context) {
 
-            postsCounter = 0;
-            updateCounter = 0;
-            newPosts = new StringBuilder();
-            mContext = context;
+        postsCounter = 0;
+        updateCounter = 0;
+        newPosts = new StringBuilder();
+        mContext = context;
 
     }
 
@@ -56,57 +56,56 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
     protected Boolean doInBackground(String... params) {
 
         try {
-            if (isBackgroundUpdateAllowed) {
-                appDatabase = AppDatabase.getInstance(mContext);
-                html = Jsoup.connect(BASIC_URL).get();
 
-                ArrayList<BlogPost> allPosts = parseHtml(html, false);
+            appDatabase = AppDatabase.getInstance(mContext);
+            html = Jsoup.connect(BASIC_URL).get();
 
-                for (BlogPost post : allPosts) {
+            ArrayList<BlogPost> allPosts = parseHtml(html, false);
 
-                    BlogPost oldEntry = appDatabase.blogPostDao().getPostByUrl(post.getUrl());
+            for (BlogPost post : allPosts) {
 
-                    if (oldEntry != null) {
+                BlogPost oldEntry = appDatabase.blogPostDao().getPostByUrl(post.getUrl());
 
-                        post.setDate(oldEntry.getDate());
-                        post.setBookmarked(oldEntry.isBookmarked());
-                        post.setHasBeenRead(oldEntry.isHasBeenRead());
+                if (oldEntry != null) {
 
-                        if (!oldEntry.getText().equals(post.getText())) {
+                    post.setDate(oldEntry.getDate());
+                    post.setBookmarked(oldEntry.isBookmarked());
+                    post.setHasBeenRead(oldEntry.isHasBeenRead());
 
-                            post.setUpdate(true);
-                            updateCounter++;
-                        } else post.setUpdate(oldEntry.isUpdate());
+                    if (!oldEntry.getText().equals(post.getText())) {
 
-                    } else {
-                        postsCounter++;
-                        newPosts.append(post.getText().length() > 99 ? post.getText().substring(4, 100) : post.getText().substring(4));
-                        newPosts.append("/;/");
+                        post.setUpdate(true);
+                        updateCounter++;
+                    } else post.setUpdate(oldEntry.isUpdate());
 
-                    }
-
+                } else {
+                    postsCounter++;
+                    newPosts.append(post.getText().length() > 99 ? post.getText().substring(4, 100) : post.getText().substring(4));
+                    newPosts.append("/;/");
 
                 }
 
-                appDatabase.blogPostDao().insertList(allPosts);
-            }else{
-                Log.d(TAG,"Background Service is off in Settings!");
             }
+
+            appDatabase.blogPostDao().insertList(allPosts);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if(postsCounter != 0 || updateCounter != 0)  {
-            if (isBackgroundUpdateAllowed && areNotificationsAllowed) {
+        if (postsCounter != 0 || updateCounter != 0) {
+
+            if (areNotificationsAllowed) {
 
                 Intent intent = new Intent(mContext, SyncReceiver.class);
                 intent.putExtra("Update", updateCounter);
                 intent.putExtra("NewPosts", newPosts.toString());
                 mContext.sendBroadcast(intent);
-            }else{
+            } else {
                 Log.d(TAG, "Notifications are not allowed");
 
             }
+
         }
 
 

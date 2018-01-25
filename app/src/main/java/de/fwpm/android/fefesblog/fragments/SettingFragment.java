@@ -1,5 +1,7 @@
 package de.fwpm.android.fefesblog.fragments;
 
+import android.app.job.JobScheduler;
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -7,6 +9,8 @@ import android.util.Log;
 
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.data.BackgroundDataFetcher;
+
+import static de.fwpm.android.fefesblog.utils.BackgroundTask.scheduleJob;
 
 
 /**
@@ -80,16 +84,14 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private void onAutomaticUpdatesToggle(Boolean isEnabled) {
         if(isEnabled) {
             Log.d(TAG, "Enable Updates");
-            BackgroundDataFetcher.isBackgroundUpdateAllowed=true;
             findPreference(automaticNotification).setEnabled(true);
-
-
+            scheduleJob(getActivity());
 
         }
         else {
             Log.d(TAG, "Disable Updates");
-            BackgroundDataFetcher.isBackgroundUpdateAllowed=false;
             findPreference(automaticNotification).setEnabled(false);
+            ((JobScheduler) getActivity().getSystemService(Context.JOB_SCHEDULER_SERVICE)).cancel(1234);
         }
     }
 
