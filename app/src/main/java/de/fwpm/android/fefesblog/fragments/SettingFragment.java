@@ -6,7 +6,6 @@ import android.preference.PreferenceFragment;
 import android.util.Log;
 
 import de.fwpm.android.fefesblog.R;
-import de.fwpm.android.fefesblog.SyncReceiver;
 import de.fwpm.android.fefesblog.data.BackgroundDataFetcher;
 
 
@@ -16,9 +15,14 @@ import de.fwpm.android.fefesblog.data.BackgroundDataFetcher;
 
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
     private static final String TAG = "SETTINGFRAGMENT";
+    private static int updateSeqValue = 3600000;
+    private static int previewSizeValue = 6;
+
 
     private String automaticUpdatesKey;
     private String automaticNotification;
+    private String updateSeq;
+    private String previewSize;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,8 +33,15 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         // Register for changes
         automaticUpdatesKey = getString(R.string.pref_background_update_key);
         automaticNotification = getString(R.string.pref_notification_key);
+        updateSeq = getString(R.string.pref_update_seq_key);
+        previewSize = getString(R.string.pref_preview_size_key);
+
         findPreference(automaticUpdatesKey).setOnPreferenceChangeListener(this);
         findPreference(automaticNotification).setOnPreferenceChangeListener(this);
+        findPreference(previewSize).setOnPreferenceChangeListener(this);
+
+        findPreference(updateSeq).setOnPreferenceChangeListener(this);
+
     }
 
     @Override
@@ -40,6 +51,12 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             onAutomaticUpdatesToggle((Boolean) newValue);
         }else if(automaticNotification.equals(key)){
             onAutomaticNotificationToggle((Boolean)newValue);
+        }else if(previewSize.equals(key)){
+            setPreviewSize((String) newValue);
+
+        }else if(updateSeq.equals(key)){
+            setUpdateSeq((String) newValue);
+
         }
         else {
             throw new RuntimeException("Unknown preference");
@@ -47,6 +64,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         return true;
     }
+
 
     private void onAutomaticNotificationToggle(Boolean isEnabled) {
         if (isEnabled){
@@ -73,5 +91,21 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             BackgroundDataFetcher.isBackgroundUpdateAllowed=false;
             findPreference(automaticNotification).setEnabled(false);
         }
+    }
+
+
+    public static int getPreviewSize(){
+            return previewSizeValue;
+    }
+
+    public static int getUpdateSeq(){
+        return updateSeqValue;
+    }
+
+    public static void setUpdateSeq(String newValue){
+        updateSeqValue = Integer.parseInt(newValue);
+    }
+    public static void setPreviewSize(String newValue){
+        previewSizeValue = Integer.parseInt(newValue);
     }
 }

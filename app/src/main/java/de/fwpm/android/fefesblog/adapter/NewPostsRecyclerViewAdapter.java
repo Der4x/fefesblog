@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import de.fwpm.android.fefesblog.BlogPost;
+import de.fwpm.android.fefesblog.fragments.SettingFragment;
 import de.fwpm.android.fefesblog.utils.PinnedHeaderItemDecoration;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
@@ -200,7 +201,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
-                    if(mContent.getLineCount() < MAX_LINES) mExpand.setVisibility(View.INVISIBLE);
+                    if(mContent.getLineCount() < SettingFragment.getPreviewSize()) mExpand.setVisibility(View.INVISIBLE);
                     else mExpand.setVisibility(View.VISIBLE);
                     return true;
                 }
@@ -248,7 +249,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
                     }
 
-                    if(mContent.getMaxLines() == MAX_LINES) {
+                    if(mContent.getMaxLines() == SettingFragment.getPreviewSize()) {
                         expandContent();
                     } else {
                         closeContent();
@@ -284,7 +285,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         }
 
         private void closeContent() {
-            mContent.setMaxLines(MAX_LINES);
+            mContent.setMaxLines(SettingFragment.getPreviewSize());
             mContent.setEllipsize(TextUtils.TruncateAt.END);
             mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
         }

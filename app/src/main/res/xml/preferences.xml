@@ -15,20 +15,24 @@
         android:defaultValue="@bool/pref_notification_default"/>
 
     <ListPreference
+        android:key="@string/pref_update_seq_key"
+        android:title="@string/pref_update_seq_title"
+        android:dialogTitle="@string/pref_update_seq_title"
+        android:summary="@string/pref_update_seq_summary"
+        android:entries="@array/pref_update_seq_entries"
+        android:entryValues="@array/pref_update_seq_values"
+        android:defaultValue="@string/pref_update_seq_default"/>
+
+    <ListPreference
         android:key="@string/pref_preview_size_key"
         android:title="@string/pref_preview_size_title"
         android:dialogTitle="@string/pref_preview_size_title"
+        android:summary="@string/pref_preview_size_summary"
         android:entries="@array/pref_preview_size_entries"
         android:entryValues="@array/pref_preview_size_values"
         android:defaultValue="@string/pref_preview_size_default"/>
 
-    <ListPreference
-        android:key="@string/pref_date_format_key"
-        android:title="@string/pref_date_format_title"
-        android:dialogTitle="@string/pref_date_format_title"
-        android:entries="@array/pref_date_format_entries"
-        android:entryValues="@array/pref_date_format_values"
-        android:defaultValue="@string/pref_date_format_default"/>
+
 
 
 </PreferenceScreen>

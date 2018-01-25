@@ -18,8 +18,10 @@
     <string name="pref_preview_size_key">preview_key</string>
     <string name="pref_preview_size_title">Vorschau-Größe</string>
     <string name="pref_preview_size_default">6</string>
-    <string name="pref_date_format_key">date_format_key</string>
-    <string name="pref_date_format_title">Datumsformat</string>
-    <string name="pref_date_format_default">d. MMMM yyyy</string>
+    <string name="pref_update_seq_key">date_format_key</string>
+    <string name="pref_update_seq_title">Update Häufigkeit</string>
+    <string name="pref_update_seq_default">3600000</string>
+    <string name="pref_preview_size_summary">Zeigt die Posts in der angegebenen Zeilenanzahl.</string>
+    <string name="pref_update_seq_summary">Ausführung der Hintergrundupdates im angegeben Intervall.</string>
 
 </resources>

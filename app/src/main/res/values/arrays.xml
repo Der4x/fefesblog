@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pref_preview_size_entries">
+        <item>4 Zeilen</item>
         <item>6 Zeilen</item>
         <item>8 Zeilen</item>
-        <item>kompletter Text</item>
     </string-array>
     <string-array name="pref_preview_size_values">
+        <item>4</item>
         <item>6</item>
         <item>8</item>
-        <item>100000</item>
     </string-array>
-    <string-array name="pref_date_format_entries">
+    <string-array name="pref_update_seq_entries">
+        <item>1 Stunde</item>
+        <item>3 Stunden</item>
+        <item>6 Stunden</item>
     </string-array>
 
-    <string-array name="pref_date_format_values">
+    <string-array name="pref_update_seq_values">
+        <item>3600000</item>
+        <item>10800000</item>
+        <item>21600000</item>
     </string-array>
 
 </resources>

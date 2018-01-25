@@ -32,6 +32,7 @@ import de.fwpm.android.fefesblog.adapter.StartScreenPagerAdapter;
 import de.fwpm.android.fefesblog.fragments.BookmarkFragment;
 import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
 import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
+import de.fwpm.android.fefesblog.fragments.SettingFragment;
 
 import static de.fwpm.android.fefesblog.NotificationHelper.NOTIFICATION_GROUP;
 import static de.fwpm.android.fefesblog.NotificationHelper.NOTIFICATION_ID;
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 Context.JOB_SCHEDULER_SERVICE);
 
         final ComponentName name = new ComponentName(this, SyncJobScheduler.class);
-        final int result = jobScheduler.schedule(getJobInfo(1234, SYNC_INTERVALL, name));
+        final int result = jobScheduler.schedule(getJobInfo(1234, SettingFragment.getUpdateSeq(), name));
 
         if (result == JobScheduler.RESULT_SUCCESS) {
             Log.d("SYNC", "Scheduled job successfully!");
