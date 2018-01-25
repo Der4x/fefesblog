@@ -21,6 +21,7 @@ import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 
 /**
  * Created by alex on 20.01.18.
@@ -177,7 +178,8 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         @Override
         public void bindItem(final NewPostsRecyclerViewAdapter adapter, final BlogPost blogPost, final int position) {
 
-            mContent.setText(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1]));
+//            mContent.setText(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1]));
+            setTextViewHTML(mContent, blogPost.getHtmlText().split("</a>", 2)[1]);
             setUpdateBanner(blogPost.isUpdate());
             closeContent();
             setBookmarkIcon(blogPost.isBookmarked());
@@ -203,6 +205,14 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                     return true;
                 }
             });
+
+//            mContent.setOnClickListener(new View.OnClickListener(){
+//
+//                @Override
+//                public void onClick(View v) {
+//                    mListener.onBlogPostClick(blogPost);
+//                }
+//            });
 
             mBookmark.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -247,6 +257,8 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
                 }
             });
+
+
 
         }
 

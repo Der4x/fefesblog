@@ -146,8 +146,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     private void scheduleJob() {
 
         final JobScheduler jobScheduler = (JobScheduler) getSystemService(
