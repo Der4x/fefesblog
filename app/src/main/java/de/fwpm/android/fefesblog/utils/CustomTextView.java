@@ -23,16 +23,19 @@ import android.widget.TextView;
 public class CustomTextView {
 
     private static final String TAG = "CustomTextView";
+    public static String clickedLink;
 
     protected static void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span)
     {
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);
         int flags = strBuilder.getSpanFlags(span);
-        ClickableSpan clickable = new ClickableSpan() {
+        final ClickableSpan clickable = new ClickableSpan() {
             public void onClick(View view) {
-                // Do something with span.getURL() to handle the link click...
+
                 Log.d(TAG, "onClick: " + span.getURL());
+                clickedLink = span.getURL();
+
             }
         };
         strBuilder.setSpan(clickable, start, end, flags);

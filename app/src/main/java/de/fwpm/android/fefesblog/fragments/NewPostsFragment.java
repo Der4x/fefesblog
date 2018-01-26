@@ -26,6 +26,7 @@ import java.util.Date;
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.data.DataFetcher;
+import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 import de.fwpm.android.fefesblog.utils.PinnedHeaderItemDecoration;
 import de.fwpm.android.fefesblog.R;
@@ -220,8 +221,13 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
                                         }).start();
 
                                     }
+
                                     Intent intent = new Intent(getActivity(), DetailsActivity.class);
                                     intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                                    if(CustomTextView.clickedLink != null) {
+                                        intent.putExtra("CLICKED_LINK", CustomTextView.clickedLink);
+                                        CustomTextView.clickedLink = null;
+                                    }
                                     startActivity(intent);
 
                                 }

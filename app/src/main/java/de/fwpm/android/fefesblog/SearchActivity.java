@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.adapter.SearchRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.data.SearchDataFetcher;
+import de.fwpm.android.fefesblog.utils.CustomTextView;
 
 public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
@@ -69,6 +70,10 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                         Log.d(TAG, "onItemClick" + position);
                         Intent intent = new Intent(SearchActivity.this, DetailsActivity.class);
                         intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                        if(CustomTextView.clickedLink != null) {
+                            intent.putExtra("CLICKED_LINK", CustomTextView.clickedLink);
+                            CustomTextView.clickedLink = null;
+                        }
                         startActivity(intent);
                     }
                 },

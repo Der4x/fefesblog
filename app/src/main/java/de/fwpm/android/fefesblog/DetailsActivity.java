@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -50,11 +51,57 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         mWebContainer = (FrameLayout) findViewById(R.id.web_container);
-        mWebView = (WebView) findViewById(R.id.webview);
         mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
 
+        initWebView();
+
+        // Get BlogPost
+        final Intent intent = getIntent();
+
+
+        Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
+        if (extra instanceof BlogPost) {
+
+            blogPost = (BlogPost) extra;
+
+//            set detail title
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY);
+            setTitle(dateFormat.format(blogPost.getDate()));
+
+            postContent = (TextView) findViewById(R.id.blogPostText);
+            setTextViewHTML(postContent,blogPost.getHtmlText().split("</a>", 2)[1]);
+            if(intent.hasExtra("CLICKED_LINK")) loadPostUrl(intent.getStringExtra("CLICKED_LINK"));
+
+        }
+
+    }
+
+    public void loadPostUrl(String url) {
+
+        mWebView.loadUrl(url);
+        mProgressBar.setVisibility(View.VISIBLE);
+
+    }
+
+    private void initWebView() {
+
+        mWebView = (WebView) findViewById(R.id.webview);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setBuiltInZoomControls(true);
+        mWebView.getSettings().setDomStorageEnabled(true);
+        mWebView.getSettings().setLoadWithOverviewMode(true);
+
+        mWebView.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent,
+                                        String contentDisposition, String mimetype,
+                                        long contentLength) {
+
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            }
+        });
+
 
         mWebView.setWebViewClient(new WebViewClient() {
 
@@ -74,52 +121,42 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
 
-                mWebContainer.setVisibility(View.VISIBLE);
-                mWebContainer.animate()
-                        .translationY(0)
-                        .setDuration(300);
-                mProgressBar.setVisibility(View.INVISIBLE);
+                showWebView();
 
             }
         });
-
-        // Get BlogPost
-        final Intent intent = getIntent();
-        Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
-        if (extra instanceof BlogPost) {
-
-            blogPost = (BlogPost) extra;
-
-//            set detail title
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY);
-            setTitle(dateFormat.format(blogPost.getDate()));
-
-            postContent = (TextView) findViewById(R.id.blogPostText);
-            setTextViewHTML(postContent,blogPost.getHtmlText().split("</a>", 2)[1]);
-
-        }
-
     }
+
 
     @Override
     public void onBackPressed()
     {
         if(mWebContainer.getVisibility() == View.VISIBLE) {
 
-            mWebContainer.animate()
-                    .translationY(mWebContainer.getHeight())
-                    .setDuration(300);
-            mWebContainer.setVisibility(View.INVISIBLE);
+            hideWebView();
 
         } else super.onBackPressed();
     }
 
-    public void loadUrl(String url) {
+    private void showWebView() {
+        mWebContainer.setVisibility(View.VISIBLE);
+        mWebContainer.animate()
+                .translationY(0)
+                .setDuration(300);
+        mProgressBar.setVisibility(View.INVISIBLE);
+    }
 
-        mWebView.loadUrl(url);
-        mProgressBar.setVisibility(View.VISIBLE);
+    private void hideWebView() {
+
+        mWebContainer.animate()
+                .translationY(mWebContainer.getHeight())
+                .setDuration(300);
+        mWebContainer.setVisibility(View.INVISIBLE);
+        mWebView.stopLoading();
 
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -128,11 +165,7 @@ public class DetailsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 if(mWebContainer.getVisibility() == View.VISIBLE) {
-
-                    mWebContainer.animate()
-                            .translationY(mWebContainer.getHeight())
-                            .setDuration(300);
-                    mWebContainer.setVisibility(View.INVISIBLE);
+                    hideWebView();
 
                 } else this.finish();
                 break;
@@ -190,9 +223,7 @@ public class DetailsActivity extends AppCompatActivity {
         int flags = strBuilder.getSpanFlags(span);
         ClickableSpan clickable = new ClickableSpan() {
             public void onClick(View view) {
-                // Do something with span.getURL() to handle the link click...
-                Log.d(TAG, "onClick: " + span.getURL());
-                loadUrl(span.getURL());
+                loadPostUrl(span.getURL());
             }
         };
         strBuilder.setSpan(clickable, start, end, flags);

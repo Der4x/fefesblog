@@ -175,7 +175,6 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         @Override
         public void bindItem(final NewPostsRecyclerViewAdapter adapter, final BlogPost blogPost, final int position) {
 
-//            mContent.setText(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1]));
             setTextViewHTML(mContent, blogPost.getHtmlText().split("</a>", 2)[1]);
             setBanner(blogPost);
             closeContent();

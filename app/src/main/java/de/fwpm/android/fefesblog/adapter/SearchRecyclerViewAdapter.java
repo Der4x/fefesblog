@@ -21,6 +21,7 @@ import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 
 /**
  * Created by alex on 22.01.18.
@@ -44,7 +45,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position,BlogPost blogPost);
+        void onItemClick(int position, BlogPost blogPost);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -64,13 +65,13 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
             mShare = (ImageButton) itemView.findViewById(R.id.share);
         }
 
-        void setClickListener(final int position,final BlogPost blogPost) {
+        void setClickListener(final int position, final BlogPost blogPost) {
 
             final View.OnClickListener onClickListener = new View.OnClickListener() {
 
                 @Override
                 public void onClick(View view) {
-                    mListener.onItemClick(position,blogPost);
+                    mListener.onItemClick(position, blogPost);
                 }
             };
             mContent.setOnClickListener(onClickListener);
@@ -97,7 +98,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         String[] htmltext = blogPost.getHtmlText().split("</a>", 2);
 
         if (htmltext.length > 1)
-            holder.mContent.setText(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1]));
+            setTextViewHTML(holder.mContent, blogPost.getHtmlText().split("</a>", 2)[1]);
         else {
             holder.mContent.setText(blogPost.getText());
             Log.d(TAG, "onBindViewHolder: " + blogPost.getHtmlText());
@@ -105,7 +106,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
         holder.mDate.setText(dateFormat.format(blogPost.getDate()));
-        holder.setClickListener(position,blogPost);
+        holder.setClickListener(position, blogPost);
 
         holder.mBookmark.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,10 +155,10 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
             @Override
             public void onClick(View view) {
                 String postText = blogPost.getText();
-                String preView = postText.length() > 99 ?  postText.substring(4,100) : postText.substring(4);
+                String preView = postText.length() > 99 ? postText.substring(4, 100) : postText.substring(4);
                 Intent share = new Intent();
                 share.setAction(Intent.ACTION_SEND);
-                share.putExtra(Intent.EXTRA_TEXT, preView +"...\n\n" +blogPost.getUrl());
+                share.putExtra(Intent.EXTRA_TEXT, preView + "...\n\n" + blogPost.getUrl());
                 share.setType("text/plain");
                 mContext.startActivity(Intent.createChooser(share, mContext.getResources().getText(R.string.share_to)));
             }

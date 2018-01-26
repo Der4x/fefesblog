@@ -25,6 +25,7 @@ import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.utils.CustomTextView;
 
 /**
  * Created by alex on 20.01.18.
@@ -115,6 +116,10 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
                         //go to detail view
                         Intent intent = new Intent(getActivity(), DetailsActivity.class);
                         intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                        if(CustomTextView.clickedLink != null) {
+                            intent.putExtra("CLICKED_LINK", CustomTextView.clickedLink);
+                            CustomTextView.clickedLink = null;
+                        }
                         startActivity(intent);
 
                     }

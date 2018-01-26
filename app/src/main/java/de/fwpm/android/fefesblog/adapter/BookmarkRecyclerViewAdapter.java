@@ -21,6 +21,7 @@ import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.SettingFragment;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 
 /**
  * Created by Untiak on 23.01.2018.
@@ -99,7 +100,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         String[] htmltext = blogPost.getHtmlText().split("</a>", 2);
 
         if (htmltext.length > 1)
-            holder.mContent.setText(Html.fromHtml(blogPost.getHtmlText().split("</a>", 2)[1]));
+            setTextViewHTML(holder.mContent, blogPost.getHtmlText().split("</a>", 2)[1]);
         else {
             holder.mContent.setText(blogPost.getText());
             Log.d(TAG, "onBindViewHolder: " + blogPost.getHtmlText());
