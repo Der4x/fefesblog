@@ -52,5 +52,6 @@ public class CustomTextView {
         }
         text.setText(strBuilder);
         text.setMovementMethod(LinkMovementMethod.getInstance());
+
     }
 }

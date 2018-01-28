@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -19,6 +21,7 @@ import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.SettingFragment;
+import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
@@ -29,7 +32,7 @@ import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 
 public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRecyclerViewAdapter.ViewHolder> {
     private static final String TAG = "BMRecyclerViewAdapter";
-    private static int MAX_LINES = 6;
+    public static int MAX_LINES;
 
     private ArrayList<BlogPost> mData;
     private Context mContext;
@@ -40,13 +43,14 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         mContext = context;
         mData = data;
         mListener = listener;
+        MAX_LINES = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(SettingFragment.PREVIEW_SIZE, 6);
 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mDate;
-        private TextView mContent;
+        private PreventScrollTextView mContent;
         private ImageButton mExpand;
         private ImageButton mBookmark;
         private ImageButton mShare;
@@ -54,12 +58,14 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mContent = (TextView) itemView.findViewById(R.id.post_text);
+            mContent = (PreventScrollTextView) itemView.findViewById(R.id.post_text);
             mDate = (TextView) itemView.findViewById(R.id.post_date);
             mExpand = (ImageButton) itemView.findViewById(R.id.expand);
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
             mShare = (ImageButton) itemView.findViewById(R.id.share);
         }
+
+
 
         void setClickListener(final int position, final BlogPost blogPost) {
 
@@ -106,6 +112,18 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
             Log.d(TAG, "onBindViewHolder: " + blogPost.getHtmlText());
         }
 
+        holder.mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if(holder.mContent.getLineCount() < MAX_LINES)
+                    holder.mExpand.setVisibility(View.INVISIBLE);
+                else
+                    holder.mExpand.setVisibility(View.VISIBLE);
+                //Todo: Handle new or update posts not expandable
+                return true;
+            }
+        });
+
         holder.setClickListener(position,blogPost);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
@@ -144,7 +162,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
 
                 }
 
-                if (holder.mContent.getMaxLines() == SettingFragment.getPreviewSize()) {
+                if (holder.mContent.getMaxLines() == MAX_LINES) {
                     expandContent(holder);
                 } else {
                     closeContent(holder);
@@ -179,7 +197,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
     }
 
     private void closeContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
-        holder.mContent.setMaxLines(SettingFragment.getPreviewSize());
+        holder.mContent.setMaxLines(MAX_LINES);
         holder.mContent.setEllipsize(TextUtils.TruncateAt.END);
         holder.mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
     }

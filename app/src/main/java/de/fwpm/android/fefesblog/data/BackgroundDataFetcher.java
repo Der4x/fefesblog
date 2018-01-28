@@ -3,6 +3,7 @@ package de.fwpm.android.fefesblog.data;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
@@ -17,6 +18,8 @@ import de.fwpm.android.fefesblog.SyncReceiver;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 
 import static de.fwpm.android.fefesblog.data.HtmlParser.parseHtml;
+import static de.fwpm.android.fefesblog.fragments.SettingFragment.NOTIFICATION_DEFAULT;
+import static de.fwpm.android.fefesblog.fragments.SettingFragment.NOTIFICATION_ENABLED;
 
 /**
  * Created by alex on 19.01.18.
@@ -95,7 +98,7 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
 
         if (postsCounter != 0 || updateCounter != 0) {
 
-            if (areNotificationsAllowed) {
+            if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(NOTIFICATION_ENABLED, NOTIFICATION_DEFAULT)) {
 
                 Intent intent = new Intent(mContext, SyncReceiver.class);
                 intent.putExtra("Update", updateCounter);

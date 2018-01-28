@@ -5,10 +5,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.util.Log;
 
 import de.fwpm.android.fefesblog.R;
+import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
+import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.data.BackgroundDataFetcher;
 
 import static de.fwpm.android.fefesblog.utils.BackgroundTask.scheduleJob;
@@ -20,9 +23,12 @@ import static de.fwpm.android.fefesblog.utils.BackgroundTask.scheduleJob;
 
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
     private static final String TAG = "SETTINGFRAGMENT";
-    private static int updateSeqValue = 3600000;
-    private static int previewSizeValue = 6;
 
+    public static final String PREVIEW_SIZE = "preview_size";
+    public static final String UPDATE_INTERVALL = "update_intevall";
+    public static final int UPDATE_ITNVERVALL_DEFAULT = 3600000;
+    public static final String NOTIFICATION_ENABLED = "notification_enabled";
+    public static final boolean NOTIFICATION_DEFAULT = true;
 
     private String automaticUpdatesKey;
     private String automaticNotification;
@@ -52,18 +58,17 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
-        if(automaticUpdatesKey.equals(key)) {
+        if (automaticUpdatesKey.equals(key)) {
             onAutomaticUpdatesToggle((Boolean) newValue);
-        }else if(automaticNotification.equals(key)){
-            onAutomaticNotificationToggle((Boolean)newValue);
-        }else if(previewSize.equals(key)){
+        } else if (automaticNotification.equals(key)) {
+            onAutomaticNotificationToggle((Boolean) newValue);
+        } else if (previewSize.equals(key)) {
             setPreviewSize((String) newValue);
 
-        }else if(updateSeq.equals(key)){
+        } else if (updateSeq.equals(key)) {
             setUpdateSeq((String) newValue);
 
-        }
-        else {
+        } else {
             throw new RuntimeException("Unknown preference");
         }
 
@@ -72,56 +77,48 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
 
     private void onAutomaticNotificationToggle(Boolean isEnabled) {
-        if (isEnabled){
-            Log.d(TAG, "Enable Notifications");
-            BackgroundDataFetcher.areNotificationsAllowed = true;
-        }else{
-            Log.d(TAG, "Enable Notifications");
-            BackgroundDataFetcher.areNotificationsAllowed = false;
 
-        }
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(NOTIFICATION_ENABLED, isEnabled).commit();
+
     }
 
     private void onAutomaticUpdatesToggle(Boolean isEnabled) {
-        if(isEnabled) {
+        if (isEnabled) {
             Log.d(TAG, "Enable Updates");
             findPreference(automaticNotification).setEnabled(true);
             scheduleJob(getActivity());
 
-        }
-        else {
+        } else {
             Log.d(TAG, "Disable Updates");
             findPreference(automaticNotification).setEnabled(false);
-            ((SwitchPreference)findPreference(automaticNotification)).setChecked(false);
+            ((SwitchPreference) findPreference(automaticNotification)).setChecked(false);
             ((JobScheduler) getActivity().getSystemService(Context.JOB_SCHEDULER_SERVICE)).cancel(1234);
         }
     }
 
+    public void setUpdateSeq(String newValue) {
+        int uodateseq = Integer.parseInt(newValue);
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt(UPDATE_INTERVALL, uodateseq).commit();
+        ((JobScheduler) getActivity().getSystemService(Context.JOB_SCHEDULER_SERVICE)).cancel(1234);
+        scheduleJob(getActivity());
 
-    public static int getPreviewSize(){
-            return previewSizeValue;
     }
 
-    public static int getUpdateSeq(){
-        return updateSeqValue;
-    }
-
-    public static void setUpdateSeq(String newValue){
-        updateSeqValue = Integer.parseInt(newValue);
-    }
-    public static void setPreviewSize(String newValue){
-        previewSizeValue = Integer.parseInt(newValue);
+    public void setPreviewSize(String newValueString) {
+        int newValue = Integer.parseInt(newValueString);
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt(PREVIEW_SIZE, newValue).commit();
+        NewPostsRecyclerViewAdapter.MAX_LINES = newValue;
+        BookmarkRecyclerViewAdapter.MAX_LINES = newValue;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (!((SwitchPreference)findPreference(automaticUpdatesKey)).isChecked())
+        if (!((SwitchPreference) findPreference(automaticUpdatesKey)).isChecked())
             findPreference(automaticNotification).setEnabled(false);
-        else{
+        else {
             findPreference(automaticNotification).setEnabled(true);
 
         }
-
-         }
+    }
 }

@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.SettingFragment;
 import de.fwpm.android.fefesblog.utils.PinnedHeaderItemDecoration;
+import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
@@ -30,7 +32,7 @@ import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRecyclerViewAdapter.ViewHolder> implements PinnedHeaderItemDecoration.PinnedHeaderAdapter {
 
     private static final String TAG = "NPRecyclerViewAdapter";
-    private static int MAX_LINES = 7;
+    public static int MAX_LINES;
 
     ArrayList<BlogPost> mData;
     Context mContext;
@@ -44,6 +46,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         mData = data;
         mListener = listener;
         mOnBottomReachListener = onBottomReachListener;
+        MAX_LINES = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(SettingFragment.PREVIEW_SIZE, 6);
 
     }
 
@@ -135,7 +138,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     }
 
     static class DataViewHolder extends ViewHolder {
-        private TextView mContent;
+        private PreventScrollTextView mContent;
         private TextView mUpdateBanner;
         private ImageButton mExpand;
         private ImageButton mBookmark;
@@ -144,7 +147,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         public DataViewHolder(View itemView, int viewType) {
             super(itemView, viewType);
-            mContent = (TextView) itemView.findViewById(R.id.post_text);
+            mContent = (PreventScrollTextView) itemView.findViewById(R.id.post_text);
             mExpand = (ImageButton) itemView.findViewById(R.id.expand);
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
             mUpdateBanner = (TextView) itemView.findViewById(R.id.update_banner);
@@ -183,8 +186,10 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
-                    if(mContent.getLineCount() < SettingFragment.getPreviewSize()) mExpand.setVisibility(View.INVISIBLE);
-                    else mExpand.setVisibility(View.VISIBLE);
+                    if(mContent.getLineCount() < MAX_LINES)
+                        mExpand.setVisibility(View.INVISIBLE);
+                    else
+                        mExpand.setVisibility(View.VISIBLE);
                     //Todo: Handle new or update posts not expandable
                     return true;
                 }
@@ -225,7 +230,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
                     }
 
-                    if(mContent.getMaxLines() == SettingFragment.getPreviewSize()) {
+                    if(mContent.getMaxLines() == MAX_LINES) {
                         expandContent();
                     } else {
                         closeContent();
@@ -264,7 +269,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         }
 
         private void closeContent() {
-            mContent.setMaxLines(SettingFragment.getPreviewSize());
+            mContent.setMaxLines(MAX_LINES);
             mContent.setEllipsize(TextUtils.TruncateAt.END);
             mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
         }

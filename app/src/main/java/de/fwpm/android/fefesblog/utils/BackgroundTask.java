@@ -5,10 +5,14 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import de.fwpm.android.fefesblog.SyncJobScheduler;
 import de.fwpm.android.fefesblog.fragments.SettingFragment;
+
+import static de.fwpm.android.fefesblog.fragments.SettingFragment.UPDATE_INTERVALL;
+import static de.fwpm.android.fefesblog.fragments.SettingFragment.UPDATE_ITNVERVALL_DEFAULT;
 
 /**
  * Created by alex on 25.01.18.
@@ -22,7 +26,7 @@ public class BackgroundTask {
                 Context.JOB_SCHEDULER_SERVICE);
 
         final ComponentName name = new ComponentName(context, SyncJobScheduler.class);
-        final int result = jobScheduler.schedule(getJobInfo(1234, SettingFragment.getUpdateSeq(), name));
+        final int result = jobScheduler.schedule(getJobInfo(1234, PreferenceManager.getDefaultSharedPreferences(context).getInt(UPDATE_INTERVALL, UPDATE_ITNVERVALL_DEFAULT), name));
 
         if (result == JobScheduler.RESULT_SUCCESS) {
             Log.d("SYNC", "Scheduled job successfully!");

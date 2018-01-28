@@ -2,6 +2,7 @@ package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -19,6 +21,8 @@ import java.util.Locale;
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.fragments.SettingFragment;
+import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
@@ -30,7 +34,7 @@ import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "SVRecyclerViewAdapter";
-    private static int MAX_LINES = 6;
+    private static int MAX_LINES;
 
     private ArrayList<BlogPost> mData;
     private Context mContext;
@@ -41,6 +45,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         mContext = context;
         mData = data;
         mListener = listener;
+        MAX_LINES = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(SettingFragment.PREVIEW_SIZE, 6);
 
     }
 
@@ -51,14 +56,14 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mDate;
-        private TextView mContent;
+        private PreventScrollTextView mContent;
         private ImageButton mExpand;
         private ImageButton mBookmark;
         private ImageButton mShare;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mContent = (TextView) itemView.findViewById(R.id.post_text);
+            mContent = (PreventScrollTextView) itemView.findViewById(R.id.post_text);
             mDate = (TextView) itemView.findViewById(R.id.post_date);
             mExpand = (ImageButton) itemView.findViewById(R.id.expand);
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
@@ -103,6 +108,18 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
             holder.mContent.setText(blogPost.getText());
             Log.d(TAG, "onBindViewHolder: " + blogPost.getHtmlText());
         }
+
+        holder.mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if(holder.mContent.getLineCount() < MAX_LINES)
+                    holder.mExpand.setVisibility(View.INVISIBLE);
+                else
+                    holder.mExpand.setVisibility(View.VISIBLE);
+                //Todo: Handle new or update posts not expandable
+                return true;
+            }
+        });
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
         holder.mDate.setText(dateFormat.format(blogPost.getDate()));
