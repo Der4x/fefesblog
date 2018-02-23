@@ -1,20 +1,15 @@
 package de.fwpm.android.fefesblog.utils;
 
-import android.content.Context;
-import android.content.Intent;
 import android.text.Html;
-import android.text.Layout;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.LinkMovementMethod;
-import android.text.method.MovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import static android.text.Html.FROM_HTML_OPTION_USE_CSS_COLORS;
 
 /**
  * Created by alex on 25.01.18.
@@ -44,6 +39,10 @@ public class CustomTextView {
 
     public static void setTextViewHTML(TextView text, String html)
     {
+//        String fontcolor = "<p style=\"color:red;\">";
+//        String styled = html.replace("<a ", "<a style=\"color:red\" ");
+
+
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);

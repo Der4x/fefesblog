@@ -242,6 +242,14 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         }
 
+        private String getCss() {
+
+            String css = "<html><head><style>a {text-align: center;color: red;}</style></head><body>";
+
+            return css;
+
+        }
+
         private void setBanner(BlogPost blogPost) {
 
             mUpdateBanner.setVisibility(View.INVISIBLE);
