@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private StartScreenPagerAdapter adapter;
     private MenuItem setting_item;
+    public static FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_search);
+        fab = (FloatingActionButton) findViewById(R.id.fab_search);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

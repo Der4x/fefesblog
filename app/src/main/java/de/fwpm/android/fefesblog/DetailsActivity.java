@@ -3,6 +3,7 @@ package de.fwpm.android.fefesblog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -88,9 +89,20 @@ public class DetailsActivity extends AppCompatActivity {
         mWebView = (WebView) findViewById(R.id.webview);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setBuiltInZoomControls(true);
-        mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.getSettings().setLoadWithOverviewMode(true);
+        mWebView.getSettings().setUseWideViewPort(true);
+        mWebView.getSettings().setSupportZoom(true);
+        mWebView.getSettings().setBuiltInZoomControls(false);
+        mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        mWebView.getSettings().setDomStorageEnabled(true);
+        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        mWebView.setScrollbarFadingEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
 
         mWebView.setDownloadListener(new DownloadListener() {
             @Override
@@ -110,6 +122,7 @@ public class DetailsActivity extends AppCompatActivity {
 
                 view.loadUrl(url);
                 return true;
+
             }
 
             @Override

@@ -27,6 +27,8 @@ import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 
+import static de.fwpm.android.fefesblog.MainActivity.fab;
+
 /**
  * Created by alex on 20.01.18.
  */
@@ -103,6 +105,16 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+                if (dy > 0 && fab.isShown())
+                    fab.hide();
+                else if(dy < 0 && !fab.isShown()) fab.show();
+            }
+
+        });
 
         mList = new ArrayList<>();
 
