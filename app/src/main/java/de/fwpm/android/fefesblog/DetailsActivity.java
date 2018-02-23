@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import de.fwpm.android.fefesblog.data.SingleDataFetcher;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -64,22 +65,50 @@ public class DetailsActivity extends AppCompatActivity {
         if (extra instanceof BlogPost) {
 
             blogPost = (BlogPost) extra;
+            postContent = (TextView) findViewById(R.id.blogPostText);
 
 //            set detail title
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY);
-            setTitle(dateFormat.format(blogPost.getDate()));
+            setContent();
 
-            postContent = (TextView) findViewById(R.id.blogPostText);
-            setTextViewHTML(postContent,blogPost.getHtmlText().split("</a>", 2)[1]);
-            if(intent.hasExtra("CLICKED_LINK")) loadPostUrl(intent.getStringExtra("CLICKED_LINK"));
+
+
+            if(intent.hasExtra("CLICKED_LINK")) {
+                loadPostUrl(intent.getStringExtra("CLICKED_LINK"));
+            }
 
         }
 
     }
 
-    public void loadPostUrl(String url) {
+    private void setContent() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY);
+        setTitle(dateFormat.format(blogPost.getDate()));
+        setTextViewHTML(postContent,blogPost.getHtmlText().split("</a>", 2)[1]);
+    }
 
-        mWebView.loadUrl(url);
+    public void loadPostUrl(final String url) {
+
+        if(url.startsWith("/?ts=")) {
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl("https://blog.fefe.de" + url);
+                    if(linkPost != null) {
+
+                        changeBlogPost(linkPost);
+
+                    } else new SingleDataFetcher(DetailsActivity.this).execute(url);
+                }
+            }).start();
+
+
+
+        } else {
+            mWebView.loadUrl(url);
+        }
+
         mProgressBar.setVisibility(View.VISIBLE);
 
     }
@@ -169,7 +198,20 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
+    public void changeBlogPost(final BlogPost _blogPost) {
 
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                blogPost = _blogPost;
+                setContent();
+                setBookmarkIcon(blogPost.isBookmarked());
+                mProgressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+
+
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -189,7 +231,7 @@ public class DetailsActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        AppDatabase.getInstance(getBaseContext()).blogPostDao().updateBlogPost(blogPost);
+                        AppDatabase.getInstance(getBaseContext()).blogPostDao().insertBlogPost(blogPost);
                     }
                 }).start();
                 break;
@@ -209,8 +251,11 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void setBookmarkIcon(boolean isBookmarked) {
 
-        if (isBookmarked) bookmark_item.setIcon(R.drawable.ic_bookmark_white_24dp);
-        else bookmark_item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
+        if(bookmark_item != null) {
+            if (isBookmarked) bookmark_item.setIcon(R.drawable.ic_bookmark_white_24dp);
+            else bookmark_item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
+
+        }
 
     }
 

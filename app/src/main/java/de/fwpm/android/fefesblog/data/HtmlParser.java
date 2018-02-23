@@ -61,7 +61,13 @@ public class HtmlParser {
                 for(Element link : links) {
 
                     if(link.text().equals("[l]")) {
-                        blogPost.setUrl(link.attr("abs:href"));
+                        String tempurl = link.attr("abs:href");
+
+                        if(!tempurl.contains("blog.fefe.de")) {
+                            tempurl = tempurl.replace("https://", "https://blog.fefe.de/");
+                        }
+
+                        blogPost.setUrl(tempurl);
                     } else {
                         postLinks.put(link.text(), link.attr("abs:href"));
                     }
