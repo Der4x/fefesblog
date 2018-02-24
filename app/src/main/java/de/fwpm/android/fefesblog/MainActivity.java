@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private StartScreenPagerAdapter adapter;
     private MenuItem setting_item;
     public static FloatingActionButton fab;
+    private boolean firstLoad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
             scheduleJob(this);
 
         }
+
+        firstLoad = true;
+
     }
 
     private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -114,6 +118,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+
+        if(firstLoad) firstLoad = false;
+        else {
+
+            ((FragmentLifecycle) adapter.getItem(0)).onResumeFragment();
+            ((FragmentLifecycle) adapter.getItem(1)).onResumeFragment();
+
+        }
 
     }
 
