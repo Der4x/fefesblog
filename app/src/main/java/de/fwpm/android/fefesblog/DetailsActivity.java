@@ -283,6 +283,10 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void setTextViewHTML(TextView text, String html) {
 
+        html = html.replace("<blockquote>", "<blockquote><font color='grey'>");
+        html = html.replace("<blockquote lang=\"en\">", "<blockquote><font color='grey'>");
+        html = html.replace("</blockquote>", "</font></blockquote>");
+
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);

@@ -42,6 +42,9 @@ public class CustomTextView {
 //        String fontcolor = "<p style=\"color:red;\">";
 //        String styled = html.replace("<a ", "<a style=\"color:red\" ");
 
+        html = html.replace("<blockquote>", "<blockquote><font color='grey'>");
+        html = html.replace("<blockquote lang=\"en\">", "<blockquote><font color='grey'>");
+        html = html.replace("</blockquote>", "</font></blockquote>");
 
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
