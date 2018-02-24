@@ -91,7 +91,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
             mPrefs.edit().putBoolean(FIRST_START, false).commit();
             Log.d(TAG, "firstStart");
         }
-        else getData();
+        else this.getData();
 
         return view;
 
@@ -317,4 +317,5 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
     public void onResumeFragment() {
         this.getData();
     }
+
 }

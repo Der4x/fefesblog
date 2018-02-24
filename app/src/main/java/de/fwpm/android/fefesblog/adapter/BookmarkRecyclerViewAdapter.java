@@ -115,7 +115,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         holder.mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                if(holder.mContent.getLineCount() < MAX_LINES)
+                if(holder.mContent.getLineCount() <= MAX_LINES)
                     holder.mExpand.setVisibility(View.INVISIBLE);
                 else
                     holder.mExpand.setVisibility(View.VISIBLE);

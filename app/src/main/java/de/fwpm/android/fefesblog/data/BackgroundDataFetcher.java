@@ -27,8 +27,6 @@ import static de.fwpm.android.fefesblog.fragments.SettingFragment.NOTIFICATION_E
 
 public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
 
-    public static boolean areNotificationsAllowed = true;
-
     private static final String TAG = "SYNC";
     private static final String BASIC_URL = "https://blog.fefe.de/";
 
@@ -39,7 +37,6 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
     private int postsCounter;
     private int updateCounter;
     private StringBuilder newPosts;
-
 
     public BackgroundDataFetcher(Context context) {
 

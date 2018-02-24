@@ -33,6 +33,7 @@ import java.util.Locale;
 
 import de.fwpm.android.fefesblog.data.SingleDataFetcher;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -46,6 +47,7 @@ public class DetailsActivity extends AppCompatActivity {
     private FrameLayout mWebContainer;
     private WebView mWebView;
     private ProgressBar mProgressBar;
+    private boolean newPostLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +56,12 @@ public class DetailsActivity extends AppCompatActivity {
 
         mWebContainer = (FrameLayout) findViewById(R.id.web_container);
         mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
+        newPostLoaded = false;
 
         initWebView();
 
         // Get BlogPost
         final Intent intent = getIntent();
-
 
         Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
         if (extra instanceof BlogPost) {
@@ -70,14 +72,9 @@ public class DetailsActivity extends AppCompatActivity {
 //            set detail title
             setContent();
 
-
-
-            if(intent.hasExtra("CLICKED_LINK")) {
-                loadPostUrl(intent.getStringExtra("CLICKED_LINK"));
-            }
+            if(intent.hasExtra("CLICKED_LINK")) loadPostUrl(intent.getStringExtra("CLICKED_LINK"));
 
         }
-
     }
 
     private void setContent() {
@@ -95,18 +92,24 @@ public class DetailsActivity extends AppCompatActivity {
                 public void run() {
 
                     BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl("https://blog.fefe.de" + url);
-                    if(linkPost != null) {
 
-                        changeBlogPost(linkPost);
+                    if(linkPost != null) changeBlogPost(linkPost);
+                    else {
+                        new SingleDataFetcher(DetailsActivity.this).execute(url);
+                        newPostLoaded = true;
+                    }
 
-                    } else new SingleDataFetcher(DetailsActivity.this).execute(url);
                 }
             }).start();
 
-
-
         } else {
-            mWebView.loadUrl(url);
+
+            if(new NetworkUtils(this).isConnectingToInternet()) {
+                mWebView.loadUrl(url);
+            } else {
+                Toast.makeText(this, "Kein Internetzugriff", Toast.LENGTH_LONG).show();
+            }
+
         }
 
         mProgressBar.setVisibility(View.VISIBLE);
@@ -171,13 +174,65 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
+
         if(mWebContainer.getVisibility() == View.VISIBLE) {
 
             hideWebView();
 
         } else super.onBackPressed();
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if(mWebContainer.getVisibility() == View.VISIBLE) {
+                    hideWebView();
+
+                } else this.finish();
+                break;
+            case R.id.menu_bookmark:
+                blogPost.setBookmarked(!blogPost.isBookmarked());
+                setBookmarkIcon(blogPost.isBookmarked());
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(newPostLoaded) AppDatabase.getInstance(getBaseContext()).blogPostDao().insertBlogPost(blogPost);
+                        else AppDatabase.getInstance(getBaseContext()).blogPostDao().updateBlogPost(blogPost);
+                    }
+                }).start();
+                break;
+            case R.id.menu_share:
+                String postText = blogPost.getText();
+                String preView = postText.length() > 99 ? postText.substring(4, 100) : postText.substring(4);
+                Intent share = new Intent();
+                share.setAction(Intent.ACTION_SEND);
+                share.putExtra(Intent.EXTRA_TEXT, preView + "...\n\n" + blogPost.getUrl());
+                share.setType("text/plain");
+                startActivity(Intent.createChooser(share, getResources().getText(R.string.share_to)));
+                break;
+        }
+        return true;
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.detail_menu, menu);
+
+        bookmark_item = menu.findItem(R.id.menu_bookmark);
+        bookmark_item.setIcon(blogPost.isBookmarked() ? R.drawable.ic_bookmark_white_24dp : R.drawable.ic_bookmark_border_white_24dp);
+
+        share_item = menu.findItem(R.id.menu_share);
+        share_item.setIcon(R.drawable.ic_share_white_24dp);
+
+        return true;
+
     }
 
     private void showWebView() {
@@ -210,72 +265,10 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
+    protected void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span) {
 
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if(mWebContainer.getVisibility() == View.VISIBLE) {
-                    hideWebView();
-
-                } else this.finish();
-                break;
-            case R.id.menu_bookmark:
-                blogPost.setBookmarked(!blogPost.isBookmarked());
-                setBookmarkIcon(blogPost.isBookmarked());
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppDatabase.getInstance(getBaseContext()).blogPostDao().insertBlogPost(blogPost);
-                    }
-                }).start();
-                break;
-            case R.id.menu_share:
-                String postText = blogPost.getText();
-                String preView = postText.length() > 99 ? postText.substring(4, 100) : postText.substring(4);
-                Intent share = new Intent();
-                share.setAction(Intent.ACTION_SEND);
-                share.putExtra(Intent.EXTRA_TEXT, preView + "...\n\n" + blogPost.getUrl());
-                share.setType("text/plain");
-                startActivity(Intent.createChooser(share, getResources().getText(R.string.share_to)));
-                break;
-        }
-        return true;
-
-    }
-
-    private void setBookmarkIcon(boolean isBookmarked) {
-
-        if(bookmark_item != null) {
-            if (isBookmarked) bookmark_item.setIcon(R.drawable.ic_bookmark_white_24dp);
-            else bookmark_item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
-
-        }
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.detail_menu, menu);
-
-        bookmark_item = menu.findItem(R.id.menu_bookmark);
-        bookmark_item.setIcon(blogPost.isBookmarked() ? R.drawable.ic_bookmark_white_24dp : R.drawable.ic_bookmark_border_white_24dp);
-
-        share_item = menu.findItem(R.id.menu_share);
-        share_item.setIcon(R.drawable.ic_share_white_24dp);
-
-        return true;
-
-    }
-
-    protected void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span)
-    {
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);
         int flags = strBuilder.getSpanFlags(span);
@@ -288,8 +281,8 @@ public class DetailsActivity extends AppCompatActivity {
         strBuilder.removeSpan(span);
     }
 
-    public void setTextViewHTML(TextView text, String html)
-    {
+    public void setTextViewHTML(TextView text, String html) {
+
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
@@ -298,6 +291,16 @@ public class DetailsActivity extends AppCompatActivity {
         }
         text.setText(strBuilder);
         text.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    private void setBookmarkIcon(boolean isBookmarked) {
+
+        if(bookmark_item != null) {
+            if (isBookmarked) bookmark_item.setIcon(R.drawable.ic_bookmark_white_24dp);
+            else bookmark_item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
+
+        }
+
     }
 
 }

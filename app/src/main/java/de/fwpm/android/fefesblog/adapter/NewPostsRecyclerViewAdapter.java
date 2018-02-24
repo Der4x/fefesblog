@@ -51,6 +51,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     }
 
     public interface OnItemClickListener {
+
         void onItemClick(int position, BlogPost blogPost);
 
         void onShareClick(int position, BlogPost blogPost);
@@ -186,7 +187,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
-                    if(mContent.getLineCount() < MAX_LINES)
+                    if(mContent.getLineCount() <= MAX_LINES)
                         mExpand.setVisibility(View.INVISIBLE);
                     else
                         mExpand.setVisibility(View.VISIBLE);
@@ -244,7 +245,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         private String getCss() {
 
-            String css = "<html><head><style>a {text-align: center;color: red;}</style></head><body>";
+            String css = "<html><head><style>p {color: red;}</style></head><body>";
 
             return css;
 
