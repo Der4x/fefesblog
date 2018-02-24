@@ -24,6 +24,7 @@
         android:padding="8dp"
         android:ellipsize="end"
         android:animateLayoutChanges="true"
+        android:lineSpacingExtra="2dp"
         android:textColor="@color/colorPrimary"
         android:textColorLink="@color/colorAccent"
         android:maxLines="6"/>

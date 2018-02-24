@@ -17,6 +17,7 @@
             android:animateLayoutChanges="true"
             android:textSize="16dp"
             android:padding="16dp"
+            android:lineSpacingExtra="2dp"
             android:text="BlogPost"
             android:textColor="@color/colorPrimary"
             android:textColorLink="@color/colorAccent" />

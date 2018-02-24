@@ -186,7 +186,6 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
     }
 
-
     @Override
     public void onBackPressed() {
 
