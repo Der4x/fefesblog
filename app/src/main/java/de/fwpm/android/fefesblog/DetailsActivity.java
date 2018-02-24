@@ -17,6 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -29,6 +31,7 @@ import android.widget.Toast;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import de.fwpm.android.fefesblog.data.SingleDataFetcher;
@@ -37,7 +40,7 @@ import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.utils.CustomQuoteSpan.replaceQuoteSpans;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements Animation.AnimationListener {
 
     private static final String TAG = "DetailActivity";
     public static final String INTENT_BLOG_POST = "blogPost";
@@ -50,6 +53,10 @@ public class DetailsActivity extends AppCompatActivity {
     private WebView mWebView;
     private ProgressBar mProgressBar;
     private boolean newPostLoaded;
+    private ArrayList<BlogPost> historyList;
+
+    Animation animFadein;
+    Animation animFadeout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +66,14 @@ public class DetailsActivity extends AppCompatActivity {
         mWebContainer = (FrameLayout) findViewById(R.id.web_container);
         mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
         newPostLoaded = false;
+        historyList = new ArrayList<>();
 
         initWebView();
+
+        animFadein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
+        animFadein.setAnimationListener(this);
+        animFadeout = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+        animFadeout.setAnimationListener(this);
 
         final Intent intent = getIntent();
 
@@ -170,6 +183,7 @@ public class DetailsActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
 
@@ -179,6 +193,12 @@ public class DetailsActivity extends AppCompatActivity {
         if(mWebContainer.getVisibility() == View.VISIBLE) {
 
             hideWebView();
+
+        } else if(historyList.size() > 0) {
+
+            changeBlogPost(historyList.get(historyList.size() - 1));
+            historyList.remove(historyList.size() - 1);
+            historyList.remove(historyList.size() - 1);
 
         } else super.onBackPressed();
 
@@ -190,7 +210,14 @@ public class DetailsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 if(mWebContainer.getVisibility() == View.VISIBLE) {
+
                     hideWebView();
+
+                } else if(historyList.size() > 0) {
+
+                    changeBlogPost(historyList.get(historyList.size() - 1));
+                    historyList.remove(historyList.size() - 1);
+                    historyList.remove(historyList.size() - 1);
 
                 } else this.finish();
                 break;
@@ -236,19 +263,23 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void showWebView() {
+
         mWebContainer.setVisibility(View.VISIBLE);
         mWebContainer.animate()
-                .translationY(0)
-                .setDuration(300);
+                .alpha(1)
+//                .translationY(0)
+                .setDuration(500);
         mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     private void hideWebView() {
 
-        mWebContainer.animate()
-                .translationY(mWebContainer.getHeight())
-                .setDuration(300);
         mWebContainer.setVisibility(View.INVISIBLE);
+        mWebContainer.animate()
+                .alpha(0)
+//                .translationY(mWebContainer.getHeight())
+                .setDuration(500);
+
         mWebView.stopLoading();
 
     }
@@ -258,10 +289,17 @@ public class DetailsActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                postContent.setVisibility(View.INVISIBLE);
+                postContent.startAnimation(animFadeout);
+
+                historyList.add(blogPost);
                 blogPost = _blogPost;
-                setContent();
+//                setContent();
                 setBookmarkIcon(blogPost.isBookmarked());
                 mProgressBar.setVisibility(View.INVISIBLE);
+
+
             }
         });
 
@@ -303,5 +341,35 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+
+        if (animation == animFadein) {
+
+        } else if (animation == animFadeout) {
+
+            if(postContent.getVisibility() == View.INVISIBLE) {
+                setContent();
+                postContent.setVisibility(View.VISIBLE);
+                postContent.startAnimation(animFadein);
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+        // TODO Auto-generated method stub
+
+    }
+
 
 }
