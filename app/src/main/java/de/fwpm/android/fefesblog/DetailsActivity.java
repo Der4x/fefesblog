@@ -35,6 +35,8 @@ import de.fwpm.android.fefesblog.data.SingleDataFetcher;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
+import static de.fwpm.android.fefesblog.utils.CustomQuoteSpan.replaceQuoteSpans;
+
 public class DetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "DetailActivity";
@@ -283,16 +285,13 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void setTextViewHTML(TextView text, String html) {
 
-        html = html.replace("<blockquote>", "<blockquote><font color='grey'>");
-        html = html.replace("<blockquote lang=\"en\">", "<blockquote><font color='grey'>");
-        html = html.replace("</blockquote>", "</font></blockquote>");
-
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
         for(URLSpan span : urls) {
             makeLinkClickable(strBuilder, span);
         }
+        replaceQuoteSpans(strBuilder);
         text.setText(strBuilder);
         text.setMovementMethod(LinkMovementMethod.getInstance());
     }

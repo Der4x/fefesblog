@@ -1,15 +1,25 @@
 package de.fwpm.android.fefesblog.utils;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.text.Html;
+import android.text.Layout;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.LeadingMarginSpan;
+import android.text.style.LineBackgroundSpan;
+import android.text.style.QuoteSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import static android.text.Html.FROM_HTML_OPTION_USE_CSS_COLORS;
+import static de.fwpm.android.fefesblog.utils.CustomQuoteSpan.replaceQuoteSpans;
 
 /**
  * Created by alex on 25.01.18.
@@ -38,16 +48,13 @@ public class CustomTextView {
 
     public static void setTextViewHTML(TextView text, String html) {
 
-        html = html.replace("<blockquote>", "<blockquote><font color='grey'>");
-        html = html.replace("<blockquote lang=\"en\">", "<blockquote><font color='grey'>");
-        html = html.replace("</blockquote>", "</font></blockquote>");
-
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
         for(URLSpan span : urls) {
             makeLinkClickable(strBuilder, span);
         }
+        replaceQuoteSpans(strBuilder);
         text.setText(trimTrailingWhitespace(strBuilder));
         text.setMovementMethod(LinkMovementMethod.getInstance());
 
