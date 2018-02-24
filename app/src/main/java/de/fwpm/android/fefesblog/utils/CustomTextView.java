@@ -28,7 +28,6 @@ public class CustomTextView {
         final ClickableSpan clickable = new ClickableSpan() {
             public void onClick(View view) {
 
-                Log.d(TAG, "onClick: " + span.getURL());
                 clickedLink = span.getURL();
 
             }
@@ -37,10 +36,7 @@ public class CustomTextView {
         strBuilder.removeSpan(span);
     }
 
-    public static void setTextViewHTML(TextView text, String html)
-    {
-//        String fontcolor = "<p style=\"color:red;\">";
-//        String styled = html.replace("<a ", "<a style=\"color:red\" ");
+    public static void setTextViewHTML(TextView text, String html) {
 
         html = html.replace("<blockquote>", "<blockquote><font color='grey'>");
         html = html.replace("<blockquote lang=\"en\">", "<blockquote><font color='grey'>");

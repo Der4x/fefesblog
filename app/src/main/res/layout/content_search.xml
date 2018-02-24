@@ -17,6 +17,32 @@
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+    <LinearLayout
+        android:id="@+id/noResultScreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:padding="64dp"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:src="@drawable/null_icon"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:text="Keine Einträge gefunden.\n\nHinweis: Die Suche ist case-sensitive,\nd.h. Fnord != fnord."/>
+
+    </LinearLayout>
+
     <ProgressBar
         android:id="@+id/progess_bar"
         android:layout_width="match_parent"

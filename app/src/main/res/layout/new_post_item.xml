@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:ellipsize="end"
+        android:textSize="14sp"
         android:animateLayoutChanges="true"
         android:textColor="@color/colorPrimary"
         android:textColorLink="@color/colorAccent"

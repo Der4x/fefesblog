@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import java.io.Serializable;
@@ -23,7 +24,7 @@ import de.fwpm.android.fefesblog.adapter.SearchRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.data.SearchDataFetcher;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 
-public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
+public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
     private static final String TAG = "SearchActivity";
 
@@ -37,6 +38,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     private SearchView mSearchView;
     private ProgressBar mProgressBar;
+    private LinearLayout noResultLayout;
     private String mQueryString;
     private SearchActivity activity;
 
@@ -53,6 +55,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         activity = this;
         mHandler = new Handler();
         mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
+        noResultLayout = (LinearLayout) findViewById(R.id.noResultScreen);
 
         mListOfPosts = new ArrayList<>();
 
@@ -70,7 +73,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                         Log.d(TAG, "onItemClick" + position);
                         Intent intent = new Intent(SearchActivity.this, DetailsActivity.class);
                         intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
-                        if(CustomTextView.clickedLink != null) {
+                        if (CustomTextView.clickedLink != null) {
                             intent.putExtra("CLICKED_LINK", CustomTextView.clickedLink);
                             CustomTextView.clickedLink = null;
                         }
@@ -107,9 +110,10 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     @Override
     public boolean onQueryTextSubmit(String query) {
 
-        if(query.length() > 2) {
+        if (query.length() > 2) {
             new SearchDataFetcher(this).execute(query);
             showProgressBar(true);
+            showNoResultScreen(false);
         }
 
         return false;
@@ -126,9 +130,10 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             @Override
             public void run() {
 
-                if(mQueryString.length() > 2) {
+                if (mQueryString.length() > 2) {
                     new SearchDataFetcher(activity).execute(mQueryString);
                     showProgressBar(true);
+                    showNoResultScreen(false);
                 }
 
             }
@@ -149,7 +154,17 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         mListOfPosts.clear();
         mListOfPosts.addAll(allPosts);
         recyclerViewAdapter.notifyDataSetChanged();
+        mRecyclerView.scrollToPosition(0);
         showProgressBar(false);
+
+        if (allPosts.size() == 0) showNoResultScreen(true);
+
+    }
+
+    private void showNoResultScreen(boolean show) {
+
+        if (show) noResultLayout.setVisibility(View.VISIBLE);
+        else noResultLayout.setVisibility(View.GONE);
 
     }
 
