@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -42,20 +43,13 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
     private static String TAG = "BookmarkFragment";
     private Context mContext;
     private Handler mHandler;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private static RecyclerView.LayoutManager mLayoutManager;
+    private static RecyclerView.SmoothScroller smoothScroller;
     View view;
 
 
     public BookmarkFragment() {
         // Required empty public constructor
-    }
-
-    public static BookmarkFragment newInstance(int position) {
-        Bundle args = new Bundle();
-        args.putInt(ARG_ITEM_ID, position);
-        BookmarkFragment fragment = new BookmarkFragment();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     private void getData() {
@@ -106,6 +100,12 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        smoothScroller = new LinearSmoothScroller(mContext) {
+            @Override protected int getVerticalSnapPreference() {
+                return LinearSmoothScroller.SNAP_TO_START;
+            }
+        };
+
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy){
@@ -154,6 +154,13 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
 
         return view;
+
+    }
+
+    public static void jump_To_Position(int position) {
+
+        smoothScroller.setTargetPosition(position);
+        mLayoutManager.startSmoothScroll(smoothScroller);
 
     }
 

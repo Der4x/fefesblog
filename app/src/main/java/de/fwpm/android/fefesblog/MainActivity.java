@@ -18,6 +18,7 @@ import android.view.View;
 import de.fwpm.android.fefesblog.adapter.StartScreenPagerAdapter;
 import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
 
+import static de.fwpm.android.fefesblog.fragments.BookmarkFragment.jump_To_Position;
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.utils.BackgroundTask.scheduleJob;
 
@@ -67,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
                 if(tab.getText().equals(getResources().getString(R.string.newposts))) {
 
                     jumpToPosition(0);
+
+                } else if(tab.getText().equals(getResources().getString(R.string.bookmarks))) {
+
+                    jump_To_Position(0);
 
                 }
             }

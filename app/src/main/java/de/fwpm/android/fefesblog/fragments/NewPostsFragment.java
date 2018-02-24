@@ -63,14 +63,6 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         // Required empty public constructor
     }
 
-    public static NewPostsFragment newInstance(int position) {
-        Bundle args = new Bundle();
-        args.putInt(ARG_ITEM_ID, position);
-        NewPostsFragment fragment = new NewPostsFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

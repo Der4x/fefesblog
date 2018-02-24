@@ -62,7 +62,6 @@ public class DetailsActivity extends AppCompatActivity {
 
         initWebView();
 
-        // Get BlogPost
         final Intent intent = getIntent();
 
         Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
@@ -71,7 +70,6 @@ public class DetailsActivity extends AppCompatActivity {
             blogPost = (BlogPost) extra;
             postContent = (TextView) findViewById(R.id.blogPostText);
 
-//            set detail title
             setContent();
 
             if(intent.hasExtra("CLICKED_LINK")) loadPostUrl(intent.getStringExtra("CLICKED_LINK"));
