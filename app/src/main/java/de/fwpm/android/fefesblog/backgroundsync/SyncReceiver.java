@@ -1,20 +1,14 @@
-package de.fwpm.android.fefesblog;
+package de.fwpm.android.fefesblog.backgroundsync;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-import static de.fwpm.android.fefesblog.NotificationHelper.NOTIFICATION_ID;
-import static de.fwpm.android.fefesblog.NotificationHelper.createNotificationBuilder;
-import static de.fwpm.android.fefesblog.NotificationHelper.makeNotificationChannel;
+import static de.fwpm.android.fefesblog.backgroundsync.NotificationHelper.NOTIFICATION_ID;
+import static de.fwpm.android.fefesblog.backgroundsync.NotificationHelper.createNotificationBuilder;
+import static de.fwpm.android.fefesblog.backgroundsync.NotificationHelper.makeNotificationChannel;
 
 /**
  * Created by alex on 22.01.18.

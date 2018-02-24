@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.BlogPost;
-import de.fwpm.android.fefesblog.R;
-import de.fwpm.android.fefesblog.SyncReceiver;
+import de.fwpm.android.fefesblog.backgroundsync.SyncReceiver;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 
 import static de.fwpm.android.fefesblog.data.HtmlParser.parseHtml;

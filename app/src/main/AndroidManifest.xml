@@ -39,13 +39,13 @@
         </activity>
 
         <service
-            android:name=".SyncJobScheduler"
+            android:name=".backgroundsync.SyncJobScheduler"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver
-            android:name=".SyncReceiver"
+            android:name=".backgroundsync.SyncReceiver"
             android:enabled="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>

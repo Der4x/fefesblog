@@ -36,7 +36,7 @@ import static de.fwpm.android.fefesblog.MainActivity.fab;
 
 public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
-    public static final String ARG_ITEM_ID = "item_id";
+//    public static final String ARG_ITEM_ID = "item_id";
     private RecyclerView mRecyclerView;
     private BookmarkRecyclerViewAdapter recyclerViewAdapter;
     private ArrayList<BlogPost> mList;
@@ -45,43 +45,10 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
     private Handler mHandler;
     private static RecyclerView.LayoutManager mLayoutManager;
     private static RecyclerView.SmoothScroller smoothScroller;
-    View view;
-
+    private View view;
 
     public BookmarkFragment() {
         // Required empty public constructor
-    }
-
-    private void getData() {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                if(mList==null){
-                    mList = new ArrayList<>();
-                }else mList.clear();
-
-                mList.addAll((ArrayList<BlogPost>) AppDatabase.getInstance(getContext()).blogPostDao().getAllBookmarkedPosts());
-
-                updateUI();
-
-            }
-        }).start();
-
-    }
-
-    private void updateUI() {
-
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-
-                recyclerViewAdapter.notifyDataSetChanged();
-
-            }
-        });
-
     }
 
     @Override
@@ -91,8 +58,27 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
         view =  inflater.inflate(R.layout.fragment_bookmarks, container, false);
 
         mHandler = new Handler();
-
         mContext = getContext();
+
+        initView();
+        getData();
+
+        return view;
+
+    }
+
+    @Override
+    public void onPauseFragment() {
+
+    }
+
+    @Override
+    public void onResumeFragment() {
+        Log.d(TAG, "onResumeFragment: " + this);
+        this.getData();
+    }
+
+    private void initView() {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.bookmark_recyclerview);
         mRecyclerView.setHasFixedSize(true);
@@ -149,11 +135,37 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
                 },mList);
 
         mRecyclerView.setAdapter(recyclerViewAdapter);
+    }
 
-        getData();
+    private void getData() {
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        return view;
+                if(mList==null){
+                    mList = new ArrayList<>();
+                }else mList.clear();
+
+                mList.addAll((ArrayList<BlogPost>) AppDatabase.getInstance(getContext()).blogPostDao().getAllBookmarkedPosts());
+
+                updateUI();
+
+            }
+        }).start();
+
+    }
+
+    private void updateUI() {
+
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                recyclerViewAdapter.notifyDataSetChanged();
+
+            }
+        });
 
     }
 
@@ -164,14 +176,5 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
     }
 
-    @Override
-    public void onPauseFragment() {
 
-    }
-
-    @Override
-    public void onResumeFragment() {
-        Log.d(TAG, "onResumeFragment: " + this);
-        this.getData();
-    }
 }
