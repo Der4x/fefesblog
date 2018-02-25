@@ -42,20 +42,19 @@ import static de.fwpm.android.fefesblog.MainActivity.fab;
 
 public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
-    public static final String ARG_ITEM_ID = "item_id";
     private static final String TAG = "NewsPostFragment";
 
-    private static RecyclerView mRecyclerView;
-    private static RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView mRecyclerView;
     private NewPostsRecyclerViewAdapter recyclerViewAdapter;
     private SwipeRefreshLayout mNewPostSwipeRefresh;
+    private static RecyclerView.LayoutManager mLayoutManager;
     private static RecyclerView.SmoothScroller smoothScroller;
 
     private ArrayList<BlogPost> mListWithHeaders;
     private Handler mHandler;
 
-    static Context context;
-    static NetworkUtils networkUtils;
+    private Context context;
+    private NetworkUtils networkUtils;
 
     View view;
 
@@ -93,8 +92,19 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
     public void onResume() {
 
         super.onResume();
+        Log.d(TAG, "onResume: " + this);
         startSync();
 
+    }
+
+    @Override
+    public void onPauseFragment() {
+    }
+
+    @Override
+    public void onResumeFragment() {
+        Log.d(TAG, "onResumeFragment: " + this);
+        this.getData();
     }
 
     private void startSync() {
@@ -279,8 +289,13 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         int counter = mListWithHeaders.size()-1;
         while (nextUrl.equals("")) {
 
-            if(mListWithHeaders.get(counter).getNextUrl() != null) {
-                nextUrl = mListWithHeaders.get(counter).getNextUrl();
+            //TODO: sometimes strange crash here when onResume() in MainActivity;
+            try {
+                if(mListWithHeaders.get(counter).getNextUrl() != null) {
+                    nextUrl = mListWithHeaders.get(counter).getNextUrl();
+                }
+            } catch (Exception e) {
+                Toast.makeText(context, "Fehler 101", Toast.LENGTH_SHORT).show();
             }
             counter--;
 
@@ -302,13 +317,6 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         listWithHeaders.add(headerBlogPost);
     }
 
-    @Override
-    public void onPauseFragment() {
-    }
 
-    @Override
-    public void onResumeFragment() {
-        this.getData();
-    }
 
 }

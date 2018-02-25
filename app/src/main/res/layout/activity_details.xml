@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorSecondaryLight"
     tools:context="de.fwpm.android.fefesblog.DetailsActivity">
 
     <ScrollView
@@ -18,7 +19,6 @@
             android:textSize="16dp"
             android:padding="16dp"
             android:lineSpacingExtra="2dp"
-            android:text="BlogPost"
             android:textColor="@color/colorPrimary"
             android:textColorLink="@color/colorAccent" />
 

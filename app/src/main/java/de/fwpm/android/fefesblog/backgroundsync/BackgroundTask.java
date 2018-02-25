@@ -1,4 +1,4 @@
-package de.fwpm.android.fefesblog.utils;
+package de.fwpm.android.fefesblog.backgroundsync;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;

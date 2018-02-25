@@ -36,11 +36,12 @@ import static de.fwpm.android.fefesblog.MainActivity.fab;
 
 public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
-//    public static final String ARG_ITEM_ID = "item_id";
+    private static String TAG = "BookmarkFragment";
+
     private RecyclerView mRecyclerView;
     private BookmarkRecyclerViewAdapter recyclerViewAdapter;
     private ArrayList<BlogPost> mList;
-    private static String TAG = "BookmarkFragment";
+
     private Context mContext;
     private Handler mHandler;
     private static RecyclerView.LayoutManager mLayoutManager;
@@ -64,6 +65,15 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
         getData();
 
         return view;
+
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+        Log.d(TAG, "onResume: " + this);
+        getData();
 
     }
 

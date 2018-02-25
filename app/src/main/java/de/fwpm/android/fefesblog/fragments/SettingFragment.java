@@ -12,9 +12,8 @@ import android.util.Log;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
-import de.fwpm.android.fefesblog.data.BackgroundDataFetcher;
 
-import static de.fwpm.android.fefesblog.utils.BackgroundTask.scheduleJob;
+import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
 
 
 /**

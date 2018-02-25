@@ -20,7 +20,7 @@ import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
 
 import static de.fwpm.android.fefesblog.fragments.BookmarkFragment.jump_To_Position;
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
-import static de.fwpm.android.fefesblog.utils.BackgroundTask.scheduleJob;
+import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,9 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
     private StartScreenPagerAdapter adapter;
-    private MenuItem setting_item;
     public static FloatingActionButton fab;
-    private boolean firstLoad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +39,49 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        initView();
+
+        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true)) {
+
+            scheduleJob(this);
+
+        }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_settings) {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+
+        MenuItem setting_item = menu.findItem(R.id.menu_settings);
+
+        return true;
+
+    }
+
+    private void initView() {
+
         viewPager = (ViewPager) findViewById(R.id.container);
         adapter = new StartScreenPagerAdapter(this, getSupportFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(pageChangeListener);
-
-        Log.d(TAG,"" + viewPager.getCurrentItem());
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -84,15 +119,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(getBaseContext(), SearchActivity.class));
             }
         });
-
-        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true)) {
-
-            scheduleJob(this);
-
-        }
-
-        firstLoad = true;
-
     }
 
     private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -120,39 +146,5 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if(firstLoad) firstLoad = false;
-        else {
-
-            ((FragmentLifecycle) adapter.getItem(0)).onResumeFragment();
-            ((FragmentLifecycle) adapter.getItem(1)).onResumeFragment();
-
-        }
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.menu_settings) {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-
-        setting_item = menu.findItem(R.id.menu_settings);
-
-        return true;
-
-    }
 
 }

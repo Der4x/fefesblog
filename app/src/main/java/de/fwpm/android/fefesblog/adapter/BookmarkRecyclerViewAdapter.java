@@ -186,20 +186,20 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
 
     private void setBookmarkIcon(BookmarkRecyclerViewAdapter.ViewHolder holder, BlogPost blogPost) {
         if (blogPost.isBookmarked())
-            holder.mBookmark.setImageResource(R.drawable.ic_bookmark_black_24dp);
-        else holder.mBookmark.setImageResource(R.drawable.ic_bookmark_border_black_24dp);
+            holder.mBookmark.setImageResource(R.drawable.ic_stat_bookmark);
+        else holder.mBookmark.setImageResource(R.drawable.ic_stat_bookmark_border);
     }
 
     private void expandContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
         holder.mContent.setMaxLines(Integer.MAX_VALUE);
         holder.mContent.setEllipsize(null);
-        holder.mExpand.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
+        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_up);
     }
 
     private void closeContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
         holder.mContent.setMaxLines(MAX_LINES);
         holder.mContent.setEllipsize(TextUtils.TruncateAt.END);
-        holder.mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_down);
     }
 
 }

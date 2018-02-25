@@ -258,21 +258,21 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         private void setBookmarkIcon(boolean isBookmarked) {
 
-            if(isBookmarked) mBookmark.setImageResource(R.drawable.ic_bookmark_black_24dp);
-            else mBookmark.setImageResource(R.drawable.ic_bookmark_border_black_24dp);
+            if(isBookmarked) mBookmark.setImageResource(R.drawable.ic_stat_bookmark);
+            else mBookmark.setImageResource(R.drawable.ic_stat_bookmark_border);
 
         }
 
         private void expandContent() {
             mContent.setMaxLines(Integer.MAX_VALUE);
             mContent.setEllipsize(null);
-            mExpand.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
+            mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_up);
         }
 
         private void closeContent() {
             mContent.setMaxLines(MAX_LINES);
             mContent.setEllipsize(TextUtils.TruncateAt.END);
-            mExpand.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+            mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_down);
         }
 
     }
