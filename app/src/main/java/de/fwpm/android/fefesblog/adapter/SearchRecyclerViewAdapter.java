@@ -26,6 +26,7 @@ import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
+import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 /**
  * Created by alex on 22.01.18.
@@ -171,13 +172,9 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         holder.mShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String postText = blogPost.getText();
-                String preView = postText.length() > 99 ? postText.substring(4, 100) : postText.substring(4);
-                Intent share = new Intent();
-                share.setAction(Intent.ACTION_SEND);
-                share.putExtra(Intent.EXTRA_TEXT, preView + "...\n\n" + blogPost.getUrl());
-                share.setType("text/plain");
-                mContext.startActivity(Intent.createChooser(share, mContext.getResources().getText(R.string.share_to)));
+
+                sharePost(mContext, blogPost);
+
             }
         });
 

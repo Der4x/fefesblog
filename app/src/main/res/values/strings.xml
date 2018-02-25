@@ -23,5 +23,7 @@
     <string name="pref_update_seq_default">3600000</string>
     <string name="pref_preview_size_summary">Zeigt die Posts in der angegebenen Zeilenanzahl.</string>
     <string name="pref_update_seq_summary">Ausführung der Hintergrundupdates im angegeben Intervall.</string>
+    <string name="no_network">Kein Internet!</string>
+    <string name="basic_url">https://blog.fefe.de</string>
 
 </resources>

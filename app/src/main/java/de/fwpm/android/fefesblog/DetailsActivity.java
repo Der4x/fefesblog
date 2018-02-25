@@ -44,16 +44,19 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
     private static final String TAG = "DetailActivity";
     public static final String INTENT_BLOG_POST = "blogPost";
-    BlogPost blogPost;
+    public static final String INTENT_URL = "CLICKED_LINK";
+    private BlogPost blogPost;
     private TextView postContent;
     private MenuItem bookmark_item;
     private MenuItem share_item;
 
     private FrameLayout mWebContainer;
+    private FrameLayout mContainer;
     private WebView mWebView;
     private ProgressBar mProgressBar;
     private boolean newPostLoaded;
     private ArrayList<BlogPost> historyList;
+    private NetworkUtils networkUtils;
 
     Animation animFadein;
     Animation animFadeout;
@@ -64,9 +67,12 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         setContentView(R.layout.activity_details);
 
         mWebContainer = (FrameLayout) findViewById(R.id.web_container);
+        mContainer = (FrameLayout) findViewById(R.id.container);
         mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
+        postContent = (TextView) findViewById(R.id.blogPostText);
         newPostLoaded = false;
         historyList = new ArrayList<>();
+        networkUtils = new NetworkUtils(this);
 
         initWebView();
 
@@ -81,19 +87,19 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         if (extra instanceof BlogPost) {
 
             blogPost = (BlogPost) extra;
-            postContent = (TextView) findViewById(R.id.blogPostText);
 
             setContent();
 
-            if(intent.hasExtra("CLICKED_LINK")) loadPostUrl(intent.getStringExtra("CLICKED_LINK"));
+            if(intent.hasExtra(INTENT_URL)) loadPostUrl(intent.getStringExtra(INTENT_URL));
 
         }
     }
 
     private void setContent() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY);
-        setTitle(dateFormat.format(blogPost.getDate()));
+
+        setTitle(new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY).format(blogPost.getDate()));
         setTextViewHTML(postContent,blogPost.getHtmlText().split("</a>", 2)[1]);
+
     }
 
     public void loadPostUrl(final String url) {
@@ -104,29 +110,29 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
                 @Override
                 public void run() {
 
-                    BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl("https://blog.fefe.de" + url);
+                    BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl(getString(R.string.basic_url) + url);
 
                     if(linkPost != null) changeBlogPost(linkPost);
-                    else {
+                    else if(networkUtils.isConnectingToInternet()) {
+
                         new SingleDataFetcher(DetailsActivity.this).execute(url);
                         newPostLoaded = true;
-                    }
+                        mProgressBar.setVisibility(View.VISIBLE);
+
+                    } else networkUtils.noNetwork(mContainer);
 
                 }
             }).start();
 
         } else {
 
-            if(new NetworkUtils(this).isConnectingToInternet()) {
+            if(networkUtils.isConnectingToInternet()) {
                 mWebView.loadUrl(url);
-            } else {
-                Toast.makeText(this, "Kein Internetzugriff", Toast.LENGTH_LONG).show();
+                mProgressBar.setVisibility(View.VISIBLE);
             }
+            else networkUtils.noNetwork(mContainer);
 
         }
-
-        mProgressBar.setVisibility(View.VISIBLE);
-
     }
 
     private void initWebView() {
@@ -294,14 +300,11 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
                 historyList.add(blogPost);
                 blogPost = _blogPost;
-//                setContent();
                 setBookmarkIcon(blogPost.isBookmarked());
                 mProgressBar.setVisibility(View.INVISIBLE);
 
-
             }
         });
-
     }
 
     protected void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span) {
@@ -316,6 +319,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         };
         strBuilder.setSpan(clickable, start, end, flags);
         strBuilder.removeSpan(span);
+
     }
 
     public void setTextViewHTML(TextView text, String html) {
@@ -329,6 +333,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         replaceQuoteSpans(strBuilder);
         text.setText(strBuilder);
         text.setMovementMethod(LinkMovementMethod.getInstance());
+
     }
 
     private void setBookmarkIcon(boolean isBookmarked) {

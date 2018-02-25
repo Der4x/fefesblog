@@ -1,8 +1,16 @@
 package de.fwpm.android.fefesblog.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
+import android.view.View;
+import android.widget.Toast;
+
+import de.fwpm.android.fefesblog.R;
 
 /**
  * Created by alex on 21.01.18.
@@ -29,6 +37,21 @@ public class NetworkUtils {
 
         }
         return false;
+    }
+
+    public void noNetwork(View view) {
+
+        Snackbar bar = Snackbar.make(view, R.string.no_network, Snackbar.LENGTH_LONG)
+                .setAction("EINSTELLUNGEN", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (context instanceof Activity)
+                            ((Activity) context).startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), 0);
+                    }
+                });
+
+        bar.show();
+
     }
 
 }

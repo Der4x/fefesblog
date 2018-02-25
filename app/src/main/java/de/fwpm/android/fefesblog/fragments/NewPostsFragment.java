@@ -33,14 +33,16 @@ import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 
+import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.MainActivity.FIRST_START;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
+import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 /**
  * Created by alex on 20.01.18.
  */
 
-public class NewPostsFragment extends Fragment implements FragmentLifecycle{
+public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
     private static final String TAG = "NewsPostFragment";
     private static final long FIVE_MINUTES = 5 * 60 * 1000;
@@ -72,7 +74,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         view = inflater.inflate(R.layout.fragment_newposts, container, false);
 
         mHandler = new Handler();
-
+        mListWithHeaders = new ArrayList<>();
         context = getContext();
         networkUtils = new NetworkUtils(context);
 
@@ -81,10 +83,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
         initView();
 
-        if(firstStart) {
-            mPrefs.edit().putBoolean(FIRST_START, false).commit();
-            Log.d(TAG, "firstStart");
-        }
+        if (firstStart) mPrefs.edit().putBoolean(FIRST_START, false).commit();
         else this.getData();
 
         return view;
@@ -95,7 +94,8 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
     public void onResume() {
 
         super.onResume();
-        if(lastSyncTimestamp == 0 || Math.abs(System.currentTimeMillis() - lastSyncTimestamp) > FIVE_MINUTES) startSync();
+        if (lastSyncTimestamp == 0 || Math.abs(System.currentTimeMillis() - lastSyncTimestamp) > FIVE_MINUTES)
+            startSync();
         else this.getData();
 
     }
@@ -113,12 +113,12 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
         lastSyncTimestamp = System.currentTimeMillis();
 
-        if(networkUtils.isConnectingToInternet()) {
+        if (networkUtils.isConnectingToInternet()) {
             new DataFetcher(this).execute();
             setRefresh(true);
-        }
-        else {
-            Toast.makeText(getContext(), "Kein Internet!", Toast.LENGTH_LONG).show();
+        } else {
+
+            networkUtils.noNetwork(mNewPostSwipeRefresh);
             setRefresh(false);
         }
 
@@ -132,8 +132,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
                 ArrayList<BlogPost> data = (ArrayList<BlogPost>) AppDatabase.getInstance(context).blogPostDao().getAllPosts();
 
-                if(mListWithHeaders == null)
-                    mListWithHeaders = new ArrayList<>();
+                if (mListWithHeaders == null) mListWithHeaders = new ArrayList<>();
                 else mListWithHeaders.clear();
 
                 Date firstDate = data.get(0).getDate();
@@ -154,14 +153,11 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
                         mListWithHeaders.add(blogPost);
 
                     }
-
                 }
-
                 updateUI();
 
             }
         }).start();
-
     }
 
     private void initView() {
@@ -180,18 +176,67 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        recyclerViewAdapter
+                = new NewPostsRecyclerViewAdapter(getContext(),
+                new NewPostsRecyclerViewAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, final BlogPost blogPost) {
+                        if (blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
+
+                            blogPost.setUpdate(false);
+                            blogPost.setHasBeenRead(true);
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AppDatabase.getInstance(context).blogPostDao().updateBlogPost(blogPost);
+                                }
+                            }).start();
+
+                        }
+
+                        Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                        intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                        if (CustomTextView.clickedLink != null) {
+                            intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
+                            CustomTextView.clickedLink = null;
+                        }
+                        startActivity(intent);
+
+                    }
+
+                    @Override
+                    public void onShareClick(int position, BlogPost blogPost) {
+
+                        sharePost(context, blogPost);
+
+                    }
+                },
+                new NewPostsRecyclerViewAdapter.OnBottomReachListener() {
+                    @Override
+                    public void onBottom(int position) {
+                        Log.d(TAG, "onBottom" + position);
+                        loadMoreData();
+
+                    }
+                },
+                mListWithHeaders);
+
+        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration());
+        mRecyclerView.setAdapter(recyclerViewAdapter);
+
         smoothScroller = new LinearSmoothScroller(context) {
-            @Override protected int getVerticalSnapPreference() {
+            @Override
+            protected int getVerticalSnapPreference() {
                 return LinearSmoothScroller.SNAP_TO_START;
             }
         };
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0 && fab.isShown())
                     fab.hide();
-                else if(dy < 0 && !fab.isShown()) fab.show();
+                else if (dy < 0 && !fab.isShown()) fab.show();
             }
 
         });
@@ -219,83 +264,22 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
             @Override
             public void run() {
 
-                if(recyclerViewAdapter == null) {
-
-                    recyclerViewAdapter
-                            = new NewPostsRecyclerViewAdapter(getContext(),
-                            new NewPostsRecyclerViewAdapter.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(int position, final BlogPost blogPost) {
-                                    if(blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
-
-                                        blogPost.setUpdate(false);
-                                        blogPost.setHasBeenRead(true);
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                AppDatabase.getInstance(context).blogPostDao().updateBlogPost(blogPost);
-                                            }
-                                        }).start();
-
-                                    }
-
-                                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                                    intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
-                                    if(CustomTextView.clickedLink != null) {
-                                        intent.putExtra("CLICKED_LINK", CustomTextView.clickedLink);
-                                        CustomTextView.clickedLink = null;
-                                    }
-                                    startActivity(intent);
-
-                                }
-
-                                @Override
-                                public void onShareClick(int position, BlogPost blogPost) {
-                                    String postText = blogPost.getText();
-                                    String preView = postText.length() > 99 ?  postText.substring(4,100) : postText.substring(4);
-                                    Intent share = new Intent();
-                                    share.setAction(Intent.ACTION_SEND);
-                                    share.putExtra(Intent.EXTRA_TEXT, preView +"...\n\n" +blogPost.getUrl());
-                                    share.setType("text/plain");
-                                    startActivity(Intent.createChooser(share, getResources().getText(R.string.share_to)));
-                                }
-                            },
-                            new NewPostsRecyclerViewAdapter.OnBottomReachListener() {
-                                @Override
-                                public void onBottom(int position) {
-                                    Log.d(TAG, "onBottom" + position);
-                                    loadMoreData();
-
-                                }
-                            },
-                            mListWithHeaders);
-
-                    mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration());
-                    mRecyclerView.setAdapter(recyclerViewAdapter);
-
-                } else {
-
-                    mRecyclerView.getRecycledViewPool().clear();
-                    recyclerViewAdapter.notifyDataSetChanged();
-
-                }
+                mRecyclerView.invalidateItemDecorations();
+                recyclerViewAdapter.notifyDataSetChanged();
 
                 setRefresh(false);
-
             }
         });
-
     }
 
     private void loadMoreData() {
 
         String nextUrl = new String();
-        int counter = mListWithHeaders.size()-1;
+        int counter = mListWithHeaders.size() - 1;
         while (nextUrl.equals("")) {
 
-            //TODO: sometimes strange crash here when onResume() in MainActivity;
             try {
-                if(mListWithHeaders.get(counter).getNextUrl() != null) {
+                if (mListWithHeaders.get(counter).getNextUrl() != null) {
                     nextUrl = mListWithHeaders.get(counter).getNextUrl();
                 }
             } catch (Exception e) {
@@ -305,20 +289,18 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
         }
 
-        if(networkUtils.isConnectingToInternet()) {
+        if (networkUtils.isConnectingToInternet()) {
             new DataFetcher(this).execute(nextUrl);
             setRefresh(true);
-        }
-        else {
-            Toast.makeText(getContext(), "Kein Internet!", Toast.LENGTH_LONG).show();
+        } else {
+            networkUtils.noNetwork(mNewPostSwipeRefresh);
             setRefresh(false);
         }
 
     }
 
     private void addHeader(ArrayList<BlogPost> listWithHeaders, Date firstDate) {
-        BlogPost headerBlogPost = new BlogPost(firstDate, BlogPost.TYPE_SECTION);
-        listWithHeaders.add(headerBlogPost);
+        listWithHeaders.add(new BlogPost(firstDate, BlogPost.TYPE_SECTION));
     }
 
 }

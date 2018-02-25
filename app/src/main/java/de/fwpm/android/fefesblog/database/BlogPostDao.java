@@ -34,6 +34,9 @@ public interface BlogPostDao {
     @Query("SELECT * FROM blogpost WHERE url LIKE :url")
     BlogPost getPostByUrl(String url);
 
+    @Query("SELECT * FROM blogpost WHERE text LIKE :query")
+    List<BlogPost> searchPosts(String query);
+
     @Query("SELECT * FROM blogpost WHERE bookmarked = 1 ORDER BY date DESC")
     List<BlogPost> getAllBookmarkedPosts();
 

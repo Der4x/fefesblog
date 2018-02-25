@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +23,9 @@ import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.adapter.SearchRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.data.SearchDataFetcher;
+import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
+import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
@@ -35,10 +38,12 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private SearchRecyclerViewAdapter recyclerViewAdapter;
+    private NetworkUtils networkUtils;
 
     private SearchView mSearchView;
     private ProgressBar mProgressBar;
     private LinearLayout noResultLayout;
+    private CoordinatorLayout mContainer;
     private String mQueryString;
     private SearchActivity activity;
 
@@ -49,16 +54,25 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(getString(R.string.search));
+
 
         mContext = this;
         activity = this;
         mHandler = new Handler();
-        mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
-        noResultLayout = (LinearLayout) findViewById(R.id.noResultScreen);
+        networkUtils = new NetworkUtils(this);
 
         mListOfPosts = new ArrayList<>();
 
+        initView();
+
+    }
+
+    private void initView() {
+
+        setTitle(getString(R.string.search));
+        mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
+        mContainer = (CoordinatorLayout) findViewById(R.id.container);
+        noResultLayout = (LinearLayout) findViewById(R.id.noResultScreen);
         mRecyclerView = (RecyclerView) findViewById(R.id.search_recyclerview);
         mRecyclerView.setHasFixedSize(true);
 
@@ -83,7 +97,29 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 mListOfPosts);
 
         mRecyclerView.setAdapter(recyclerViewAdapter);
+    }
 
+    private void search(final String query) {
+
+        showNoResultScreen(false);
+
+        if(networkUtils.isConnectingToInternet()) {
+
+            new SearchDataFetcher(this).execute(query);
+            showProgressBar(true);
+
+        } else {
+
+            networkUtils.noNetwork(mContainer);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayList<BlogPost> data = (ArrayList<BlogPost>) AppDatabase.getInstance(mContext).blogPostDao().searchPosts("%" + query + "%");
+                    populateResult(data);
+                }
+            }).start();
+
+        }
     }
 
     @Override
@@ -110,14 +146,12 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     @Override
     public boolean onQueryTextSubmit(String query) {
 
-        if (query.length() > 2) {
-            new SearchDataFetcher(this).execute(query);
-            showProgressBar(true);
-            showNoResultScreen(false);
-        }
-
+        if (query.length() > 2) search(query);
         return false;
+
     }
+
+
 
     @Override
     public boolean onQueryTextChange(String newText) {
@@ -130,15 +164,10 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             @Override
             public void run() {
 
-                if (mQueryString.length() > 2) {
-                    new SearchDataFetcher(activity).execute(mQueryString);
-                    showProgressBar(true);
-                    showNoResultScreen(false);
-                }
+                if (mQueryString.length() > 2) search(mQueryString);
 
             }
         }, 500);
-
 
         return false;
     }
@@ -149,16 +178,20 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         return false;
     }
 
-    public void populateResult(ArrayList<BlogPost> allPosts) {
+    public void populateResult(final ArrayList<BlogPost> allPosts) {
 
-        mListOfPosts.clear();
-        mListOfPosts.addAll(allPosts);
-        recyclerViewAdapter.notifyDataSetChanged();
-        mRecyclerView.scrollToPosition(0);
-        showProgressBar(false);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mListOfPosts.clear();
+                mListOfPosts.addAll(allPosts);
+                recyclerViewAdapter.notifyDataSetChanged();
+                mRecyclerView.scrollToPosition(0);
+                showProgressBar(false);
 
-        if (allPosts.size() == 0) showNoResultScreen(true);
-
+                if (allPosts.size() == 0) showNoResultScreen(true);
+            }
+        });
     }
 
     private void showNoResultScreen(boolean show) {
