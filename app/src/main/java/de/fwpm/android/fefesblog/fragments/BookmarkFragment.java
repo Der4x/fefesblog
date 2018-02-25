@@ -72,8 +72,7 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
     public void onResume() {
 
         super.onResume();
-        Log.d(TAG, "onResume: " + this);
-        getData();
+        this.getData();
 
     }
 
@@ -84,7 +83,6 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
     @Override
     public void onResumeFragment() {
-        Log.d(TAG, "onResumeFragment: " + this);
         this.getData();
     }
 

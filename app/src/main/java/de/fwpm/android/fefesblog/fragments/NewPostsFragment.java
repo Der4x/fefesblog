@@ -43,6 +43,7 @@ import static de.fwpm.android.fefesblog.MainActivity.fab;
 public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
     private static final String TAG = "NewsPostFragment";
+    private static final long FIVE_MINUTES = 5 * 60 * 1000;
 
     private RecyclerView mRecyclerView;
     private NewPostsRecyclerViewAdapter recyclerViewAdapter;
@@ -55,6 +56,8 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
     private Context context;
     private NetworkUtils networkUtils;
+
+    long lastSyncTimestamp;
 
     View view;
 
@@ -92,8 +95,8 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
     public void onResume() {
 
         super.onResume();
-        Log.d(TAG, "onResume: " + this);
-        startSync();
+        if(lastSyncTimestamp == 0 || Math.abs(System.currentTimeMillis() - lastSyncTimestamp) > FIVE_MINUTES) startSync();
+        else this.getData();
 
     }
 
@@ -103,11 +106,12 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
 
     @Override
     public void onResumeFragment() {
-        Log.d(TAG, "onResumeFragment: " + this);
         this.getData();
     }
 
     private void startSync() {
+
+        lastSyncTimestamp = System.currentTimeMillis();
 
         if(networkUtils.isConnectingToInternet()) {
             new DataFetcher(this).execute();
@@ -316,7 +320,5 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle{
         BlogPost headerBlogPost = new BlogPost(firstDate, BlogPost.TYPE_SECTION);
         listWithHeaders.add(headerBlogPost);
     }
-
-
 
 }
