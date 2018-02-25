@@ -130,6 +130,20 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         MenuItem searchItem = menu.findItem(R.id.search);
         searchItem.setVisible(true);
         searchItem.setEnabled(true);
+        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+
+                finish();
+                return true;
+
+            }
+        });
 
         mSearchView = (SearchView) searchItem.getActionView();
         mSearchView.setOnQueryTextListener(this);
@@ -150,8 +164,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         return false;
 
     }
-
-
 
     @Override
     public boolean onQueryTextChange(String newText) {
@@ -196,8 +208,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     private void showNoResultScreen(boolean show) {
 
-        if (show) noResultLayout.setVisibility(View.VISIBLE);
-        else noResultLayout.setVisibility(View.GONE);
+        noResultLayout.setVisibility(show ? View.VISIBLE : View.GONE);
 
     }
 

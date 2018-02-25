@@ -269,6 +269,15 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
     private void showWebView() {
 
+        try {
+            Class.forName("android.webkit.WebView")
+                    .getMethod("onResume", (Class[]) null)
+                    .invoke(mWebView, (Object[]) null);
+
+        } catch (Exception e){
+
+        }
+
         mWebContainer.setVisibility(View.VISIBLE);
         mWebContainer.animate()
                 .alpha(1)
@@ -286,6 +295,14 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
                 .setDuration(500);
 
         mWebView.stopLoading();
+        try {
+            Class.forName("android.webkit.WebView")
+                    .getMethod("onPause", (Class[]) null)
+                    .invoke(mWebView, (Object[]) null);
+
+        } catch (Exception e){
+
+        }
 
     }
 
