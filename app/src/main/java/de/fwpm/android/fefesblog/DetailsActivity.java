@@ -39,6 +39,7 @@ import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.utils.CustomQuoteSpan.replaceQuoteSpans;
+import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 public class DetailsActivity extends AppCompatActivity implements Animation.AnimationListener {
 
@@ -66,20 +67,14 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        mWebContainer = (FrameLayout) findViewById(R.id.web_container);
-        mContainer = (FrameLayout) findViewById(R.id.container);
-        mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
-        postContent = (TextView) findViewById(R.id.blogPostText);
         newPostLoaded = false;
         historyList = new ArrayList<>();
         networkUtils = new NetworkUtils(this);
 
+        initView();
+
         initWebView();
 
-        animFadein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
-        animFadein.setAnimationListener(this);
-        animFadeout = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
-        animFadeout.setAnimationListener(this);
 
         final Intent intent = getIntent();
 
@@ -95,44 +90,87 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         }
     }
 
-    private void setContent() {
+    @Override
+    public void onBackPressed() {
 
-        setTitle(new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY).format(blogPost.getDate()));
-        setTextViewHTML(postContent,blogPost.getHtmlText().split("</a>", 2)[1]);
+        if(mWebContainer.getVisibility() == View.VISIBLE) {
+
+            hideWebView();
+
+        } else if(historyList.size() > 0) {
+
+            changeBlogPost(historyList.get(historyList.size() - 1));
+            historyList.remove(historyList.size() - 1);
+            historyList.remove(historyList.size() - 1);
+
+        } else super.onBackPressed();
 
     }
 
-    public void loadPostUrl(final String url) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(url.startsWith("/?ts=")) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if(mWebContainer.getVisibility() == View.VISIBLE) {
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+                    hideWebView();
 
-                    BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl(getString(R.string.basic_url) + url);
+                } else if(historyList.size() > 0) {
 
-                    if(linkPost != null) changeBlogPost(linkPost);
-                    else if(networkUtils.isConnectingToInternet()) {
+                    changeBlogPost(historyList.get(historyList.size() - 1));
+                    historyList.remove(historyList.size() - 1);
+                    historyList.remove(historyList.size() - 1);
 
-                        new SingleDataFetcher(DetailsActivity.this).execute(url);
-                        newPostLoaded = true;
-                        mProgressBar.setVisibility(View.VISIBLE);
+                } else this.finish();
+                break;
+            case R.id.menu_bookmark:
+                blogPost.setBookmarked(!blogPost.isBookmarked());
+                setBookmarkIcon(blogPost.isBookmarked());
 
-                    } else networkUtils.noNetwork(mContainer);
-
-                }
-            }).start();
-
-        } else {
-
-            if(networkUtils.isConnectingToInternet()) {
-                mWebView.loadUrl(url);
-                mProgressBar.setVisibility(View.VISIBLE);
-            }
-            else networkUtils.noNetwork(mContainer);
-
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(newPostLoaded) AppDatabase.getInstance(getBaseContext()).blogPostDao().insertBlogPost(blogPost);
+                        else AppDatabase.getInstance(getBaseContext()).blogPostDao().updateBlogPost(blogPost);
+                    }
+                }).start();
+                break;
+            case R.id.menu_share:
+                sharePost(getApplicationContext(), blogPost);
+                break;
         }
+        return true;
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.detail_menu, menu);
+
+        bookmark_item = menu.findItem(R.id.menu_bookmark);
+        bookmark_item.setIcon(blogPost.isBookmarked() ? R.drawable.ic_bookmark_white_24dp : R.drawable.ic_bookmark_border_white_24dp);
+
+        share_item = menu.findItem(R.id.menu_share);
+        share_item.setIcon(R.drawable.ic_share_white_24dp);
+
+        return true;
+
+    }
+
+    private void initView() {
+
+        mWebContainer = (FrameLayout) findViewById(R.id.web_container);
+        mContainer = (FrameLayout) findViewById(R.id.container);
+        mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
+        postContent = (TextView) findViewById(R.id.blogPostText);
+
+        animFadein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
+        animFadein.setAnimationListener(this);
+        animFadeout = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+        animFadeout.setAnimationListener(this);
+
     }
 
     private void initWebView() {
@@ -192,81 +230,6 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
     }
 
-    @Override
-    public void onBackPressed() {
-
-        if(mWebContainer.getVisibility() == View.VISIBLE) {
-
-            hideWebView();
-
-        } else if(historyList.size() > 0) {
-
-            changeBlogPost(historyList.get(historyList.size() - 1));
-            historyList.remove(historyList.size() - 1);
-            historyList.remove(historyList.size() - 1);
-
-        } else super.onBackPressed();
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if(mWebContainer.getVisibility() == View.VISIBLE) {
-
-                    hideWebView();
-
-                } else if(historyList.size() > 0) {
-
-                    changeBlogPost(historyList.get(historyList.size() - 1));
-                    historyList.remove(historyList.size() - 1);
-                    historyList.remove(historyList.size() - 1);
-
-                } else this.finish();
-                break;
-            case R.id.menu_bookmark:
-                blogPost.setBookmarked(!blogPost.isBookmarked());
-                setBookmarkIcon(blogPost.isBookmarked());
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(newPostLoaded) AppDatabase.getInstance(getBaseContext()).blogPostDao().insertBlogPost(blogPost);
-                        else AppDatabase.getInstance(getBaseContext()).blogPostDao().updateBlogPost(blogPost);
-                    }
-                }).start();
-                break;
-            case R.id.menu_share:
-                String postText = blogPost.getText();
-                String preView = postText.length() > 99 ? postText.substring(4, 100) : postText.substring(4);
-                Intent share = new Intent();
-                share.setAction(Intent.ACTION_SEND);
-                share.putExtra(Intent.EXTRA_TEXT, preView + "...\n\n" + blogPost.getUrl());
-                share.setType("text/plain");
-                startActivity(Intent.createChooser(share, getResources().getText(R.string.share_to)));
-                break;
-        }
-        return true;
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.detail_menu, menu);
-
-        bookmark_item = menu.findItem(R.id.menu_bookmark);
-        bookmark_item.setIcon(blogPost.isBookmarked() ? R.drawable.ic_bookmark_white_24dp : R.drawable.ic_bookmark_border_white_24dp);
-
-        share_item = menu.findItem(R.id.menu_share);
-        share_item.setIcon(R.drawable.ic_share_white_24dp);
-
-        return true;
-
-    }
-
     private void showWebView() {
 
         try {
@@ -304,6 +267,46 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
         }
 
+    }
+
+    private void setContent() {
+
+        setTitle(new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY).format(blogPost.getDate()));
+        setTextViewHTML(postContent,blogPost.getHtmlText().split("</a>", 2)[1]);
+
+    }
+
+    public void loadPostUrl(final String url) {
+
+        if(url.startsWith("/?ts=")) {
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl(getString(R.string.basic_url) + url);
+
+                    if(linkPost != null) changeBlogPost(linkPost);
+                    else if(networkUtils.isConnectingToInternet()) {
+
+                        new SingleDataFetcher(DetailsActivity.this).execute(url);
+                        newPostLoaded = true;
+                        mProgressBar.setVisibility(View.VISIBLE);
+
+                    } else networkUtils.noNetwork(mContainer);
+
+                }
+            }).start();
+
+        } else {
+
+            if(networkUtils.isConnectingToInternet()) {
+                mWebView.loadUrl(url);
+                mProgressBar.setVisibility(View.VISIBLE);
+            }
+            else networkUtils.noNetwork(mContainer);
+
+        }
     }
 
     public void changeBlogPost(final BlogPost _blogPost) {
@@ -391,6 +394,5 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         // TODO Auto-generated method stub
 
     }
-
 
 }
