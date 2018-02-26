@@ -223,7 +223,8 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
             @Override
             public void onPageFinished(WebView view, String url) {
 
-                showWebView();
+//                showWebView();
+                mProgressBar.setVisibility(View.INVISIBLE);
 
             }
         });
@@ -232,21 +233,10 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
     private void showWebView() {
 
-        try {
-            Class.forName("android.webkit.WebView")
-                    .getMethod("onResume", (Class[]) null)
-                    .invoke(mWebView, (Object[]) null);
-
-        } catch (Exception e){
-
-        }
-
         mWebContainer.setVisibility(View.VISIBLE);
         mWebContainer.animate()
                 .alpha(1)
-//                .translationY(0)
                 .setDuration(500);
-        mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     private void hideWebView() {
@@ -254,18 +244,9 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         mWebContainer.setVisibility(View.INVISIBLE);
         mWebContainer.animate()
                 .alpha(0)
-//                .translationY(mWebContainer.getHeight())
                 .setDuration(500);
 
-        mWebView.stopLoading();
-        try {
-            Class.forName("android.webkit.WebView")
-                    .getMethod("onPause", (Class[]) null)
-                    .invoke(mWebView, (Object[]) null);
-
-        } catch (Exception e){
-
-        }
+        mWebView.loadUrl("");
 
     }
 
@@ -303,6 +284,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
             if(networkUtils.isConnectingToInternet()) {
                 mWebView.loadUrl(url);
                 mProgressBar.setVisibility(View.VISIBLE);
+                showWebView();
             }
             else networkUtils.noNetwork(mContainer);
 
