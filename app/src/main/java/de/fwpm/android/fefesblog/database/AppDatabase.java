@@ -42,7 +42,7 @@ public abstract class AppDatabase extends RoomDatabase {
             database.execSQL(
                     "CREATE TABLE episode (nr INTEGER NOT NULL,"
                             + "url TEXT,"
-                            + "date TEXT,"
+                            + "date INTEGER,"
                             + "titel TEXT,"
                             + "file_mp3 TEXT,"
                             + "file_ogg TEXT,"
