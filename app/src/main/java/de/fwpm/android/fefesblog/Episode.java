@@ -1,22 +1,49 @@
 package de.fwpm.android.fefesblog;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 /**
  * Created by alex on 28.02.18.
  */
-
+@Entity
 public class Episode {
 
+    @PrimaryKey
+    @NonNull
     private int nr;
+
+    @ColumnInfo(name = "url")
     private String url;
+
+    @ColumnInfo(name = "date")
     private Date date;
+
+    @ColumnInfo(name = "titel")
     private String titel;
+
+    @ColumnInfo(name = "file_mp3")
     private String file_mp3;
+
+    @ColumnInfo(name = "file_ogg")
     private String file_ogg;
+
+    @ColumnInfo(name = "topic")
+    private String topic;
+
+    @ColumnInfo(name = "linkList")
+    private ArrayList<String> linkList;
+
+    @ColumnInfo(name = "bookList")
+    private ArrayList<String> bookList;
 
     public Episode() {
 
@@ -65,6 +92,10 @@ public class Episode {
 
     }
 
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     public String getFile_mp3() {
         return file_mp3;
     }
@@ -80,4 +111,29 @@ public class Episode {
     public void setFile_ogg(String file_ogg) {
         this.file_ogg = file_ogg;
     }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public ArrayList<String> getLinkList() {
+        return linkList;
+    }
+
+    public void setLinkList(ArrayList<String> linkList) {
+        this.linkList = linkList;
+    }
+
+    public ArrayList<String> getBookList() {
+        return bookList;
+    }
+
+    public void setBookList(ArrayList<String> bookList) {
+        this.bookList = bookList;
+    }
+
 }

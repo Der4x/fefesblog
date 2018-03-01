@@ -53,6 +53,8 @@ public class ALDataFetcher extends AsyncTask<String, Void, Void> {
 
             ArrayList<Episode> allEpisodes = parseALHtml(html);
 
+            appDatabase.episodeDao().insertEpisodeLisr(allEpisodes);
+
             return null;
 
         } catch (IOException e) {

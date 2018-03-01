@@ -61,13 +61,13 @@ public class HtmlParser {
                 for(Element link : links) {
 
                     if(link.text().equals("[l]")) {
-                        String tempurl = link.attr("abs:href");
+//                        String tempurl = link.attr("abs:href");
+//
+//                        if(!tempurl.contains("blog.fefe.de")) {
+//                            tempurl = tempurl.replace("https://", "https://blog.fefe.de/");
+//                        }
 
-                        if(!tempurl.contains("blog.fefe.de")) {
-                            tempurl = tempurl.replace("https://", "https://blog.fefe.de/");
-                        }
-
-                        blogPost.setUrl(tempurl);
+                        blogPost.setUrl(fixUrl(link.attr("abs:href")));
                     } else {
                         postLinks.put(link.text(), link.attr("abs:href"));
                     }
@@ -84,8 +84,16 @@ public class HtmlParser {
 
         }
 
-        if(!search) allPosts.get(allPosts.size()-1).setNextUrl(nextUrl);
+        if(!search) allPosts.get(allPosts.size()-1).setNextUrl(fixUrl(nextUrl));
 
         return allPosts;
     }
+
+    private static String fixUrl(String url) {
+        if(!url.contains("blog.fefe.de")) {
+            return url.replace("https://", "https://blog.fefe.de/");
+        } else return url;
+
+    }
+
 }

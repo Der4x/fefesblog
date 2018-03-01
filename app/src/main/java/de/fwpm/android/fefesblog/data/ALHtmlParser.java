@@ -66,6 +66,64 @@ public class ALHtmlParser {
                         }
                     }
 
+                    Elements elements = episodeDetails.select("h2");
+
+                    for(Element element : elements) {
+
+                        switch (element.text()) {
+
+                            case "Thema":
+                            case "Themen":
+                                newEpisode.setTopic(element.nextElementSibling().toString());
+                                break;
+                            case "Linkliste":
+                                Element nextElement = element.nextElementSibling();
+                                Element nextElement2;
+
+                                if(nextElement.toString().contains("<p>")) {
+
+                                    nextElement2 = nextElement.nextElementSibling();
+                                    nextElement = nextElement2;
+
+                                }
+
+                                Elements linkliste = nextElement.select("ul");
+
+                                if(linkliste != null && linkliste.size() > 0) {
+
+                                    Elements links = linkliste.get(0).children();
+                                    ArrayList<String> linkList = new ArrayList<>();
+
+                                    for (Element linkItem : links) {
+
+                                        linkList.add(linkItem.toString().substring(4));
+
+                                    }
+
+                                    newEpisode.setLinkList(linkList);
+
+                                }
+                                break;
+                            case "Buchtipps":
+                                Elements bookElements = element.nextElementSibling().select("ul");
+
+                                if(bookElements != null && bookElements.size() > 0) {
+
+                                    Elements books = bookElements.get(0).children();
+                                    ArrayList<String> bookList = new ArrayList<>();
+
+                                    for (Element bookItem : books) {
+
+                                        bookList.add(bookItem.toString().substring(4));
+
+                                    }
+                                    newEpisode.setBookList(bookList);
+                                }
+                                break;
+                        }
+
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

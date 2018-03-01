@@ -2,9 +2,12 @@ package de.fwpm.android.fefesblog.database;
 
 import android.arch.persistence.room.TypeConverter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.fwpm.android.fefesblog.Episode;
 
 /**
  * Created by alex on 21.01.18.
@@ -65,5 +68,40 @@ public class Converter {
 
     }
 
+    @TypeConverter
+    public static String fromArrayListToString(ArrayList<String> list) {
+
+        StringBuilder stringList = new StringBuilder();
+
+        if(list != null && list.size() > 0) {
+
+            for (int i = 0; i < list.size(); i++) {
+
+                stringList.append(list.get(i));
+                stringList.append("/;/");
+
+            }
+
+            return stringList.toString();
+
+        } else return "";
+    }
+
+    @TypeConverter
+    public static ArrayList<String> stringToArrayList(String string) {
+
+        if(string != null) {
+
+            ArrayList<String> list = new ArrayList<>();
+            String[] items = string.split("/;/");
+
+            for (int i = 0; i < items.length; i++) {
+                list.add(items[i]);
+            }
+            return list;
+
+        } else return null;
+
+    }
 
 }

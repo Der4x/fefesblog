@@ -21,6 +21,7 @@ import android.widget.Toast;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import de.fwpm.android.fefesblog.BlogPost;
@@ -278,9 +279,26 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         int counter = mListWithHeaders.size() - 1;
         while (nextUrl.equals("")) {
 
+            String nextMonthurl = mListWithHeaders.get(counter).getNextUrl();
+
             try {
                 if (mListWithHeaders.get(counter).getNextUrl() != null) {
-                    nextUrl = mListWithHeaders.get(counter).getNextUrl();
+
+                    SimpleDateFormat fmt = new SimpleDateFormat("yyyyMM");
+
+                    Date before = fmt.parse(nextMonthurl.substring(nextMonthurl.length() - 6));
+
+                    Date lastdate = mListWithHeaders.get(counter).getDate();
+
+                    if(before.after((lastdate))) {
+
+                        Calendar nextMonth = Calendar.getInstance();
+                        nextMonth.setTimeInMillis(before.getTime());
+                        nextMonth.add(Calendar.MONTH, -1);
+                        nextUrl = "https://blog.fefe.de//?mon=" + fmt.format(nextMonth.getTime());
+
+                    } else nextUrl = mListWithHeaders.get(counter).getNextUrl();
+
                 }
             } catch (Exception e) {
                 Toast.makeText(context, "Fehler 101", Toast.LENGTH_SHORT).show();
