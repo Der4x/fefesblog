@@ -27,8 +27,8 @@ public class Episode {
     @ColumnInfo(name = "date")
     private Date date;
 
-    @ColumnInfo(name = "titel")
-    private String titel;
+    @ColumnInfo(name = "title")
+    private String title;
 
     @ColumnInfo(name = "file_mp3")
     private String file_mp3;
@@ -65,12 +65,12 @@ public class Episode {
         this.url = url;
     }
 
-    public String getTitel() {
-        return titel;
+    public String getTitle() {
+        return title;
     }
 
-    public void setTitel(String titel) {
-        this.titel = titel;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Date getDate() {

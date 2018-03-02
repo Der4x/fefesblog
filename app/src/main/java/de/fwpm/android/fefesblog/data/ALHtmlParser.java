@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog.data;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,10 +15,6 @@ import java.util.HashMap;
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.Episode;
 
-/**
- * Created by alex on 19.01.18.
- */
-
 public class ALHtmlParser {
 
     private static final String TAG = "ALHTMLPARSER";
@@ -25,11 +22,14 @@ public class ALHtmlParser {
     private SharedPreferences mPrefs;
     private SharedPreferences.Editor editor;
 
-    public static ArrayList<Episode> parseALHtml(Document doc) {
+    public static ArrayList<Episode> parseALHtml(Document doc, int oldSize) {
 
         ArrayList<Episode> allEpisodes = new ArrayList<>();
 
         Elements listOfEpisodes = doc.select("body > ul").first().children();
+        
+        if(listOfEpisodes.size() == oldSize + 1) return null;
+        Log.d(TAG, "parseALHtml: parse new Episodes");
 
         for (Element episode : listOfEpisodes) {
 
@@ -47,7 +47,7 @@ public class ALHtmlParser {
 
                 newEpisode.setDate(link.text().split(" vom ")[1]);
                 newEpisode.setUrl(link.attr("abs:href"));
-                newEpisode.setTitel(episode.text());
+                newEpisode.setTitle(episode.text());
 
                 try {
 

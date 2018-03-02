@@ -265,7 +265,8 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
             @Override
             public void run() {
 
-                mRecyclerView.invalidateItemDecorations();
+                //TODO: Test for "same-date-bug"
+                mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration());
                 recyclerViewAdapter.notifyDataSetChanged();
 
                 setRefresh(false);

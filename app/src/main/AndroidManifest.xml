@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
@@ -27,6 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".SearchActivity"
             android:configChanges="orientation"
@@ -36,6 +38,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.fwpm.android.fefesblog.MainActivity" />
         </activity>
+
+        <activity
+            android:name=".DetailsActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".AlternativlosActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"/>
 
         <service
             android:name=".backgroundsync.SyncJobScheduler"
@@ -54,15 +70,6 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".DetailsActivity"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".AlternativlosActivity"></activity>
     </application>
 
 </manifest>

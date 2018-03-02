@@ -25,5 +25,6 @@
     <string name="pref_update_seq_summary">Ausführung der Hintergrundupdates im angegeben Intervall.</string>
     <string name="no_network">Kein Internet!</string>
     <string name="basic_url">https://blog.fefe.de</string>
+    <string name="alternativlos">Alternativlos</string>
 
 </resources>
