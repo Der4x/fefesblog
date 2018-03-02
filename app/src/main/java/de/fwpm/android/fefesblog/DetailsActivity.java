@@ -56,8 +56,10 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
     private WebView mWebView;
     private ProgressBar mProgressBar;
     private boolean newPostLoaded;
+    private boolean direktClick;
     private ArrayList<BlogPost> historyList;
     private NetworkUtils networkUtils;
+    private String mCurrentUrl;
 
     Animation animFadein;
     Animation animFadeout;
@@ -85,7 +87,10 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
             setContent();
 
-            if(intent.hasExtra(INTENT_URL)) loadPostUrl(intent.getStringExtra(INTENT_URL));
+            if(intent.hasExtra(INTENT_URL)) {
+                direktClick = true;
+                loadPostUrl(intent.getStringExtra(INTENT_URL));
+            }
 
         }
     }
@@ -93,9 +98,14 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
     @Override
     public void onBackPressed() {
 
-        if(mWebContainer.getVisibility() == View.VISIBLE) {
+        if(direktClick && !mWebView.canGoBack()) {
 
-            hideWebView();
+            finish();
+
+        } else if(mWebContainer.getVisibility() == View.VISIBLE) {
+
+            if(mWebView.canGoBack()) mWebView.goBack();
+            else hideWebView();
 
         } else if(historyList.size() > 0) {
 
@@ -112,9 +122,15 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(mWebContainer.getVisibility() == View.VISIBLE) {
 
-                    hideWebView();
+                if(direktClick && !mWebView.canGoBack()) {
+
+                    finish();
+
+                } else if(mWebContainer.getVisibility() == View.VISIBLE) {
+
+                    if(mWebView.canGoBack()) mWebView.goBack();
+                    else hideWebView();
 
                 } else if(historyList.size() > 0) {
 
@@ -124,6 +140,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
                 } else this.finish();
                 break;
+
             case R.id.menu_bookmark:
                 blogPost.setBookmarked(!blogPost.isBookmarked());
                 setBookmarkIcon(blogPost.isBookmarked());
@@ -181,7 +198,8 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         mWebView.getSettings().setLoadWithOverviewMode(true);
         mWebView.getSettings().setUseWideViewPort(true);
         mWebView.getSettings().setSupportZoom(true);
-        mWebView.getSettings().setBuiltInZoomControls(false);
+        mWebView.getSettings().setBuiltInZoomControls(true);
+        mWebView.getSettings().setDisplayZoomControls(false);
         mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         mWebView.getSettings().setDomStorageEnabled(true);
@@ -209,7 +227,18 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-                view.loadUrl(url);
+                if(mCurrentUrl != null && url != null && url.equals(mCurrentUrl)) {
+
+                    onBackPressed();
+
+                } else {
+                    view.loadUrl(url);
+                    mCurrentUrl = url;
+                    mProgressBar.setVisibility(View.VISIBLE);
+                }
+
+
+//                view.loadUrl(url);
                 return true;
 
             }
@@ -223,7 +252,6 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
             @Override
             public void onPageFinished(WebView view, String url) {
 
-//                showWebView();
                 mProgressBar.setVisibility(View.INVISIBLE);
 
             }
