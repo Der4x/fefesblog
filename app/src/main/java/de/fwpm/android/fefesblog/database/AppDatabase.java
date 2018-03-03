@@ -43,7 +43,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     "CREATE TABLE episode (nr INTEGER NOT NULL,"
                             + "url TEXT,"
                             + "date INTEGER,"
-                            + "titel TEXT,"
+                            + "title TEXT,"
                             + "file_mp3 TEXT,"
                             + "file_ogg TEXT,"
                             + "topic TEXT,"
