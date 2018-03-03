@@ -38,6 +38,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     Context mContext;
     static OnItemClickListener mListener;
     OnBottomReachListener mOnBottomReachListener;
+    private static ArrayList<Integer> expandedItems;
 
 
     public NewPostsRecyclerViewAdapter(Context context, final OnItemClickListener listener, final OnBottomReachListener onBottomReachListener ,final ArrayList<BlogPost> data) {
@@ -47,6 +48,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         mListener = listener;
         mOnBottomReachListener = onBottomReachListener;
         MAX_LINES = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(SettingFragment.PREVIEW_SIZE, 6);
+        expandedItems = new ArrayList<>();
 
     }
 
@@ -181,7 +183,8 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
             setTextViewHTML(mContent, blogPost.getHtmlText().split("</a>", 2)[1]);
             setBanner(blogPost);
-            closeContent();
+            if(expandedItems.contains(position)) expandContent();
+            else closeContent();
             setBookmarkIcon(blogPost.isBookmarked());
 
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -233,9 +236,11 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
                     if(mContent.getMaxLines() == MAX_LINES) {
                         expandContent();
+                        expandedItems.add(position);
                     } else {
                         closeContent();
                         jumpToPosition((position == 0) ? 0 : position-1);
+                        expandedItems.remove((Integer) position);
                     }
 
                 }

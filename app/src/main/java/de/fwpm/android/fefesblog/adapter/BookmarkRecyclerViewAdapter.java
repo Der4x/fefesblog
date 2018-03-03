@@ -37,6 +37,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
     private ArrayList<BlogPost> mData;
     private Context mContext;
     private OnItemClickListener mListener;
+    private static ArrayList<Integer> expandedItems;
 
     public BookmarkRecyclerViewAdapter(Context context, final OnItemClickListener listener, final ArrayList<BlogPost> data) {
 
@@ -44,6 +45,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         mData = data;
         mListener = listener;
         MAX_LINES = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(SettingFragment.PREVIEW_SIZE, 6);
+        expandedItems = new ArrayList<>();
 
     }
 
@@ -99,7 +101,8 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final BlogPost blogPost = mData.get(position);
 
-        closeContent(holder);
+        if(expandedItems.contains(position)) expandContent(holder);
+        else closeContent(holder);
 
         setBookmarkIcon(holder, blogPost);
 
@@ -164,9 +167,11 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
 
                 if (holder.mContent.getMaxLines() == MAX_LINES) {
                     expandContent(holder);
+                    expandedItems.add(position);
                 } else {
                     closeContent(holder);
                     jumpToPosition((position == 0) ? 0 : position - 1);
+                    expandedItems.remove((Integer) position);
                 }
 
             }
