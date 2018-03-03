@@ -1,11 +1,16 @@
 package de.fwpm.android.fefesblog;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
@@ -53,12 +58,13 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
     private MenuItem share_item;
 
     private FrameLayout mWebContainer;
-    private FrameLayout mContainer;
+    private CoordinatorLayout mContainer;
     private WebView mWebView;
     private ProgressBar mProgressBar;
     private boolean newPostLoaded;
     private boolean direktClick;
     private boolean clearWebViewHistory;
+    private boolean titleClickable;
     private ArrayList<BlogPost> historyList;
     private NetworkUtils networkUtils;
     private String mCurrentUrl;
@@ -70,6 +76,23 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(titleClickable) {
+
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("link", mWebView.getUrl());
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(getApplicationContext(), "URL in Zwischenablage gespeichert", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
+
 
         newPostLoaded = false;
         historyList = new ArrayList<>();
@@ -89,7 +112,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
             setContent();
 
-            if(intent.hasExtra(INTENT_URL)) {
+            if (intent.hasExtra(INTENT_URL)) {
                 direktClick = true;
                 loadPostUrl(intent.getStringExtra(INTENT_URL));
             }
@@ -100,16 +123,17 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
     @Override
     public void onBackPressed() {
 
-        if(direktClick && !mWebView.canGoBack()) {
+        if (direktClick && !mWebView.canGoBack()) {
 
+            hideWebView();
             finish();
 
-        } else if(mWebContainer.getVisibility() == View.VISIBLE) {
+        } else if (mWebContainer.getVisibility() == View.VISIBLE) {
 
-            if(mWebView.canGoBack()) goBackInWebView(); //mWebView.goBack();
+            if (mWebView.canGoBack()) goBackInWebView(); //mWebView.goBack();
             else hideWebView();
 
-        } else if(historyList.size() > 0) {
+        } else if (historyList.size() > 0) {
 
             changeBlogPost(historyList.get(historyList.size() - 1));
             historyList.remove(historyList.size() - 1);
@@ -122,19 +146,20 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
         switch (item.getItemId()) {
             case android.R.id.home:
 
-                if(direktClick && !mWebView.canGoBack()) {
+                if (direktClick && !mWebView.canGoBack()) {
 
                     finish();
 
-                } else if(mWebContainer.getVisibility() == View.VISIBLE) {
+                } else if (mWebContainer.getVisibility() == View.VISIBLE) {
 
-                    if(mWebView.canGoBack()) goBackInWebView();// mWebView.goBack();
+                    if (mWebView.canGoBack()) goBackInWebView();// mWebView.goBack();
                     else hideWebView();
 
-                } else if(historyList.size() > 0) {
+                } else if (historyList.size() > 0) {
 
                     changeBlogPost(historyList.get(historyList.size() - 1));
                     historyList.remove(historyList.size() - 1);
@@ -150,8 +175,10 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if(newPostLoaded) AppDatabase.getInstance(getBaseContext()).blogPostDao().insertBlogPost(blogPost);
-                        else AppDatabase.getInstance(getBaseContext()).blogPostDao().updateBlogPost(blogPost);
+                        if (newPostLoaded)
+                            AppDatabase.getInstance(getBaseContext()).blogPostDao().insertBlogPost(blogPost);
+                        else
+                            AppDatabase.getInstance(getBaseContext()).blogPostDao().updateBlogPost(blogPost);
                     }
                 }).start();
                 break;
@@ -181,7 +208,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
     private void initView() {
 
         mWebContainer = (FrameLayout) findViewById(R.id.web_container);
-        mContainer = (FrameLayout) findViewById(R.id.container);
+        mContainer = (CoordinatorLayout) findViewById(R.id.container);
         mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
         postContent = (TextView) findViewById(R.id.blogPostText);
 
@@ -229,7 +256,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-                if(mCurrentUrl != null && url.equals(mCurrentUrl)) {
+                if (mCurrentUrl != null && url.equals(mCurrentUrl)) {
 
                     onBackPressed();
 
@@ -247,6 +274,11 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
+                if (!url.equals("about:blank")) {
+                    setTitle(url.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", ""));
+                    titleClickable = true;
+                }
+
             }
 
 
@@ -255,7 +287,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
                 showProgressBar(false);
 
-                if(clearWebViewHistory) {
+                if (clearWebViewHistory) {
                     mWebView.clearHistory();
                     clearWebViewHistory = false;
                 }
@@ -275,6 +307,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
     private void hideWebView() {
 
+        setContent();
         mWebContainer.setVisibility(View.INVISIBLE);
         mWebContainer.animate()
                 .alpha(0)
@@ -289,13 +322,14 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
     private void setContent() {
 
         setTitle(new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY).format(blogPost.getDate()));
-        setTextViewHTML(postContent,blogPost.getHtmlText().split("</a>", 2)[1]);
+        setTextViewHTML(postContent, blogPost.getHtmlText().split("</a>", 2)[1]);
+        titleClickable = false;
 
     }
 
     public void loadPostUrl(final String url) {
 
-        if(url.startsWith("/?ts=")) {
+        if (url.startsWith("/?ts=")) {
 
             new Thread(new Runnable() {
                 @Override
@@ -303,8 +337,8 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
                     BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl(getString(R.string.basic_url) + url);
 
-                    if(linkPost != null) changeBlogPost(linkPost);
-                    else if(networkUtils.isConnectingToInternet()) {
+                    if (linkPost != null) changeBlogPost(linkPost);
+                    else if (networkUtils.isConnectingToInternet()) {
 
                         new SingleDataFetcher(DetailsActivity.this).execute(url);
                         newPostLoaded = true;
@@ -317,12 +351,11 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
         } else {
 
-            if(networkUtils.isConnectingToInternet()) {
+            if (networkUtils.isConnectingToInternet()) {
                 mWebView.loadUrl(url);
                 showProgressBar(true);
                 showWebView();
-            }
-            else networkUtils.noNetwork(mContainer);
+            } else networkUtils.noNetwork(mContainer);
 
         }
     }
@@ -365,7 +398,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
-        for(URLSpan span : urls) {
+        for (URLSpan span : urls) {
             makeLinkClickable(strBuilder, span);
         }
         replaceQuoteSpans(strBuilder);
@@ -376,7 +409,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
     private void setBookmarkIcon(boolean isBookmarked) {
 
-        if(bookmark_item != null) {
+        if (bookmark_item != null) {
             if (isBookmarked) bookmark_item.setIcon(R.drawable.ic_bookmark_white_24dp);
             else bookmark_item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
 
@@ -402,7 +435,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
         } else if (animation == animFadeout) {
 
-            if(postContent.getVisibility() == View.INVISIBLE) {
+            if (postContent.getVisibility() == View.INVISIBLE) {
                 setContent();
                 postContent.setVisibility(View.VISIBLE);
                 postContent.startAnimation(animFadein);
@@ -424,7 +457,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
     }
 
-    public void goBackInWebView(){
+    public void goBackInWebView() {
         WebBackForwardList history = mWebView.copyBackForwardList();
         int index = -1;
         String url = null;
@@ -433,10 +466,10 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
             if (!history.getItemAtIndex(history.getCurrentIndex() + index).getUrl().equals("about:blank")) {
                 mWebView.goBackOrForward(index);
                 url = history.getItemAtIndex(-index).getUrl();
-                Log.e("tag","first non empty" + url);
+                Log.e("tag", "first non empty" + url);
                 break;
             }
-            index --;
+            index--;
 
         }
         // no history found that is not empty
