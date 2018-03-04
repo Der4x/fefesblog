@@ -26,5 +26,6 @@
     <string name="no_network">Kein Internet!</string>
     <string name="basic_url">https://blog.fefe.de</string>
     <string name="alternativlos">Alternativlos</string>
+    <string name="title_activity_episode">EpisodeActivity</string>
 
 </resources>

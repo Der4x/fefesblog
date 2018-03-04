@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import de.fwpm.android.fefesblog.adapter.EpisodeRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.data.ALDataFetcher;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+
+import static de.fwpm.android.fefesblog.EpisodeActivity.INTENT_NR;
 
 public class AlternativlosActivity extends AppCompatActivity {
 
@@ -82,6 +85,10 @@ public class AlternativlosActivity extends AppCompatActivity {
 
                     @Override
                     public void onItemClick(int position, Episode episode) {
+
+                        Intent intent  = new Intent(mContext, EpisodeActivity.class);
+                        intent.putExtra(INTENT_NR, episode.getNr());
+                        startActivity(intent);
 
                     }
 
