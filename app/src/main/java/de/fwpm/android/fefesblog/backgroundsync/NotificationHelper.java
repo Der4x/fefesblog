@@ -104,20 +104,10 @@ public class NotificationHelper {
             mChannel.enableLights(true);
             mChannel.setLightColor(Color.BLUE);
             mChannel.enableVibration(true);
-            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300});
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500});
             mNotificationManager.createNotificationChannel(mChannel);
         }
 
     }
-
-    String[] testdata = new String[]{
-            "Das Pentagon hat eine metrische Tonne Rumsfeld-Memos veröffentlicht. Einige davon sind ganz interessant. (Danke, Markus) ",
-//                "Kurze Durchsage von CDU-Generalsekretär Peter Tauber: Konkret soll Tauber in einer",
-//                "Benutzt hier jemand 7-zip? Um RAR oder ZIP auszupacken? ",
-//                "NSA deletes \"honesty\" and \"openness\" from core values. Für mehr Ehrlichkeit in der Werbung! ",
-//                "Für mehr Ehrlichkeit in der Werbung! ",
-//                "Es gibt jetzt komplett durchsichtige Fingerabdrucksensoren. (Danke, Michael) ",
-//                "Habt ihr mitgekriegt, dass Erdogan im Dezember den Griechen mitgeteilt hatte, der Vertrag von Lausanne "
-    };
 
 }
