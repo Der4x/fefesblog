@@ -56,6 +56,7 @@ public class CustomTextView {
         }
         replaceQuoteSpans(strBuilder);
         text.setText(trimTrailingWhitespace(strBuilder));
+//        text.setMovementMethod(LinkMovementMethod.getInstance());
         text.setMovementMethod(LinkMovementMethod.getInstance());
 
     }

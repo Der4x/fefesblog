@@ -26,11 +26,11 @@ public class SharePostUtil {
 
     }
 
-    public static void shareLink(Context context, String url) {
+    public static void shareLink(Context context, String url, String title) {
 
         Intent share = new Intent();
         share.setAction(Intent.ACTION_SEND);
-        share.putExtra(Intent.EXTRA_TEXT, url);
+        share.putExtra(Intent.EXTRA_TEXT, title + "\n\n" + url);
         share.setType("text/plain");
         context.startActivity(Intent.createChooser(share, context.getResources().getText(R.string.share_link)));
 

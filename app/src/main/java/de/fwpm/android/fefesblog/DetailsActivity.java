@@ -21,14 +21,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.Layout;
+import android.text.Selection;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
+import android.text.method.Touch;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -52,6 +57,7 @@ import java.util.Locale;
 
 import de.fwpm.android.fefesblog.data.SingleDataFetcher;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.utils.CustomMovementMethod;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.utils.CustomQuoteSpan.replaceQuoteSpans;
@@ -81,9 +87,14 @@ public class DetailsActivity extends AppCompatActivity {
     private String mCurrentUrl;
     private Context context;
     private String downloadUrl;
+    private DownloadManager dm;
+    private long enq;
 
     Animation animFadein;
     Animation animFadeout;
+
+    Animation animSlideDown;
+    Animation animSlideUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,13 +134,13 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if (direktClick && !mWebView.canGoBack()) {
+        if (direktClick && !mWebView.canGoBack() && historyList.size() <= 1) {
 
             finish();
 
         } else if (mWebContainer.getVisibility() == View.VISIBLE) {
 
-            if (mWebView.canGoBack()) goBackInWebView(); //mWebView.goBack();
+            if (mWebView.canGoBack()) goBackInWebView();
             else hideWebView();
 
         } else if (historyList.size() > 0) {
@@ -148,13 +159,13 @@ public class DetailsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
 
-                if (direktClick && !mWebView.canGoBack()) {
+                if (direktClick && !mWebView.canGoBack() && historyList.size() <= 1) {
 
                     finish();
 
                 } else if (mWebContainer.getVisibility() == View.VISIBLE) {
 
-                    if (mWebView.canGoBack()) goBackInWebView();// mWebView.goBack();
+                    if (mWebView.canGoBack()) goBackInWebView();
                     else hideWebView();
 
                 } else if (historyList.size() > 0) {
@@ -182,7 +193,7 @@ public class DetailsActivity extends AppCompatActivity {
                 break;
             case R.id.menu_share:
                 if (mWebContainer.getVisibility() == View.VISIBLE)
-                    shareLink(context, mWebView.getUrl());
+                    shareLink(context, mWebView.getUrl(), mWebView.getTitle());
                 else
                     sharePost(context, blogPost);
                 break;
@@ -267,6 +278,12 @@ public class DetailsActivity extends AppCompatActivity {
         animFadein.setAnimationListener(animationListener);
         animFadeout = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
         animFadeout.setAnimationListener(animationListener);
+
+
+        animSlideDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
+        animSlideDown.setAnimationListener(animationListener);
+        animSlideUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_up);
+        animSlideUp.setAnimationListener(animationListener);
 
     }
 
@@ -359,12 +376,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
-    DownloadManager dm;
-    long enq;
-
     private void downloadContent(String url) {
-
-
 
         String[] splitUrl = url.split("/");
         String filename = splitUrl[splitUrl.length-1];
@@ -382,9 +394,10 @@ public class DetailsActivity extends AppCompatActivity {
     private void showWebView() {
 
         mWebContainer.setVisibility(View.VISIBLE);
-        mWebContainer.animate()
-                .alpha(1)
-                .setDuration(500);
+        if(!direktClick) mWebContainer.startAnimation(animSlideUp);
+//        mWebContainer.animate()
+//                .alpha(1)
+//                .setDuration(500);
         clearWebViewHistory = true;
         if(bookmark_item != null) bookmark_item.setVisible(false);
 
@@ -395,9 +408,10 @@ public class DetailsActivity extends AppCompatActivity {
         if(bookmark_item != null) bookmark_item.setVisible(true);
         setContent();
         mWebContainer.setVisibility(View.INVISIBLE);
-        mWebContainer.animate()
-                .alpha(0)
-                .setDuration(500);
+        mWebContainer.startAnimation(animSlideDown);
+//        mWebContainer.animate()
+//                .alpha(0)
+//                .setDuration(500);
 
         clearWebViewHistory = true;
         mWebView.loadUrl("");
@@ -490,7 +504,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
         replaceQuoteSpans(strBuilder);
         text.setText(strBuilder);
-        text.setMovementMethod(LinkMovementMethod.getInstance());
+        text.setMovementMethod(new CustomMovementMethod());
 
     }
 
@@ -610,6 +624,4 @@ public class DetailsActivity extends AppCompatActivity {
             }
         }
     };
-
-
 }
