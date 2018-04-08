@@ -164,6 +164,8 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
             public void run() {
 
                 recyclerViewAdapter.notifyDataSetChanged();
+                if(mList.isEmpty()) showNoBookmarkScreen(true);
+                else showNoBookmarkScreen(false);
 
             }
         });
@@ -174,6 +176,12 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
         smoothScroller.setTargetPosition(position);
         mLayoutManager.startSmoothScroll(smoothScroller);
+
+    }
+
+    private void showNoBookmarkScreen(boolean show) {
+
+        ((LinearLayout) view.findViewById(R.id.noBookmarkScreen)).setVisibility(show ? View.VISIBLE : View.GONE);
 
     }
 

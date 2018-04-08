@@ -265,7 +265,6 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
             @Override
             public void run() {
 
-                mRecyclerView.invalidateItemDecorations();
                 recyclerViewAdapter.notifyDataSetChanged();
 
                 setRefresh(false);
@@ -319,6 +318,19 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
     private void addHeader(ArrayList<BlogPost> listWithHeaders, Date firstDate) {
         listWithHeaders.add(new BlogPost(firstDate, BlogPost.TYPE_SECTION));
+    }
+
+    public void error(final String message) {
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setRefresh(false);
+                Toast.makeText(context, "Fehler beim Laden neuer Posts: " + message, Toast.LENGTH_LONG).show();
+
+            }
+        });
+
     }
 
 }
