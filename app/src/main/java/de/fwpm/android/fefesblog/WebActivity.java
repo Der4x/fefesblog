@@ -140,26 +140,17 @@ public class WebActivity extends AppCompatActivity {
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setDisplayZoomControls(false);
 
+        mWebView.getSettings().setLoadWithOverviewMode(true);
+        mWebView.getSettings().setUseWideViewPort(true);
+        mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+
         CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView, false);
-
-//        mWebView.getSettings().setLoadWithOverviewMode(true);
-//        mWebView.getSettings().setUseWideViewPort(true);
-//
-//        mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-//        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-//
-//        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-//        mWebView.setScrollbarFadingEnabled(true);
-//        mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-
 
         mWebView.setDownloadListener(new DownloadListener() {
             @Override
             public void onDownloadStart(String url, String userAgent,
                                         String contentDisposition, String mimetype,
                                         long contentLength) {
-
-//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 
                 if (haveStoragePermission()) {
                     downloadContent(url);
@@ -170,7 +161,6 @@ public class WebActivity extends AppCompatActivity {
 
             }
         });
-
 
         mWebView.setWebViewClient(new WebViewClient() {
 
@@ -186,9 +176,7 @@ public class WebActivity extends AppCompatActivity {
                     mCurrentUrl = url;
 
                 }
-
                 return true;
-
             }
 
             @Override
@@ -261,7 +249,6 @@ public class WebActivity extends AppCompatActivity {
             index--;
 
         }
-        // no history found that is not empty
         if (url == null) {
             this.finish();
         }
