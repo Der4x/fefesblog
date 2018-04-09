@@ -27,6 +27,8 @@ import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
+import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
+
 public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
     private static final String TAG = "SearchActivity";
@@ -84,13 +86,17 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 new SearchRecyclerViewAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position, BlogPost blogPost) {
-                        Log.d(TAG, "onItemClick" + position);
-                        Intent intent = new Intent(SearchActivity.this, DetailsActivity.class);
-                        intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                        Intent intent;
+
                         if (CustomTextView.clickedLink != null) {
-                            intent.putExtra("CLICKED_LINK", CustomTextView.clickedLink);
+                            intent = new Intent(SearchActivity.this, WebActivity.class);
+                            intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
                             CustomTextView.clickedLink = null;
+                        } else {
+                            intent = new Intent(SearchActivity.this, DetailsActivity.class);
+                            intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
                         }
+
                         startActivity(intent);
                     }
                 },

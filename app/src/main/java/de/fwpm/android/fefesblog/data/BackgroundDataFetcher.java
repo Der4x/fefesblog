@@ -106,16 +106,11 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
             }
 
         }
-
-
-        Log.d(TAG, "doInBackground: " + postsCounter + ", " + updateCounter);
         return true;
     }
 
     @Override
     protected void onPostExecute(Boolean success) {
-
-        Log.d(TAG, "onPostExecute: ");
         super.onPostExecute(success);
 
     }

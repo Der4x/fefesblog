@@ -2,6 +2,7 @@ package de.fwpm.android.fefesblog;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -57,6 +58,7 @@ public class BlogPost implements Serializable {
 
     }
 
+    @Ignore
     public BlogPost(Date date, int type) {
 
         this.date = date;

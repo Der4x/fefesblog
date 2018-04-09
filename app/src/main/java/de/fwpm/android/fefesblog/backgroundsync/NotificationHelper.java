@@ -25,7 +25,6 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 public class NotificationHelper {
 
     public static final String CHANNEL_ID = "fefes_blog";
-    public static final String NOTIFICATION_GROUP = "fefes_blog";
     public static final int NOTIFICATION_ID = 5353;
 
     public static PendingIntent getResultPendingIntent(Context context) {

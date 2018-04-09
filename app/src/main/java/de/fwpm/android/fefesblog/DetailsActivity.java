@@ -38,6 +38,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
@@ -69,32 +70,24 @@ public class DetailsActivity extends AppCompatActivity {
     private static final String TAG = "DetailActivity";
     public static final String INTENT_BLOG_POST = "blogPost";
     public static final String INTENT_URL = "CLICKED_LINK";
+
     private BlogPost blogPost;
     private TextView postContent;
     private MenuItem bookmark_item;
     private MenuItem share_item;
 
-    private FrameLayout mWebContainer;
     private CoordinatorLayout mContainer;
-    private WebView mWebView;
     private ProgressBar mProgressBar;
     private boolean newPostLoaded;
-    private boolean direktClick;
-    private boolean clearWebViewHistory;
-    private boolean titleClickable;
+
     private ArrayList<BlogPost> historyList;
     private NetworkUtils networkUtils;
-    private String mCurrentUrl;
+
     private Context context;
-    private String downloadUrl;
-    private DownloadManager dm;
-    private long enq;
 
     Animation animFadein;
     Animation animFadeout;
 
-    Animation animSlideDown;
-    Animation animSlideUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,9 +103,6 @@ public class DetailsActivity extends AppCompatActivity {
 
         initView();
 
-        initWebView();
-
-
         final Intent intent = getIntent();
 
         Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
@@ -122,11 +112,6 @@ public class DetailsActivity extends AppCompatActivity {
 
             setContent();
 
-            if (intent.hasExtra(INTENT_URL)) {
-                direktClick = true;
-                loadPostUrl(intent.getStringExtra(INTENT_URL));
-            }
-
         }
     }
 
@@ -134,16 +119,7 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if (direktClick && !mWebView.canGoBack() && historyList.size() <= 1) {
-
-            finish();
-
-        } else if (mWebContainer.getVisibility() == View.VISIBLE) {
-
-            if (mWebView.canGoBack()) goBackInWebView();
-            else hideWebView();
-
-        } else if (historyList.size() > 0) {
+        if (historyList.size() > 0) {
 
             changeBlogPost(historyList.get(historyList.size() - 1));
             historyList.remove(historyList.size() - 1);
@@ -159,16 +135,7 @@ public class DetailsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
 
-                if (direktClick && !mWebView.canGoBack() && historyList.size() <= 1) {
-
-                    finish();
-
-                } else if (mWebContainer.getVisibility() == View.VISIBLE) {
-
-                    if (mWebView.canGoBack()) goBackInWebView();
-                    else hideWebView();
-
-                } else if (historyList.size() > 0) {
+                if (historyList.size() > 0) {
 
                     changeBlogPost(historyList.get(historyList.size() - 1));
                     historyList.remove(historyList.size() - 1);
@@ -192,10 +159,7 @@ public class DetailsActivity extends AppCompatActivity {
                 }).start();
                 break;
             case R.id.menu_share:
-                if (mWebContainer.getVisibility() == View.VISIBLE)
-                    shareLink(context, mWebView.getUrl(), mWebView.getTitle());
-                else
-                    sharePost(context, blogPost);
+                sharePost(context, blogPost);
                 break;
         }
         return true;
@@ -213,8 +177,6 @@ public class DetailsActivity extends AppCompatActivity {
         share_item = menu.findItem(R.id.menu_share);
         share_item.setIcon(R.drawable.ic_share_white_24dp);
 
-        if(mWebContainer != null && mWebContainer.getVisibility() == View.VISIBLE) bookmark_item.setVisible(false);
-
         return true;
 
     }
@@ -223,24 +185,11 @@ public class DetailsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (titleClickable) {
 
-                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("link", mWebView.getUrl());
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(context, "URL in Zwischenablage gespeichert", Toast.LENGTH_LONG).show();
-
-                }
-            }
-        });
     }
 
     private void initView() {
 
-        mWebContainer = (FrameLayout) findViewById(R.id.web_container);
         mContainer = (CoordinatorLayout) findViewById(R.id.container);
         mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
         postContent = (TextView) findViewById(R.id.blogPostText);
@@ -279,144 +228,6 @@ public class DetailsActivity extends AppCompatActivity {
         animFadeout = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
         animFadeout.setAnimationListener(animationListener);
 
-
-        animSlideDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
-        animSlideDown.setAnimationListener(animationListener);
-        animSlideUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_up);
-        animSlideUp.setAnimationListener(animationListener);
-
-    }
-
-    private void initWebView() {
-
-        mWebView = (WebView) findViewById(R.id.webview);
-        mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setLoadWithOverviewMode(true);
-        mWebView.getSettings().setUseWideViewPort(true);
-        mWebView.getSettings().setSupportZoom(true);
-        mWebView.getSettings().setBuiltInZoomControls(true);
-        mWebView.getSettings().setDisplayZoomControls(false);
-        mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        mWebView.getSettings().setDomStorageEnabled(true);
-        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        mWebView.setScrollbarFadingEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        } else {
-            mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
-
-        mWebView.setDownloadListener(new DownloadListener() {
-            @Override
-            public void onDownloadStart(String url, String userAgent,
-                                        String contentDisposition, String mimetype,
-                                        long contentLength) {
-
-//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-
-                if(haveStoragePermission()) {
-                    downloadContent(url);
-                } else {
-                    downloadUrl = url;
-                    requestForStoragePermission();
-                }
-
-            }
-        });
-
-
-        mWebView.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
-                if (mCurrentUrl != null && url.equals(mCurrentUrl)) {
-
-                    onBackPressed();
-
-                } else {
-                    view.loadUrl(url);
-                    mCurrentUrl = url;
-                    showProgressBar(true);
-
-                }
-
-                return true;
-
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-
-                if (!url.equals("about:blank")) {
-                    getSupportActionBar().setTitle("Laden...");
-                    getSupportActionBar().setSubtitle(view.getUrl());
-                    titleClickable = true;
-                }
-
-            }
-
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-
-                showProgressBar(false);
-                if (!url.equals("about:blank") && mWebContainer.getVisibility() == View.VISIBLE) {
-                    getSupportActionBar().setTitle(view.getTitle());
-                    getSupportActionBar().setSubtitle(view.getUrl());
-                }
-                if (clearWebViewHistory) {
-                    mWebView.clearHistory();
-                    clearWebViewHistory = false;
-                }
-            }
-        });
-
-    }
-
-    private void downloadContent(String url) {
-
-        String[] splitUrl = url.split("/");
-        String filename = splitUrl[splitUrl.length-1];
-
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.allowScanningByMediaScanner();
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
-        dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-        registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-        enq = dm.enqueue(request);
-        Toast.makeText(getApplicationContext(), "Downloading File", Toast.LENGTH_LONG).show();
-    }
-
-    private void showWebView() {
-
-        mWebContainer.setVisibility(View.VISIBLE);
-        if(!direktClick) mWebContainer.startAnimation(animSlideUp);
-//        mWebContainer.animate()
-//                .alpha(1)
-//                .setDuration(500);
-        clearWebViewHistory = true;
-        if(bookmark_item != null) bookmark_item.setVisible(false);
-
-    }
-
-    private void hideWebView() {
-
-        if(bookmark_item != null) bookmark_item.setVisible(true);
-        setContent();
-        mWebContainer.setVisibility(View.INVISIBLE);
-        mWebContainer.startAnimation(animSlideDown);
-//        mWebContainer.animate()
-//                .alpha(0)
-//                .setDuration(500);
-
-        clearWebViewHistory = true;
-        mWebView.loadUrl("");
-        mCurrentUrl = "";
-
     }
 
     private void setContent() {
@@ -424,7 +235,6 @@ public class DetailsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY).format(blogPost.getDate()));
         getSupportActionBar().setSubtitle("");
         setTextViewHTML(postContent, blogPost.getHtmlText().split("</a>", 2)[1]);
-        titleClickable = false;
 
     }
 
@@ -453,9 +263,9 @@ public class DetailsActivity extends AppCompatActivity {
         } else {
 
             if (networkUtils.isConnectingToInternet()) {
-                mWebView.loadUrl(url);
-                showProgressBar(true);
-                showWebView();
+                Intent intent = new Intent(this, WebActivity.class);
+                intent.putExtra(INTENT_URL, url);
+                startActivity(intent);
             } else networkUtils.noNetwork(mContainer);
 
         }
@@ -523,105 +333,10 @@ public class DetailsActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mProgressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+                mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
 
     }
 
-    public void goBackInWebView() {
-        WebBackForwardList history = mWebView.copyBackForwardList();
-        int index = -1;
-        String url = null;
-
-        while (mWebView.canGoBackOrForward(index)) {
-            if (!history.getItemAtIndex(history.getCurrentIndex() + index).getUrl().equals("about:blank")) {
-                mWebView.goBackOrForward(index);
-                url = history.getItemAtIndex(-index).getUrl();
-                Log.e("tag", "first non empty" + url);
-                break;
-            }
-            index--;
-
-        }
-        // no history found that is not empty
-        if (url == null) {
-            Log.d(TAG, "goBackInWebView: no history found that is not empty");
-            hideWebView();
-        }
-    }
-
-    private boolean haveStoragePermission() {
-
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void requestForStoragePermission() {
-        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-
-    }
-
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-
-        switch (requestCode) {
-            case 1: {
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    downloadContent(downloadUrl);
-
-                } else {
-
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl)));
-
-                }
-                return;
-            }
-        }
-    }
-
-    BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-                DownloadManager.Query query = new DownloadManager.Query();
-                query.setFilterById(enq);
-                Cursor c = dm.query(query);
-                if (c.moveToFirst()) {
-                    int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                    if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
-                        String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-
-                        if (uriString.substring(0, 7).matches("file://")) {
-                            uriString =  uriString.substring(7);
-                        }
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            File file=new File(uriString);
-                            Uri uri = FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".provider", file);
-                            intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setData(uri);
-                            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            startActivity(intent);
-                        } else {
-                            intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setDataAndType(Uri.parse(uriString), "application/pdf");
-                            intent = Intent.createChooser(intent, "Open File");
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                        }
-
-                        onBackPressed();
-
-                    }
-                }
-            }
-        }
-    };
 }

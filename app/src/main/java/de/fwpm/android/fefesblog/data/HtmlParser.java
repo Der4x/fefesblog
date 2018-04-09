@@ -28,7 +28,7 @@ public class HtmlParser {
 
         Elements dates = doc.select("h3");
 
-        Elements listsOfPosts = doc.select("body > ul"); //select("ul"); -> Der Bug war richtig fies!!
+        Elements listsOfPosts = doc.select("body > ul");
 
         Elements div = doc.select("body > div");
         String nextUrl = new String();
@@ -43,7 +43,7 @@ public class HtmlParser {
 
         for(Element listOfPosts : listsOfPosts) {
 
-            Elements posts = listOfPosts.children();//select("li");
+            Elements posts = listOfPosts.children();
 
             for (Element post : posts) {
 
@@ -80,7 +80,6 @@ public class HtmlParser {
             }
 
             counter++;
-//            if(counter == dates.size()) return allPosts;
 
         }
 

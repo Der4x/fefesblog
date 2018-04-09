@@ -24,10 +24,12 @@ import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
+import de.fwpm.android.fefesblog.WebActivity;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 
+import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
@@ -119,12 +121,17 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
                     @Override
                     public void onItemClick(int position, BlogPost blogPost) {
 
-                        Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                        intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
-                        if(CustomTextView.clickedLink != null) {
-                            intent.putExtra("CLICKED_LINK", CustomTextView.clickedLink);
+                        Intent intent;
+
+                        if (CustomTextView.clickedLink != null) {
+                            intent = new Intent(getActivity(), WebActivity.class);
+                            intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
                             CustomTextView.clickedLink = null;
+                        } else {
+                            intent = new Intent(getActivity(), DetailsActivity.class);
+                            intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
                         }
+
                         startActivity(intent);
 
                     }

@@ -26,6 +26,7 @@ import java.util.Date;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
+import de.fwpm.android.fefesblog.WebActivity;
 import de.fwpm.android.fefesblog.data.DataFetcher;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
@@ -195,12 +196,17 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                         }
 
-                        Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                        intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                        Intent intent;
+
                         if (CustomTextView.clickedLink != null) {
+                            intent = new Intent(getActivity(), WebActivity.class);
                             intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
                             CustomTextView.clickedLink = null;
+                        } else {
+                            intent = new Intent(getActivity(), DetailsActivity.class);
+                            intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
                         }
+
                         startActivity(intent);
 
                     }
@@ -266,7 +272,6 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
             public void run() {
 
                 recyclerViewAdapter.notifyDataSetChanged();
-
                 setRefresh(false);
             }
         });
@@ -289,7 +294,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                     Date lastdate = mListWithHeaders.get(counter).getDate();
 
-                    if(before.after((lastdate))) {
+                    if (before.after((lastdate))) {
 
                         Calendar nextMonth = Calendar.getInstance();
                         nextMonth.setTimeInMillis(before.getTime());
