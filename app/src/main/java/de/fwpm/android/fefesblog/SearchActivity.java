@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -92,12 +93,15 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                             intent = new Intent(SearchActivity.this, WebActivity.class);
                             intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
                             CustomTextView.clickedLink = null;
+                            if (networkUtils.isConnectingToInternet()) startActivity(intent);
+                            else networkUtils.noNetwork(mContainer);
                         } else {
                             intent = new Intent(SearchActivity.this, DetailsActivity.class);
                             intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                            startActivity(intent);
                         }
 
-                        startActivity(intent);
+
                     }
                 },
                 mListOfPosts);

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import java.io.Serializable;
@@ -28,6 +29,7 @@ import de.fwpm.android.fefesblog.WebActivity;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
+import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
@@ -127,12 +129,15 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
                             intent = new Intent(getActivity(), WebActivity.class);
                             intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
                             CustomTextView.clickedLink = null;
+                            if (new NetworkUtils(getContext()).isConnectingToInternet()) startActivity(intent);
+                            else new NetworkUtils(getContext()).noNetwork((FrameLayout) view.findViewById(R.id.bookmarkFragment));
                         } else {
                             intent = new Intent(getActivity(), DetailsActivity.class);
                             intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                            startActivity(intent);
                         }
 
-                        startActivity(intent);
+
 
                     }
 

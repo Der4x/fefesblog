@@ -73,6 +73,18 @@ public class WebActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mWebView.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mWebView.onResume();
+    }
+
+    @Override
     public void onBackPressed() {
 
         if (mWebView.canGoBack()) goBackInWebView();

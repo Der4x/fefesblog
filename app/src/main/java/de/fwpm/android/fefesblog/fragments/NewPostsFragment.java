@@ -202,12 +202,13 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
                             intent = new Intent(getActivity(), WebActivity.class);
                             intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
                             CustomTextView.clickedLink = null;
+                            if (networkUtils.isConnectingToInternet()) startActivity(intent);
+                            else networkUtils.noNetwork(mNewPostSwipeRefresh);
                         } else {
                             intent = new Intent(getActivity(), DetailsActivity.class);
                             intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                            startActivity(intent);
                         }
-
-                        startActivity(intent);
 
                     }
 
