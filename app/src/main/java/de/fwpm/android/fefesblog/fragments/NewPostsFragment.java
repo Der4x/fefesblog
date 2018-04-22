@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +39,7 @@ import de.fwpm.android.fefesblog.database.AppDatabase;
 import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.MainActivity.FIRST_START;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
+import static de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter.expandedItems;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 /**
@@ -52,7 +54,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
     private RecyclerView mRecyclerView;
     private NewPostsRecyclerViewAdapter recyclerViewAdapter;
     private SwipeRefreshLayout mNewPostSwipeRefresh;
-    private static RecyclerView.LayoutManager mLayoutManager;
+    private static LinearLayoutManager mLayoutManager;
     private static RecyclerView.SmoothScroller smoothScroller;
 
     private ArrayList<BlogPost> mListWithHeaders;
@@ -62,6 +64,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
     private NetworkUtils networkUtils;
 
     long lastSyncTimestamp;
+    boolean newPosts;
 
     View view;
 
@@ -134,8 +137,10 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                 ArrayList<BlogPost> data = (ArrayList<BlogPost>) AppDatabase.getInstance(context).blogPostDao().getAllPosts();
 
-                if (mListWithHeaders == null) mListWithHeaders = new ArrayList<>();
-                else mListWithHeaders.clear();
+                if(mListWithHeaders.size() > 1 && !data.get(0).getUrl().equals(mListWithHeaders.get(1).getUrl()))
+                    newPosts = true;
+
+                mListWithHeaders.clear();
 
                 Date firstDate = data.get(0).getDate();
                 addHeader(mListWithHeaders, firstDate);
@@ -156,7 +161,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                     }
                 }
-                updateUI();
+                updateUI(newPosts);
 
             }
         }).start();
@@ -266,7 +271,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         getData();
     }
 
-    private void updateUI() {
+    private void updateUI(final boolean newPosts) {
 
         mHandler.post(new Runnable() {
             @Override
@@ -274,6 +279,22 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                 recyclerViewAdapter.notifyDataSetChanged();
                 setRefresh(false);
+
+                if(newPosts && mLayoutManager.findFirstVisibleItemPosition() > 0) {
+
+                    expandedItems.clear();
+                    Snackbar bar = Snackbar.make(mNewPostSwipeRefresh, "Neue Posts", Snackbar.LENGTH_LONG)
+                            .setAction("ANZEIGEN", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                   jumpToPosition(0);
+                                }
+                            });
+
+                    bar.show();
+
+                }
+
             }
         });
     }

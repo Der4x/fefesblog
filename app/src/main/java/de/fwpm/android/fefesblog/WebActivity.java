@@ -66,6 +66,9 @@ public class WebActivity extends AppCompatActivity {
         initWebView();
 
         String url = getIntent().getStringExtra(INTENT_URL);
+
+        if(url.startsWith("//ptrace.fefe.de")) url = "https:" + url;
+
         mWebView.loadUrl(url);
 
         context = this;
@@ -312,6 +315,10 @@ public class WebActivity extends AppCompatActivity {
                 return;
             }
         }
+    }
+
+    public static void clearCookies() {
+        CookieManager.getInstance().removeAllCookies(null);
     }
 
     BroadcastReceiver receiver = new BroadcastReceiver() {

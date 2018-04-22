@@ -47,6 +47,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -198,9 +199,7 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onAnimationStart(Animation animation) {
 
-                if (animation == animFadein) {
-
-                } else if (animation == animFadeout) {
+                if (animation == animFadeout) {
 
                     if (postContent.getVisibility() == View.INVISIBLE) {
                         setContent();
@@ -214,6 +213,9 @@ public class DetailsActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
+
+                if (animation == animFadein)
+                    ((ScrollView) findViewById(R.id.scrollView)).scrollTo(0,0);
 
             }
 
