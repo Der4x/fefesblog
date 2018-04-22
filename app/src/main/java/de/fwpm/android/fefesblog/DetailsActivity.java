@@ -73,6 +73,7 @@ public class DetailsActivity extends AppCompatActivity {
     public static final String INTENT_URL = "CLICKED_LINK";
 
     private BlogPost blogPost;
+    private String clickedUrl;
     private TextView postContent;
     private MenuItem bookmark_item;
     private MenuItem share_item;
@@ -106,12 +107,14 @@ public class DetailsActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
 
+        clickedUrl = intent.getStringExtra(INTENT_URL);
+
         Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
         if (extra instanceof BlogPost) {
 
             blogPost = (BlogPost) extra;
-
-            setContent();
+            if(clickedUrl == null) setContent();
+            else loadPostUrl(clickedUrl);
 
         }
     }
@@ -282,7 +285,9 @@ public class DetailsActivity extends AppCompatActivity {
                 postContent.setVisibility(View.INVISIBLE);
                 postContent.startAnimation(animFadeout);
 
-                historyList.add(blogPost);
+                if (clickedUrl == null) historyList.add(blogPost);
+                else clickedUrl = null;
+
                 blogPost = _blogPost;
                 setBookmarkIcon(blogPost.isBookmarked());
                 showProgressBar(false);
