@@ -12,7 +12,7 @@ import de.fwpm.android.fefesblog.BlogPost;
  * Created by alex on 21.01.18.
  */
 
-@Database(entities = {BlogPost.class}, version = 1)
+@Database(entities = {BlogPost.class}, version = 1, exportSchema = false)
 @TypeConverters({Converter.class})
 public abstract class AppDatabase extends RoomDatabase {
 

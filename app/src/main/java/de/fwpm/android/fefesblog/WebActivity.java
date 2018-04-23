@@ -127,6 +127,7 @@ public class WebActivity extends AppCompatActivity {
     }
 
     private void initToolbar() {
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -188,7 +189,6 @@ public class WebActivity extends AppCompatActivity {
 
                 } else {
                     view.loadUrl(url);
-                    mCurrentUrl = url;
 
                 }
                 return true;
@@ -207,6 +207,8 @@ public class WebActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+
+                mCurrentUrl = url;
 
                 if (!url.equals("about:blank")) {
                     getSupportActionBar().setTitle(view.getTitle());
@@ -315,6 +317,26 @@ public class WebActivity extends AppCompatActivity {
                 return;
             }
         }
+    }
+
+    private void openInApp(String url, String packageName) {
+
+        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        viewIntent.setPackage(packageName);
+        startActivity(viewIntent);
+        this.finish();
+
+    }
+
+    private boolean isAppInstalled(String packageName) {
+        PackageManager packageManager = getPackageManager();
+        try {
+            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+
+        }
+        return false;
     }
 
     public static void clearCookies() {

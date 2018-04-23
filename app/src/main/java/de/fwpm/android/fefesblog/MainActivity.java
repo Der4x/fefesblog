@@ -47,9 +47,7 @@ public class MainActivity extends AppCompatActivity {
             scheduleJob(this);
 
         }
-
-        clearCookies();
-
+        
     }
 
     @Override

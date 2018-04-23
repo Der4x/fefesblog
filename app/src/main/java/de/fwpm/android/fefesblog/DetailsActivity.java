@@ -63,6 +63,7 @@ import de.fwpm.android.fefesblog.utils.CustomMovementMethod;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.utils.CustomQuoteSpan.replaceQuoteSpans;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.shareLink;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
@@ -267,11 +268,8 @@ public class DetailsActivity extends AppCompatActivity {
 
         } else {
 
-            if (networkUtils.isConnectingToInternet()) {
-                Intent intent = new Intent(this, WebActivity.class);
-                intent.putExtra(INTENT_URL, url);
-                startActivity(intent);
-            } else networkUtils.noNetwork(mContainer);
+            if(!handleClickedLink(this, blogPost, url))
+                networkUtils.noNetwork(mContainer);
 
         }
     }

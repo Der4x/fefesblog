@@ -29,6 +29,7 @@ import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
 
 public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
@@ -90,11 +91,13 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                         Intent intent;
 
                         if (CustomTextView.clickedLink != null) {
-                            intent = new Intent(SearchActivity.this, WebActivity.class);
-                            intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
+
+                            if(!handleClickedLink(SearchActivity.this, blogPost, CustomTextView.clickedLink)) {
+                                networkUtils.noNetwork(mContainer);
+                            }
+
                             CustomTextView.clickedLink = null;
-                            if (networkUtils.isConnectingToInternet()) startActivity(intent);
-                            else networkUtils.noNetwork(mContainer);
+
                         } else {
                             intent = new Intent(SearchActivity.this, DetailsActivity.class);
                             intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);

@@ -40,6 +40,7 @@ import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.MainActivity.FIRST_START;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
 import static de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter.expandedItems;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 /**
@@ -188,6 +189,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
                 new NewPostsRecyclerViewAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position, final BlogPost blogPost) {
+
                         if (blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
 
                             blogPost.setUpdate(false);
@@ -201,34 +203,23 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                         }
 
-                        Intent intent;
-
 
 
                         if (CustomTextView.clickedLink != null) {
 
-                            if (CustomTextView.clickedLink.startsWith("/?ts=")) {
-
-                                intent = new Intent(getActivity(), DetailsActivity.class);
-                                intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
-                                intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
-                                startActivity(intent);
-
-                            } else {
-
-                                intent = new Intent(getActivity(), WebActivity.class);
-                                intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
-                                if (networkUtils.isConnectingToInternet()) startActivity(intent);
-                                else networkUtils.noNetwork(mNewPostSwipeRefresh);
-
+                            if(!handleClickedLink(getActivity(), blogPost, CustomTextView.clickedLink)) {
+                                networkUtils.noNetwork(mNewPostSwipeRefresh);
                             }
 
                             CustomTextView.clickedLink = null;
 
                         } else {
+
+                            Intent intent;
                             intent = new Intent(getActivity(), DetailsActivity.class);
                             intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
                             startActivity(intent);
+
                         }
 
                     }

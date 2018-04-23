@@ -33,6 +33,7 @@ import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 /**
@@ -126,11 +127,13 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
                         Intent intent;
 
                         if (CustomTextView.clickedLink != null) {
-                            intent = new Intent(getActivity(), WebActivity.class);
-                            intent.putExtra(INTENT_URL, CustomTextView.clickedLink);
+
+                            if(!handleClickedLink(getActivity(), blogPost, CustomTextView.clickedLink)) {
+                                new NetworkUtils(getContext()).noNetwork((FrameLayout) view.findViewById(R.id.bookmarkFragment));
+                            }
+
                             CustomTextView.clickedLink = null;
-                            if (new NetworkUtils(getContext()).isConnectingToInternet()) startActivity(intent);
-                            else new NetworkUtils(getContext()).noNetwork((FrameLayout) view.findViewById(R.id.bookmarkFragment));
+
                         } else {
                             intent = new Intent(getActivity(), DetailsActivity.class);
                             intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
