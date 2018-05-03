@@ -71,15 +71,17 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
                     post.setBookmarked(oldEntry.isBookmarked());
                     post.setHasBeenRead(oldEntry.isHasBeenRead());
 
-                    if (!oldEntry.getText().equals(post.getText())) {
+                    if (!oldEntry.getText().equals(post.getText()) && post.getText().contains("Update")) {
 
                         post.setUpdate(true);
                         updateCounter++;
+
                     } else post.setUpdate(oldEntry.isUpdate());
 
                 } else {
+
                     postsCounter++;
-                    newPosts.append(post.getText().length() > 99 ? post.getText().substring(4, 100) : post.getText().substring(4));
+                    newPosts.append(post.getText().length() > 199 ? post.getText().substring(4, 200) + "..." : post.getText().substring(4));
                     newPosts.append("/;/");
 
                 }
@@ -100,9 +102,9 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
                 intent.putExtra("Update", updateCounter);
                 intent.putExtra("NewPosts", newPosts.toString());
                 mContext.sendBroadcast(intent);
+
             } else {
                 Log.d(TAG, "Notifications are not allowed");
-
             }
 
         }

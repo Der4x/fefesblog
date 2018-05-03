@@ -18,10 +18,9 @@ import android.view.View;
 import de.fwpm.android.fefesblog.adapter.StartScreenPagerAdapter;
 import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
 
-import static de.fwpm.android.fefesblog.WebActivity.clearCookies;
+import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
 import static de.fwpm.android.fefesblog.fragments.BookmarkFragment.jump_To_Position;
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
-import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             scheduleJob(this);
 
         }
-        
+
     }
 
     @Override

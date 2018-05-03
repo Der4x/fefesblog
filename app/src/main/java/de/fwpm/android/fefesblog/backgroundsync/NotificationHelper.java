@@ -83,7 +83,10 @@ public class NotificationHelper {
                 .setContentIntent(getResultPendingIntent(context))
                 .setAutoCancel(true);
 
-        if(newPosts != null && newPosts.length > 0) builder.setStyle(inboxStyle);
+        if(newPosts != null && newPosts.length == 1)
+            builder.setStyle(new NotificationCompat.BigTextStyle().bigText(newPosts[0]));
+        else if(newPosts != null && newPosts.length > 0)
+            builder.setStyle(inboxStyle);
 
         return builder;
 

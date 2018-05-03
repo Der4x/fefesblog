@@ -162,7 +162,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                     }
                 }
-                updateUI(newPosts);
+                updateUI();
 
             }
         }).start();
@@ -278,7 +278,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         getData();
     }
 
-    private void updateUI(final boolean newPosts) {
+    private void updateUI() {
 
         mHandler.post(new Runnable() {
             @Override
@@ -290,6 +290,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
                 if(newPosts && mLayoutManager.findFirstVisibleItemPosition() > 0) {
 
                     expandedItems.clear();
+                    newPosts = false;
                     Snackbar bar = Snackbar.make(mNewPostSwipeRefresh, "Neue Posts", Snackbar.LENGTH_LONG)
                             .setAction("ANZEIGEN", new View.OnClickListener() {
                                 @Override
