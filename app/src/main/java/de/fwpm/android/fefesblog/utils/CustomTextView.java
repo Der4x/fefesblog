@@ -105,7 +105,7 @@ public class CustomTextView {
 
         }
 
-        if (url.startsWith("/?ts=")) {
+        if (url.startsWith("/?ts=") || url.startsWith("https://blog.fefe.de/?ts=")) {
 
             intent = new Intent(activity, DetailsActivity.class);
             intent.putExtra(INTENT_URL, url);

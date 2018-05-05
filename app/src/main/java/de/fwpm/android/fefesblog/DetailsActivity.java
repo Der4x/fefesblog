@@ -248,23 +248,11 @@ public class DetailsActivity extends AppCompatActivity {
 
         if (url.startsWith("/?ts=")) {
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+            getPostFromUrl(getString(R.string.basic_url) + url);
 
-                    BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl(getString(R.string.basic_url) + url);
+        } else if (url.startsWith("https://blog.fefe.de/?ts=")) {
 
-                    if (linkPost != null) changeBlogPost(linkPost);
-                    else if (networkUtils.isConnectingToInternet()) {
-
-                        new SingleDataFetcher(DetailsActivity.this).execute(url);
-                        newPostLoaded = true;
-                        showProgressBar(true);
-
-                    } else networkUtils.noNetwork(mContainer);
-
-                }
-            }).start();
+            getPostFromUrl(url);
 
         } else {
 
@@ -272,6 +260,27 @@ public class DetailsActivity extends AppCompatActivity {
                 networkUtils.noNetwork(mContainer);
 
         }
+    }
+
+    private void getPostFromUrl(final String url) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl(url);
+
+                if (linkPost != null) changeBlogPost(linkPost);
+                else if (networkUtils.isConnectingToInternet()) {
+
+                    new SingleDataFetcher(DetailsActivity.this).execute(url);
+                    newPostLoaded = true;
+                    showProgressBar(true);
+
+                } else networkUtils.noNetwork(mContainer);
+
+            }
+        }).start();
     }
 
     public void changeBlogPost(final BlogPost _blogPost) {
