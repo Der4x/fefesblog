@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
@@ -89,7 +90,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
         initView();
 
-        if (firstStart) mPrefs.edit().putBoolean(FIRST_START, false).commit();
+        if (firstStart) mPrefs.edit().putBoolean(FIRST_START, false).apply();
         else this.getData();
 
         return view;
@@ -108,6 +109,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
     @Override
     public void onPauseFragment() {
+
     }
 
     @Override
@@ -146,7 +148,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
                 Date firstDate = data.get(0).getDate();
                 addHeader(mListWithHeaders, firstDate);
 
-                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd", Locale.GERMANY);
 
                 for (BlogPost blogPost : data) {
 
@@ -170,7 +172,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
     private void initView() {
 
-        mNewPostSwipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.new_posts_swipe_refresh);
+        mNewPostSwipeRefresh = view.findViewById(R.id.new_posts_swipe_refresh);
         mNewPostSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -178,57 +180,29 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
             }
         });
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.newpost_recyclerview);
+        mRecyclerView = view.findViewById(R.id.newpost_recyclerview);
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        initAdapter();
+
+    }
+
+    private void initAdapter() {
 
         recyclerViewAdapter
                 = new NewPostsRecyclerViewAdapter(getContext(),
                 new NewPostsRecyclerViewAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position, final BlogPost blogPost) {
-
-                        if (blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
-
-                            blogPost.setUpdate(false);
-                            blogPost.setHasBeenRead(true);
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    AppDatabase.getInstance(context).blogPostDao().updateBlogPost(blogPost);
-                                }
-                            }).start();
-
-                        }
-
-
-
-                        if (CustomTextView.clickedLink != null) {
-
-                            if(!handleClickedLink(getActivity(), blogPost, CustomTextView.clickedLink)) {
-                                networkUtils.noNetwork(mNewPostSwipeRefresh);
-                            }
-
-                            CustomTextView.clickedLink = null;
-
-                        } else {
-
-                            Intent intent;
-                            intent = new Intent(getActivity(), DetailsActivity.class);
-                            intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
-                            startActivity(intent);
-
-                        }
-
+                        handlePostClick(blogPost);
                     }
 
                     @Override
                     public void onShareClick(int position, BlogPost blogPost) {
-
                         sharePost(context, blogPost);
-
                     }
                 },
                 new NewPostsRecyclerViewAdapter.OnBottomReachListener() {
@@ -260,7 +234,38 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
             }
 
         });
+    }
 
+    private void handlePostClick(final BlogPost blogPost) {
+        if (blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
+
+            blogPost.setUpdate(false);
+            blogPost.setHasBeenRead(true);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    AppDatabase.getInstance(context).blogPostDao().updateBlogPost(blogPost);
+                }
+            }).start();
+
+        }
+
+        if (CustomTextView.clickedLink != null) {
+
+            if(!handleClickedLink(getActivity(), blogPost, CustomTextView.clickedLink)) {
+                networkUtils.noNetwork(mNewPostSwipeRefresh);
+            }
+
+            CustomTextView.clickedLink = null;
+
+        } else {
+
+            Intent intent;
+            intent = new Intent(getActivity(), DetailsActivity.class);
+            intent.putExtra(DetailsActivity.INTENT_BLOG_POST, blogPost);
+            startActivity(intent);
+
+        }
     }
 
     public static void jumpToPosition(int position) {
@@ -284,7 +289,14 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
             @Override
             public void run() {
 
-                recyclerViewAdapter.notifyDataSetChanged();
+                if(mLayoutManager.findFirstVisibleItemPosition() == 0 && newPosts) {
+
+                    initAdapter();
+
+                } else {
+                    recyclerViewAdapter.notifyDataSetChanged();
+                }
+
                 setRefresh(false);
 
                 if(newPosts && mLayoutManager.findFirstVisibleItemPosition() > 0) {
@@ -309,7 +321,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
     private void loadMoreData() {
 
-        String nextUrl = new String();
+        String nextUrl = "";
         int counter = mListWithHeaders.size() - 1;
         while (nextUrl.equals("")) {
 
@@ -318,7 +330,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
             try {
                 if (mListWithHeaders.get(counter).getNextUrl() != null) {
 
-                    SimpleDateFormat fmt = new SimpleDateFormat("yyyyMM");
+                    SimpleDateFormat fmt = new SimpleDateFormat("yyyyMM", Locale.GERMANY);
 
                     Date before = fmt.parse(nextMonthurl.substring(nextMonthurl.length() - 6));
 
