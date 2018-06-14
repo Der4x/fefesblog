@@ -28,6 +28,7 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
 
     private static final String TAG = "SYNC";
     private static final String BASIC_URL = "https://blog.fefe.de/";
+    private static final int TEXT_LENGTH = 500;
 
     private Document html;
     private Context mContext;
@@ -81,7 +82,7 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
                 } else {
 
                     postsCounter++;
-                    newPosts.append(post.getText().length() > 199 ? post.getText().substring(4, 200) + "..." : post.getText().substring(4));
+                    newPosts.append(post.getText().length() >= TEXT_LENGTH ? post.getText().substring(4, TEXT_LENGTH) + "..." : post.getText().substring(4));
                     newPosts.append("/;/");
 
                 }

@@ -16,6 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
+            android:value="true" />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
@@ -46,7 +48,7 @@
 
         <receiver
             android:name=".backgroundsync.SyncReceiver"
-            android:enabled="true"></receiver>
+            android:enabled="true"/>
 
         <activity
             android:name=".DetailsActivity"
@@ -70,7 +72,7 @@
 
         <activity android:name=".WebActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

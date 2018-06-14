@@ -64,6 +64,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
     private Context context;
     private NetworkUtils networkUtils;
+    private DataFetcher dataFetcher;
 
     long lastSyncTimestamp;
     boolean newPosts;
@@ -108,6 +109,14 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
     }
 
     @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+        if(dataFetcher != null) dataFetcher.cancel(true);
+
+    }
+
+    @Override
     public void onPauseFragment() {
 
     }
@@ -122,7 +131,8 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         lastSyncTimestamp = System.currentTimeMillis();
 
         if (networkUtils.isConnectingToInternet()) {
-            new DataFetcher(this).execute();
+            dataFetcher = new DataFetcher(this);
+            dataFetcher.execute();
             setRefresh(true);
         } else {
 
@@ -354,7 +364,8 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         }
 
         if (networkUtils.isConnectingToInternet()) {
-            new DataFetcher(this).execute(nextUrl);
+            dataFetcher = new DataFetcher(this);
+            dataFetcher.execute(nextUrl);
             setRefresh(true);
         } else {
             networkUtils.noNetwork(mNewPostSwipeRefresh);

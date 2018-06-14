@@ -3,22 +3,12 @@ package de.fwpm.android.fefesblog.utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.text.Html;
-import android.text.Layout;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.LeadingMarginSpan;
-import android.text.style.LineBackgroundSpan;
-import android.text.style.QuoteSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -28,7 +18,6 @@ import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.WebActivity;
 
-import static android.text.Html.FROM_HTML_OPTION_USE_CSS_COLORS;
 import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.utils.CustomQuoteSpan.replaceQuoteSpans;
 
@@ -131,7 +120,13 @@ public class CustomTextView {
 
         Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         viewIntent.setPackage(packageName);
-        activity.startActivity(viewIntent);
+        try {
+            activity.startActivity(viewIntent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            ex.printStackTrace();
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            activity.startActivity(intent);
+        }
 
     }
 
