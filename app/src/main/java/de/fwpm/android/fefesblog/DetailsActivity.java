@@ -94,6 +94,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (App.getInstance().isNightModeEnabled()) setTheme(R.style.MainActivityThemeDark);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 

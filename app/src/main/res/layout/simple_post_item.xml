@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorSecondaryLight"
     android:animateLayoutChanges="true"
     android:orientation="vertical">
 
@@ -16,7 +15,7 @@
         android:paddingLeft="16dp"
         android:paddingTop="8dp"
         android:animateLayoutChanges="true"
-        android:textColor="@color/colorPrimary"/>
+        android:textColor="?attr/primaryTextColor"/>
 
     <de.fwpm.android.fefesblog.utils.PreventScrollTextView
         android:id="@+id/post_text"
@@ -30,7 +29,7 @@
         android:ellipsize="end"
         android:animateLayoutChanges="true"
         android:lineSpacingExtra="2dp"
-        android:textColor="@color/colorPrimary"
+        android:textColor="?attr/primaryTextColor"
         android:textColorLink="@color/colorAccent"
         android:maxLines="6"/>
 
@@ -46,8 +45,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:backgroundTint="@color/colorSecondaryLight"
-            android:tint="@color/colorSecondaryDark"
+            android:backgroundTint="@android:color/transparent"
+            android:tint="?attr/buttonColor"
             android:src="@drawable/ic_stat_bookmark_border" />
 
         <View
@@ -56,7 +55,7 @@
             android:layout_height="24dp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/bookmark"
-            android:background="#cccccc" />
+            android:background="?attr/buttonColor" />
 
         <ImageButton
             android:id="@+id/share"
@@ -64,8 +63,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/divider"
-            android:backgroundTint="@color/colorSecondaryLight"
-            android:tint="@color/colorSecondaryDark"
+            android:backgroundTint="@android:color/transparent"
+            android:tint="?attr/buttonColor"
             android:src="@drawable/ic_stat_share" />
 
         <ImageButton
@@ -74,8 +73,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:backgroundTint="@color/colorSecondaryLight"
-            android:tint="@color/colorLight"
+            android:backgroundTint="@android:color/transparent"
+            android:tint="?attr/arrowColor"
             android:src="@drawable/ic_stat_keyboard_arrow_down" />
 
     </RelativeLayout>
@@ -83,6 +82,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorLight"/>
+        android:background="?attr/headerBackgroundColor"/>
 
 </LinearLayout>

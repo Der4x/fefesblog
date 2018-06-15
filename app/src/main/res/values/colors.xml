@@ -11,4 +11,9 @@
     <color name="colorSecondaryDark">#b3b3b3</color>
     <color name="colorSecondaryLight">#ffffff</color>
 
+    <color name="darkGray">#737373</color>
+
+    <color name="colorBlackLight">#252525</color>
+    <color name="black">#0a0a0a</color>
+
 </resources>

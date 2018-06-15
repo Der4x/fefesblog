@@ -54,8 +54,16 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
     private static RecyclerView.SmoothScroller smoothScroller;
     private View view;
 
+    private static BookmarkFragment instance;
+
     public BookmarkFragment() {
-        // Required empty public constructor
+        instance = this;
+    }
+
+    public static BookmarkFragment getInstance() {
+        if(instance != null)
+            return instance;
+        else return new BookmarkFragment();
     }
 
     @Override

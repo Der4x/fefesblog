@@ -53,6 +53,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (App.getInstance().isNightModeEnabled()) setTheme(R.style.MainActivityThemeDark);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

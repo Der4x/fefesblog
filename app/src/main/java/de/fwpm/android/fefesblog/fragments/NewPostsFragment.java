@@ -71,8 +71,16 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
     View view;
 
+    private static NewPostsFragment instance;
+
     public NewPostsFragment() {
-        // Required empty public constructor
+        instance = this;
+    }
+
+    public static NewPostsFragment getInstance() {
+
+        if(instance != null) return instance;
+        else return  new NewPostsFragment();
     }
 
     @Override
