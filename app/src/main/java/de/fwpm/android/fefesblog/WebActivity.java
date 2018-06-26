@@ -29,6 +29,7 @@ import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -60,7 +61,7 @@ public class WebActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.MainActivityThemeDark);
+        if (App.getInstance().isNightModeEnabled()) setTheme(R.style.MainActivityThemeDark);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
@@ -163,8 +164,6 @@ public class WebActivity extends AppCompatActivity {
         mWebView.getSettings().setLoadWithOverviewMode(true);
         mWebView.getSettings().setUseWideViewPort(true);
         mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-
-        CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView, false);
 
         mWebView.setDownloadListener(new DownloadListener() {
             @Override
@@ -323,29 +322,6 @@ public class WebActivity extends AppCompatActivity {
         }
     }
 
-    private void openInApp(String url, String packageName) {
-
-        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        viewIntent.setPackage(packageName);
-        startActivity(viewIntent);
-        this.finish();
-
-    }
-
-    private boolean isAppInstalled(String packageName) {
-        PackageManager packageManager = getPackageManager();
-        try {
-            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
-            return true;
-        } catch (PackageManager.NameNotFoundException e) {
-
-        }
-        return false;
-    }
-
-    public static void clearCookies() {
-        CookieManager.getInstance().removeAllCookies(null);
-    }
 
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -371,13 +347,21 @@ public class WebActivity extends AppCompatActivity {
                             intent = new Intent(Intent.ACTION_VIEW);
                             intent.setData(uri);
                             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            startActivity(intent);
+                            try {
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         } else {
                             intent = new Intent(Intent.ACTION_VIEW);
                             intent.setDataAndType(Uri.parse(uriString), "application/pdf");
                             intent = Intent.createChooser(intent, "Open File");
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
+                            try {
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
 
                         onBackPressed();

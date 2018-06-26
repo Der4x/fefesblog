@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/expand"
-            android:textColor="?attr/primaryTextColor"
+            android:textColor="?attr/buttonColor"
             android:paddingRight="8dp"
             android:visibility="gone"
             android:text="Update!" />

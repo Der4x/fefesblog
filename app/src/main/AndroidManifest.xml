@@ -17,8 +17,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
             android:value="true" />
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
@@ -31,15 +33,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".SearchActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/MainActivityThemeLight">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.fwpm.android.fefesblog.MainActivity" />
         </activity>
+
+        <activity android:name=".WebActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainActivityThemeLight"/>
+
+        <activity
+            android:name=".DetailsActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainActivityThemeLight" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".backgroundsync.SyncJobScheduler"
@@ -51,16 +69,6 @@
             android:name=".backgroundsync.SyncReceiver"
             android:enabled="true"/>
 
-        <activity
-            android:name=".DetailsActivity"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait" />
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -71,9 +79,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".WebActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

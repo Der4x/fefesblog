@@ -141,13 +141,15 @@ public class DetailsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
 
-                if (historyList.size() > 0) {
+//                if (historyList.size() > 0) {
+//
+//                    changeBlogPost(historyList.get(historyList.size() - 1));
+//                    historyList.remove(historyList.size() - 1);
+//                    historyList.remove(historyList.size() - 1);
+//
+//                } else
 
-                    changeBlogPost(historyList.get(historyList.size() - 1));
-                    historyList.remove(historyList.size() - 1);
-                    historyList.remove(historyList.size() - 1);
-
-                } else this.finish();
+                this.finish();
                 break;
 
             case R.id.menu_bookmark:
