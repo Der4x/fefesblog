@@ -46,7 +46,7 @@ public class SingleDataFetcher extends AsyncTask<String, Void, Void> {
 
         try {
 
-            html = Jsoup.connect(BASIC_URL + params[0]).get();
+            html = Jsoup.connect(params[0]).get();
 
             ArrayList<BlogPost> allPosts = parseHtml(html, false);
             blogPost = allPosts.get(0);

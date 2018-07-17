@@ -2,12 +2,14 @@ package de.fwpm.android.fefesblog;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -57,6 +59,7 @@ public class BlogPost implements Serializable {
 
     }
 
+    @Ignore
     public BlogPost(Date date, int type) {
 
         this.date = date;
@@ -73,9 +76,24 @@ public class BlogPost implements Serializable {
         try {
 
             Date date = new SimpleDateFormat("EEE MMM d yyyy", Locale.ENGLISH).parse(dateAsString);
-            date.setHours(new Date().getHours());
-            date.setMinutes(new Date().getMinutes());
-            this.date = date;
+
+            Calendar now = Calendar.getInstance();
+            Calendar postDate = Calendar.getInstance();
+            postDate.setTime(date);
+            if(postDate.get(Calendar.DAY_OF_MONTH) != now.get(Calendar.DAY_OF_MONTH)) {
+
+                postDate.set(Calendar.HOUR, 23);
+                postDate.set(Calendar.MINUTE, 59);
+
+            } else {
+
+                postDate.set(Calendar.HOUR, now.get(Calendar.HOUR));
+                postDate.set(Calendar.MINUTE, now.get(Calendar.MINUTE));
+
+            }
+
+            this.date = new Date(postDate.getTimeInMillis());
+
         } catch (ParseException e) {
             e.printStackTrace();
             this.date = null;

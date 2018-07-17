@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-
     <SwitchPreference
         android:key="@string/pref_background_update_key"
         android:title="@string/pref_background_update_title"
@@ -32,7 +31,10 @@
         android:entryValues="@array/pref_preview_size_values"
         android:defaultValue="@string/pref_preview_size_default"/>
 
-
-
+    <SwitchPreference
+        android:key="@string/pref_theme_key"
+        android:title="@string/pref_theme_title"
+        android:summary="@string/pref_theme_text"
+        android:defaultValue="@bool/pref_theme_default"/>
 
 </PreferenceScreen>

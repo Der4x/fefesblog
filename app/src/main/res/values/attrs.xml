@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="FefeAppTheme">
+        <attr name="primaryTextColor" format="color" />
+        <attr name="quoteTextColor" format="color" />
+        <attr name="quoteStripeColor" format="color" />
+        <attr name="headerTextColor" format="color" />
+        <attr name="headerBackgroundColor" format="color" />
+        <attr name="buttonColor" format="color" />
+        <attr name="arrowColor" format="color" />
+
+    </declare-styleable>
+
+</resources>

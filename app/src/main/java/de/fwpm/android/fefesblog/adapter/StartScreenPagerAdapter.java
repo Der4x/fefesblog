@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.fragments.BookmarkFragment;
@@ -13,13 +14,13 @@ import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
  * Created by alex on 20.01.18.
  */
 
-public class StartScreenPagerAdapter extends FragmentPagerAdapter {
+public class StartScreenPagerAdapter extends FragmentStatePagerAdapter {
 
     private static final int PAGE_COUNT = 2;
 
-    NewPostsFragment newPostsFragment = new NewPostsFragment();
+    NewPostsFragment newPostsFragment = NewPostsFragment.getInstance();
 
-    BookmarkFragment bookmarkFragment = new BookmarkFragment();
+    BookmarkFragment bookmarkFragment = BookmarkFragment.getInstance();
 
     Context mContext;
 
@@ -57,5 +58,10 @@ public class StartScreenPagerAdapter extends FragmentPagerAdapter {
             default:
                 return "";
         }
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 }

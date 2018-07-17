@@ -16,7 +16,7 @@ import de.fwpm.android.fefesblog.MainActivity;
  * Created by alex on 21.01.18.
  */
 
-@Database(entities = {BlogPost.class, Episode.class}, version = 2)
+@Database(entities = {BlogPost.class, Episode.class}, version = 2, exportSchema = false)
 @TypeConverters({Converter.class})
 public abstract class AppDatabase extends RoomDatabase {
 

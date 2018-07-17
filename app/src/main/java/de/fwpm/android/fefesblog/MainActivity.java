@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,9 +19,9 @@ import android.view.View;
 import de.fwpm.android.fefesblog.adapter.StartScreenPagerAdapter;
 import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
 
+import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
 import static de.fwpm.android.fefesblog.fragments.BookmarkFragment.jump_To_Position;
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
-import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,11 +31,17 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private StartScreenPagerAdapter adapter;
     public static FloatingActionButton fab;
+    public static boolean themeChanged;
+
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (App.getInstance().isNightModeEnabled()) setTheme(R.style.MainActivityThemeDark);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        context = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -49,9 +56,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public static Context getMainContext() {
+        return context;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+        if(themeChanged) {
+            themeChanged = false;
+            recreate();
+            if (adapter != null) {
+
+                adapter.notifyDataSetChanged();
+
+            }
+        }
 
     }
 
@@ -151,5 +171,8 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
+    public static void setThemeChanged() {
+        themeChanged = true;
+    }
 
 }

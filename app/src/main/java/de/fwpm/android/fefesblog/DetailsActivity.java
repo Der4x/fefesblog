@@ -1,29 +1,44 @@
 package de.fwpm.android.fefesblog;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.Layout;
+import android.text.Selection;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
+import android.text.method.Touch;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
@@ -32,9 +47,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,98 +59,80 @@ import java.util.Locale;
 
 import de.fwpm.android.fefesblog.data.SingleDataFetcher;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.utils.CustomMovementMethod;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.utils.CustomQuoteSpan.replaceQuoteSpans;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
+import static de.fwpm.android.fefesblog.utils.SharePostUtil.shareLink;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
-public class DetailsActivity extends AppCompatActivity implements Animation.AnimationListener {
+public class DetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "DetailActivity";
     public static final String INTENT_BLOG_POST = "blogPost";
     public static final String INTENT_URL = "CLICKED_LINK";
+
     private BlogPost blogPost;
+    private String clickedUrl;
     private TextView postContent;
     private MenuItem bookmark_item;
     private MenuItem share_item;
 
-    private FrameLayout mWebContainer;
     private CoordinatorLayout mContainer;
-    private WebView mWebView;
     private ProgressBar mProgressBar;
     private boolean newPostLoaded;
-    private boolean direktClick;
-    private boolean clearWebViewHistory;
-    private boolean titleClickable;
+
     private ArrayList<BlogPost> historyList;
     private NetworkUtils networkUtils;
-    private String mCurrentUrl;
+
+    private Context context;
 
     Animation animFadein;
     Animation animFadeout;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (App.getInstance().isNightModeEnabled()) setTheme(R.style.MainActivityThemeDark);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(titleClickable) {
 
-                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("link", mWebView.getUrl());
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(getApplicationContext(), "URL in Zwischenablage gespeichert", Toast.LENGTH_LONG).show();
-
-                }
-            }
-        });
-
-
+        context = this;
         newPostLoaded = false;
         historyList = new ArrayList<>();
         networkUtils = new NetworkUtils(this);
 
+        initToolbar();
+
         initView();
-
-        initWebView();
-
 
         final Intent intent = getIntent();
 
-        Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
-        if (extra instanceof BlogPost) {
 
-            blogPost = (BlogPost) extra;
+        if(intent.getData() != null) {
+            //Deep Link
+            clickedUrl = intent.getDataString();
+            loadPostUrl(clickedUrl);
+        }
+        else {
 
-            setContent();
+            clickedUrl = intent.getStringExtra(INTENT_URL);
+            Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
+            if (extra instanceof BlogPost) {
 
-            if (intent.hasExtra(INTENT_URL)) {
-                direktClick = true;
-                loadPostUrl(intent.getStringExtra(INTENT_URL));
+                blogPost = (BlogPost) extra;
+                if(clickedUrl == null) setContent();
+                else loadPostUrl(clickedUrl);
+
             }
-
         }
     }
 
     @Override
     public void onBackPressed() {
 
-        if (direktClick && !mWebView.canGoBack()) {
-
-            hideWebView();
-            finish();
-
-        } else if (mWebContainer.getVisibility() == View.VISIBLE) {
-
-            if (mWebView.canGoBack()) goBackInWebView(); //mWebView.goBack();
-            else hideWebView();
-
-        } else if (historyList.size() > 0) {
+        if (historyList.size() > 0) {
 
             changeBlogPost(historyList.get(historyList.size() - 1));
             historyList.remove(historyList.size() - 1);
@@ -146,26 +145,10 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
         switch (item.getItemId()) {
             case android.R.id.home:
 
-                if (direktClick && !mWebView.canGoBack()) {
-
-                    finish();
-
-                } else if (mWebContainer.getVisibility() == View.VISIBLE) {
-
-                    if (mWebView.canGoBack()) goBackInWebView();// mWebView.goBack();
-                    else hideWebView();
-
-                } else if (historyList.size() > 0) {
-
-                    changeBlogPost(historyList.get(historyList.size() - 1));
-                    historyList.remove(historyList.size() - 1);
-                    historyList.remove(historyList.size() - 1);
-
-                } else this.finish();
+                this.finish();
                 break;
 
             case R.id.menu_bookmark:
@@ -183,7 +166,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
                 }).start();
                 break;
             case R.id.menu_share:
-                sharePost(getApplicationContext(), blogPost);
+                sharePost(context, blogPost);
                 break;
         }
         return true;
@@ -205,125 +188,61 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
     }
 
+    private void initToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    }
+
     private void initView() {
 
-        mWebContainer = (FrameLayout) findViewById(R.id.web_container);
         mContainer = (CoordinatorLayout) findViewById(R.id.container);
         mProgressBar = (ProgressBar) findViewById(R.id.progess_bar);
         postContent = (TextView) findViewById(R.id.blogPostText);
 
+        Animation.AnimationListener animationListener = new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+                if (animation == animFadeout) {
+
+                    if (postContent.getVisibility() == View.INVISIBLE) {
+                        setContent();
+                        postContent.setVisibility(View.VISIBLE);
+                        postContent.startAnimation(animFadein);
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                if (animation == animFadein)
+                    ((ScrollView) findViewById(R.id.scrollView)).scrollTo(0,0);
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        };
+
         animFadein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
-        animFadein.setAnimationListener(this);
+        animFadein.setAnimationListener(animationListener);
         animFadeout = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
-        animFadeout.setAnimationListener(this);
-
-    }
-
-    private void initWebView() {
-
-        mWebView = (WebView) findViewById(R.id.webview);
-        mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setLoadWithOverviewMode(true);
-        mWebView.getSettings().setUseWideViewPort(true);
-        mWebView.getSettings().setSupportZoom(true);
-        mWebView.getSettings().setBuiltInZoomControls(true);
-        mWebView.getSettings().setDisplayZoomControls(false);
-        mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        mWebView.getSettings().setDomStorageEnabled(true);
-        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        mWebView.setScrollbarFadingEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        } else {
-            mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
-
-        mWebView.setDownloadListener(new DownloadListener() {
-            @Override
-            public void onDownloadStart(String url, String userAgent,
-                                        String contentDisposition, String mimetype,
-                                        long contentLength) {
-
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            }
-        });
-
-
-        mWebView.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
-                if (mCurrentUrl != null && url.equals(mCurrentUrl)) {
-
-                    onBackPressed();
-
-                } else {
-                    view.loadUrl(url);
-                    mCurrentUrl = url;
-                    showProgressBar(true);
-
-                }
-
-                return true;
-
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-
-                if (!url.equals("about:blank")) {
-                    setTitle(url.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", ""));
-                    titleClickable = true;
-                }
-
-            }
-
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-
-                showProgressBar(false);
-
-                if (clearWebViewHistory) {
-                    mWebView.clearHistory();
-                    clearWebViewHistory = false;
-                }
-            }
-        });
-
-    }
-
-    private void showWebView() {
-
-        mWebContainer.setVisibility(View.VISIBLE);
-        mWebContainer.animate()
-                .alpha(1)
-                .setDuration(500);
-        clearWebViewHistory = true;
-    }
-
-    private void hideWebView() {
-
-        setContent();
-        mWebContainer.setVisibility(View.INVISIBLE);
-        mWebContainer.animate()
-                .alpha(0)
-                .setDuration(500);
-
-        clearWebViewHistory = true;
-        mWebView.loadUrl("");
-        mCurrentUrl = "";
+        animFadeout.setAnimationListener(animationListener);
 
     }
 
     private void setContent() {
 
-        setTitle(new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY).format(blogPost.getDate()));
+        getSupportActionBar().setTitle(new SimpleDateFormat("d. MMMM yyyy", Locale.GERMANY).format(blogPost.getDate()));
+        getSupportActionBar().setSubtitle("");
         setTextViewHTML(postContent, blogPost.getHtmlText().split("</a>", 2)[1]);
-        titleClickable = false;
 
     }
 
@@ -331,33 +250,39 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
 
         if (url.startsWith("/?ts=")) {
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+            getPostFromUrl(getString(R.string.basic_url) + url);
 
-                    BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl(getString(R.string.basic_url) + url);
+        } else if (url.startsWith("https://blog.fefe.de/?ts=")) {
 
-                    if (linkPost != null) changeBlogPost(linkPost);
-                    else if (networkUtils.isConnectingToInternet()) {
-
-                        new SingleDataFetcher(DetailsActivity.this).execute(url);
-                        newPostLoaded = true;
-                        showProgressBar(true);
-
-                    } else networkUtils.noNetwork(mContainer);
-
-                }
-            }).start();
+            getPostFromUrl(url);
 
         } else {
 
-            if (networkUtils.isConnectingToInternet()) {
-                mWebView.loadUrl(url);
-                showProgressBar(true);
-                showWebView();
-            } else networkUtils.noNetwork(mContainer);
+            if(!handleClickedLink(this, blogPost, url))
+                networkUtils.noNetwork(mContainer);
 
         }
+    }
+
+    private void getPostFromUrl(final String url) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                BlogPost linkPost = AppDatabase.getInstance(getBaseContext()).blogPostDao().getPostByUrl(url);
+
+                if (linkPost != null) changeBlogPost(linkPost);
+                else if (networkUtils.isConnectingToInternet()) {
+
+                    new SingleDataFetcher(DetailsActivity.this).execute(url);
+                    newPostLoaded = true;
+                    showProgressBar(true);
+
+                } else networkUtils.noNetwork(mContainer);
+
+            }
+        }).start();
     }
 
     public void changeBlogPost(final BlogPost _blogPost) {
@@ -369,7 +294,9 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
                 postContent.setVisibility(View.INVISIBLE);
                 postContent.startAnimation(animFadeout);
 
-                historyList.add(blogPost);
+                if (clickedUrl == null) historyList.add(blogPost);
+                else clickedUrl = null;
+
                 blogPost = _blogPost;
                 setBookmarkIcon(blogPost.isBookmarked());
                 showProgressBar(false);
@@ -403,7 +330,7 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         }
         replaceQuoteSpans(strBuilder);
         text.setText(strBuilder);
-        text.setMovementMethod(LinkMovementMethod.getInstance());
+        text.setMovementMethod(new CustomMovementMethod());
 
     }
 
@@ -422,61 +349,10 @@ public class DetailsActivity extends AppCompatActivity implements Animation.Anim
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mProgressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+                mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
 
-    }
-
-    @Override
-    public void onAnimationEnd(Animation animation) {
-
-        if (animation == animFadein) {
-
-        } else if (animation == animFadeout) {
-
-            if (postContent.getVisibility() == View.INVISIBLE) {
-                setContent();
-                postContent.setVisibility(View.VISIBLE);
-                postContent.startAnimation(animFadein);
-            }
-
-        }
-
-    }
-
-    @Override
-    public void onAnimationRepeat(Animation animation) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onAnimationStart(Animation animation) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void goBackInWebView() {
-        WebBackForwardList history = mWebView.copyBackForwardList();
-        int index = -1;
-        String url = null;
-
-        while (mWebView.canGoBackOrForward(index)) {
-            if (!history.getItemAtIndex(history.getCurrentIndex() + index).getUrl().equals("about:blank")) {
-                mWebView.goBackOrForward(index);
-                url = history.getItemAtIndex(-index).getUrl();
-                Log.e("tag", "first non empty" + url);
-                break;
-            }
-            index--;
-
-        }
-        // no history found that is not empty
-        if (url == null) {
-            Log.d(TAG, "goBackInWebView: no history found that is not empty");
-            hideWebView();
-        }
     }
 
 }

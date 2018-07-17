@@ -25,6 +25,10 @@
     <string name="pref_update_seq_summary">Ausführung der Hintergrundupdates im angegeben Intervall.</string>
     <string name="no_network">Kein Internet!</string>
     <string name="basic_url">https://blog.fefe.de</string>
+    <string name="share_link">Link freigeben</string>
+    <string name="pref_theme_key">theme_key</string>
+    <string name="pref_theme_title">Nachtmodus</string>
+    <string name="pref_theme_text">App im dunklen Design verwenden</string>
     <string name="alternativlos">Alternativlos</string>
     <string name="title_activity_episode">EpisodeActivity</string>
 

@@ -9,6 +9,82 @@
         <!--<item name="android:navigationBarColor">@color/colorPrimary</item>-->
     </style>
 
+    <!-- Specific Feed activity theme -->
+    <style name="MainActivityThemeLight" parent="ActivityTheme.Primary.Base.Light">
+        <item name="android:windowBackground">@color/colorSecondary</item>
+    </style>
+
+    <style name="MainActivityThemeDark" parent="ActivityTheme.Primary.Base.Dark">
+        <item name="android:windowBackground">@color/colorBlackLight</item>
+    </style>
+
+    <style name="SettingsActivityThemeDark" parent="ActivityTheme.Primary.Settings.Dark">
+        <item name="android:windowBackground">@color/colorBlackLight</item>
+    </style>
+
+    <!-- Light base activity theme -->
+    <style name="ActivityTheme.Primary.Base.Light" parent="Theme.AppCompat.NoActionBar">
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="primaryTextColor">@color/colorPrimary</item>
+
+        <item name="quoteTextColor">@color/darkGray</item>
+        <item name="quoteStripeColor">@color/darkGray</item>
+
+        <item name="headerTextColor">@color/colorSecondaryLight</item>
+        <item name="headerBackgroundColor">@color/colorLight</item>
+
+        <item name="buttonColor">@color/colorSecondaryDark</item>
+        <item name="arrowColor">@color/colorLight</item>
+
+        <item name="android:navigationBarColor">@color/colorSecondary</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarDividerColor">@color/colorSecondaryDark</item>
+
+    </style>
+
+    <!-- Dark base activity theme -->
+    <style name="ActivityTheme.Primary.Base.Dark"    parent="Theme.AppCompat.NoActionBar">
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="primaryTextColor">@color/colorSecondary</item>
+
+        <item name="quoteTextColor">@color/colorSecondaryDark</item>
+        <item name="quoteStripeColor">@color/colorSecondaryDark</item>
+
+        <item name="headerTextColor">@color/darkGray</item>
+        <item name="headerBackgroundColor">@color/black</item>
+
+        <item name="buttonColor">@color/darkGray</item>
+        <item name="arrowColor">@color/colorSecondary</item>
+
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
+
+    </style>
+
+    <!-- Dark settings activity theme -->
+    <style name="ActivityTheme.Primary.Settings.Dark"  parent="Theme.AppCompat">
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="primaryTextColor">@color/colorSecondary</item>
+
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
+
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -18,5 +94,12 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Toolbar.SubtitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textSize">12sp</item>
+    </style>
 
 </resources>

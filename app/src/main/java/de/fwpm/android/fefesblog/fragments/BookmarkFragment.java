@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import java.io.Serializable;
@@ -24,11 +25,15 @@ import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
+import de.fwpm.android.fefesblog.WebActivity;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
+import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
+import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 /**
@@ -49,8 +54,16 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
     private static RecyclerView.SmoothScroller smoothScroller;
     private View view;
 
+    private static BookmarkFragment instance;
+
     public BookmarkFragment() {
-        // Required empty public constructor
+        instance = this;
+    }
+
+    public static BookmarkFragment getInstance() {
+        if(instance != null)
+            return instance;
+        else return new BookmarkFragment();
     }
 
     @Override
@@ -119,13 +132,23 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
                     @Override
                     public void onItemClick(int position, BlogPost blogPost) {
 
-                        Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                        intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
-                        if(CustomTextView.clickedLink != null) {
-                            intent.putExtra("CLICKED_LINK", CustomTextView.clickedLink);
+                        Intent intent;
+
+                        if (CustomTextView.clickedLink != null) {
+
+                            if(!handleClickedLink(getActivity(), blogPost, CustomTextView.clickedLink)) {
+                                new NetworkUtils(getContext()).noNetwork((FrameLayout) view.findViewById(R.id.bookmarkFragment));
+                            }
+
                             CustomTextView.clickedLink = null;
+
+                        } else {
+                            intent = new Intent(getActivity(), DetailsActivity.class);
+                            intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                            startActivity(intent);
                         }
-                        startActivity(intent);
+
+
 
                     }
 
@@ -164,6 +187,8 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
             public void run() {
 
                 recyclerViewAdapter.notifyDataSetChanged();
+                if(mList.isEmpty()) showNoBookmarkScreen(true);
+                else showNoBookmarkScreen(false);
 
             }
         });
@@ -174,6 +199,12 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
         smoothScroller.setTargetPosition(position);
         mLayoutManager.startSmoothScroll(smoothScroller);
+
+    }
+
+    private void showNoBookmarkScreen(boolean show) {
+
+        ((LinearLayout) view.findViewById(R.id.noBookmarkScreen)).setVisibility(show ? View.VISIBLE : View.GONE);
 
     }
 

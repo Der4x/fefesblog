@@ -25,7 +25,6 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 public class NotificationHelper {
 
     public static final String CHANNEL_ID = "fefes_blog";
-    public static final String NOTIFICATION_GROUP = "fefes_blog";
     public static final int NOTIFICATION_ID = 5353;
 
     public static PendingIntent getResultPendingIntent(Context context) {
@@ -84,7 +83,10 @@ public class NotificationHelper {
                 .setContentIntent(getResultPendingIntent(context))
                 .setAutoCancel(true);
 
-        if(newPosts != null && newPosts.length > 0) builder.setStyle(inboxStyle);
+        if(newPosts != null && newPosts.length == 1)
+            builder.setStyle(new NotificationCompat.BigTextStyle().bigText(newPosts[0]));
+        else if(newPosts != null && newPosts.length > 0)
+            builder.setStyle(inboxStyle);
 
         return builder;
 
@@ -104,20 +106,10 @@ public class NotificationHelper {
             mChannel.enableLights(true);
             mChannel.setLightColor(Color.BLUE);
             mChannel.enableVibration(true);
-            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300});
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500});
             mNotificationManager.createNotificationChannel(mChannel);
         }
 
     }
-
-    String[] testdata = new String[]{
-            "Das Pentagon hat eine metrische Tonne Rumsfeld-Memos veröffentlicht. Einige davon sind ganz interessant. (Danke, Markus) ",
-//                "Kurze Durchsage von CDU-Generalsekretär Peter Tauber: Konkret soll Tauber in einer",
-//                "Benutzt hier jemand 7-zip? Um RAR oder ZIP auszupacken? ",
-//                "NSA deletes \"honesty\" and \"openness\" from core values. Für mehr Ehrlichkeit in der Werbung! ",
-//                "Für mehr Ehrlichkeit in der Werbung! ",
-//                "Es gibt jetzt komplett durchsichtige Fingerabdrucksensoren. (Danke, Michael) ",
-//                "Habt ihr mitgekriegt, dass Erdogan im Dezember den Griechen mitgeteilt hatte, der Vertrag von Lausanne "
-    };
 
 }

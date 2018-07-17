@@ -28,6 +28,7 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
 
     private static final String TAG = "SYNC";
     private static final String BASIC_URL = "https://blog.fefe.de/";
+    private static final int TEXT_LENGTH = 500;
 
     private Document html;
     private Context mContext;
@@ -71,15 +72,17 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
                     post.setBookmarked(oldEntry.isBookmarked());
                     post.setHasBeenRead(oldEntry.isHasBeenRead());
 
-                    if (!oldEntry.getText().equals(post.getText())) {
+                    if (!oldEntry.getText().equals(post.getText()) && post.getText().contains("Update")) {
 
                         post.setUpdate(true);
                         updateCounter++;
+
                     } else post.setUpdate(oldEntry.isUpdate());
 
                 } else {
+
                     postsCounter++;
-                    newPosts.append(post.getText().length() > 99 ? post.getText().substring(4, 100) : post.getText().substring(4));
+                    newPosts.append(post.getText().length() >= TEXT_LENGTH ? post.getText().substring(4, TEXT_LENGTH) + "..." : post.getText().substring(4));
                     newPosts.append("/;/");
 
                 }
@@ -100,22 +103,17 @@ public class BackgroundDataFetcher extends AsyncTask<String, Void, Boolean> {
                 intent.putExtra("Update", updateCounter);
                 intent.putExtra("NewPosts", newPosts.toString());
                 mContext.sendBroadcast(intent);
+
             } else {
                 Log.d(TAG, "Notifications are not allowed");
-
             }
 
         }
-
-
-        Log.d(TAG, "doInBackground: " + postsCounter + ", " + updateCounter);
         return true;
     }
 
     @Override
     protected void onPostExecute(Boolean success) {
-
-        Log.d(TAG, "onPostExecute: ");
         super.onPostExecute(success);
 
     }

@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -26,6 +27,9 @@ import de.fwpm.android.fefesblog.data.SearchDataFetcher;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
+
+import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
+import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
 
 public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
@@ -49,6 +53,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (App.getInstance().isNightModeEnabled()) setTheme(R.style.MainActivityThemeDark);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -84,14 +89,23 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 new SearchRecyclerViewAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position, BlogPost blogPost) {
-                        Log.d(TAG, "onItemClick" + position);
-                        Intent intent = new Intent(SearchActivity.this, DetailsActivity.class);
-                        intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                        Intent intent;
+
                         if (CustomTextView.clickedLink != null) {
-                            intent.putExtra("CLICKED_LINK", CustomTextView.clickedLink);
+
+                            if(!handleClickedLink(SearchActivity.this, blogPost, CustomTextView.clickedLink)) {
+                                networkUtils.noNetwork(mContainer);
+                            }
+
                             CustomTextView.clickedLink = null;
+
+                        } else {
+                            intent = new Intent(SearchActivity.this, DetailsActivity.class);
+                            intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
+                            startActivity(intent);
                         }
-                        startActivity(intent);
+
+
                     }
                 },
                 mListOfPosts);

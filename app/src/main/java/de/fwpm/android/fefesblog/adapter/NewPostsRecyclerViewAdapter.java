@@ -38,7 +38,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     Context mContext;
     static OnItemClickListener mListener;
     OnBottomReachListener mOnBottomReachListener;
-    private static ArrayList<Integer> expandedItems;
+    public static ArrayList<Integer> expandedItems;
 
 
     public NewPostsRecyclerViewAdapter(Context context, final OnItemClickListener listener, final OnBottomReachListener onBottomReachListener ,final ArrayList<BlogPost> data) {
