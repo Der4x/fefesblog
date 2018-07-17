@@ -356,7 +356,6 @@ public class EpisodeActivity extends AppCompatActivity implements View.OnClickLi
 
     private static String getFormattedTimeString(int millis) {
 
-
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         cal.setTimeInMillis(millis);
 
@@ -393,12 +392,6 @@ public class EpisodeActivity extends AppCompatActivity implements View.OnClickLi
     static void stopRepeatingTask() {
         mHandler.removeCallbacks(mStatusChecker);
     }
-
-
-
-
-
-
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);

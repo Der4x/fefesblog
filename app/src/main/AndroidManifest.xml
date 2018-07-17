@@ -48,17 +48,6 @@
         <activity android:name=".WebActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MainActivityThemeLight"/>
-        <service
-            android:name=".backgroundsync.SyncJobScheduler"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <service android:name=".utils.MediaPlayerService" />
-
-        <receiver
-            android:name=".backgroundsync.SyncReceiver"
-            android:enabled="true"/>
 
         <activity
             android:name=".DetailsActivity"
@@ -79,16 +68,24 @@
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".AlternativlosActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".EpisodeActivity"
+            android:label="@string/title_activity_episode"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
             android:name=".backgroundsync.SyncJobScheduler"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service android:name=".utils.MediaPlayerService" />
 
         <receiver
             android:name=".backgroundsync.SyncReceiver"
@@ -104,10 +101,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity
-            android:name=".EpisodeActivity"
-            android:label="@string/title_activity_episode"
-            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
