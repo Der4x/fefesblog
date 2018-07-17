@@ -109,18 +109,25 @@ public class DetailsActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
 
-        clickedUrl = intent.getStringExtra(INTENT_URL);
 
-        Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
-        if (extra instanceof BlogPost) {
+        if(intent.getData() != null) {
+            //Deep Link
+            clickedUrl = intent.getDataString();
+            loadPostUrl(clickedUrl);
+        }
+        else {
 
-            blogPost = (BlogPost) extra;
-            if(clickedUrl == null) setContent();
-            else loadPostUrl(clickedUrl);
+            clickedUrl = intent.getStringExtra(INTENT_URL);
+            Serializable extra = intent.getSerializableExtra(INTENT_BLOG_POST);
+            if (extra instanceof BlogPost) {
 
+                blogPost = (BlogPost) extra;
+                if(clickedUrl == null) setContent();
+                else loadPostUrl(clickedUrl);
+
+            }
         }
     }
-
 
     @Override
     public void onBackPressed() {
@@ -140,14 +147,6 @@ public class DetailsActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case android.R.id.home:
-
-//                if (historyList.size() > 0) {
-//
-//                    changeBlogPost(historyList.get(historyList.size() - 1));
-//                    historyList.remove(historyList.size() - 1);
-//                    historyList.remove(historyList.size() - 1);
-//
-//                } else
 
                 this.finish();
                 break;

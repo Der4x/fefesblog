@@ -52,7 +52,16 @@
             android:name=".DetailsActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/MainActivityThemeLight" />
+            android:theme="@style/MainActivityThemeLight" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="blog.fefe.de" />
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name=".SettingsActivity"
