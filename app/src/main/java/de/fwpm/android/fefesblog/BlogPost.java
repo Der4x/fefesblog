@@ -75,19 +75,19 @@ public class BlogPost implements Serializable {
 
         try {
 
-            Date date = new SimpleDateFormat("EEE MMM d yyyy", Locale.ENGLISH).parse(dateAsString);
+            Date date = new SimpleDateFormat("EEE MMM d yyyy", Locale.GERMAN).parse(dateAsString);
 
             Calendar now = Calendar.getInstance();
             Calendar postDate = Calendar.getInstance();
             postDate.setTime(date);
             if(postDate.get(Calendar.DAY_OF_MONTH) != now.get(Calendar.DAY_OF_MONTH)) {
 
-                postDate.set(Calendar.HOUR, 23);
+                postDate.set(Calendar.HOUR_OF_DAY, 23);
                 postDate.set(Calendar.MINUTE, 59);
 
             } else {
 
-                postDate.set(Calendar.HOUR, now.get(Calendar.HOUR));
+                postDate.set(Calendar.HOUR_OF_DAY, now.get(Calendar.HOUR));
                 postDate.set(Calendar.MINUTE, now.get(Calendar.MINUTE));
 
             }

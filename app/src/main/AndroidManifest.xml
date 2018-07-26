@@ -79,6 +79,11 @@
             android:name=".backgroundsync.SyncReceiver"
             android:enabled="true"/>
 
+        <receiver
+            android:name=".utils.CustomTabsBroadcastReceiver"
+            android:enabled="true">
+        </receiver>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"

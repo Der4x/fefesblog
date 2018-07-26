@@ -79,8 +79,8 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
     public static NewPostsFragment getInstance() {
 
-        if(instance != null) return instance;
-        else return  new NewPostsFragment();
+        if (instance != null) return instance;
+        else return new NewPostsFragment();
     }
 
     @Override
@@ -120,7 +120,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
     public void onDestroy() {
 
         super.onDestroy();
-        if(dataFetcher != null) dataFetcher.cancel(true);
+        if (dataFetcher != null) dataFetcher.cancel(true);
 
     }
 
@@ -158,7 +158,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                 ArrayList<BlogPost> data = (ArrayList<BlogPost>) AppDatabase.getInstance(context).blogPostDao().getAllPosts();
 
-                if(mListWithHeaders.size() > 1 && !data.get(0).getUrl().equals(mListWithHeaders.get(1).getUrl()))
+                if (mListWithHeaders.size() > 1 && !data.get(0).getUrl().equals(mListWithHeaders.get(1).getUrl()))
                     newPosts = true;
 
                 mListWithHeaders.clear();
@@ -227,7 +227,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
                     @Override
                     public void onBottom(int position) {
                         Log.d(TAG, "onBottom" + position);
-                        loadMoreData();
+                        if(!mListWithHeaders.isEmpty()) loadMoreData();
 
                     }
                 },
@@ -270,7 +270,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
         if (CustomTextView.clickedLink != null) {
 
-            if(!handleClickedLink(getActivity(), blogPost, CustomTextView.clickedLink)) {
+            if (!handleClickedLink(getActivity(), blogPost, CustomTextView.clickedLink)) {
                 networkUtils.noNetwork(mNewPostSwipeRefresh);
             }
 
@@ -307,7 +307,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
             @Override
             public void run() {
 
-                if(mLayoutManager.findFirstVisibleItemPosition() == 0 && newPosts) {
+                if (mLayoutManager.findFirstVisibleItemPosition() == 0 && newPosts) {
 
                     initAdapter();
 
@@ -317,14 +317,14 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                 setRefresh(false);
 
-                if(newPosts && mLayoutManager.findFirstVisibleItemPosition() > 0) {
+                if (newPosts && mLayoutManager.findFirstVisibleItemPosition() > 0) {
 
                     expandedItems.clear();
                     Snackbar bar = Snackbar.make(mNewPostSwipeRefresh, "Neue Posts", Snackbar.LENGTH_LONG)
                             .setAction("ANZEIGEN", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                   jumpToPosition(0);
+                                    jumpToPosition(0);
                                 }
                             });
 
@@ -341,34 +341,42 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
     private void loadMoreData() {
 
         String nextUrl = "";
-        int counter = mListWithHeaders.size() - 1;
-        while (nextUrl.equals("")) {
+        int counter;
 
-            String nextMonthurl = mListWithHeaders.get(counter).getNextUrl();
+        if (mListWithHeaders.size() > 1) {
 
-            try {
-                if (mListWithHeaders.get(counter).getNextUrl() != null) {
+            counter = mListWithHeaders.size() - 1;
 
-                    SimpleDateFormat fmt = new SimpleDateFormat("yyyyMM", Locale.GERMANY);
+            while (nextUrl.equals("")) {
 
-                    Date before = fmt.parse(nextMonthurl.substring(nextMonthurl.length() - 6));
+                try {
 
-                    Date lastdate = mListWithHeaders.get(counter).getDate();
+                    String nextMonthurl = mListWithHeaders.get(counter).getNextUrl();
 
-                    if (before.after((lastdate))) {
+                    if (mListWithHeaders.get(counter).getNextUrl() != null) {
 
-                        Calendar nextMonth = Calendar.getInstance();
-                        nextMonth.setTimeInMillis(before.getTime());
-                        nextMonth.add(Calendar.MONTH, -1);
-                        nextUrl = "https://blog.fefe.de//?mon=" + fmt.format(nextMonth.getTime());
+                        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMM", Locale.GERMANY);
 
-                    } else nextUrl = mListWithHeaders.get(counter).getNextUrl();
+                        Date before = fmt.parse(nextMonthurl.substring(nextMonthurl.length() - 6));
 
+                        Date lastdate = mListWithHeaders.get(counter).getDate();
+
+                        if (before.after((lastdate))) {
+
+                            Calendar nextMonth = Calendar.getInstance();
+                            nextMonth.setTimeInMillis(before.getTime());
+                            nextMonth.add(Calendar.MONTH, -1);
+                            nextUrl = "https://blog.fefe.de//?mon=" + fmt.format(nextMonth.getTime());
+
+                        } else nextUrl = mListWithHeaders.get(counter).getNextUrl();
+
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(context, "Fehler 101", Toast.LENGTH_SHORT).show();
                 }
-            } catch (Exception e) {
-                Toast.makeText(context, "Fehler 101", Toast.LENGTH_SHORT).show();
+                counter--;
+
             }
-            counter--;
 
         }
 

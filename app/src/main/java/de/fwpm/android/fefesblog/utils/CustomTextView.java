@@ -1,9 +1,14 @@
 package de.fwpm.android.fefesblog.utils;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -18,6 +23,7 @@ import java.io.Serializable;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
+import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.WebActivity;
 
 import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
@@ -35,8 +41,7 @@ public class CustomTextView {
     private static final String TAG = "CustomTextView";
     public static String clickedLink;
 
-    protected static void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span)
-    {
+    protected static void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span) {
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);
         int flags = strBuilder.getSpanFlags(span);
@@ -56,7 +61,7 @@ public class CustomTextView {
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
-        for(URLSpan span : urls) {
+        for (URLSpan span : urls) {
             makeLinkClickable(strBuilder, span);
         }
         replaceQuoteSpans(strBuilder);
@@ -67,54 +72,83 @@ public class CustomTextView {
 
     public static CharSequence trimTrailingWhitespace(CharSequence source) {
 
-        if(source == null)
+        if (source == null)
             return "";
 
         int i = source.length();
 
         // loop back to the first non-whitespace character
-        while(--i >= 0 && Character.isWhitespace(source.charAt(i))) {
+        while (--i >= 0 && Character.isWhitespace(source.charAt(i))) {
         }
 
-        return source.subSequence(0, i+1);
+        return source.subSequence(0, i + 1);
     }
 
     public static boolean handleClickedLink(Activity activity, BlogPost blogPost, String url) {
 
-        Intent intent;
-
-        if ((url.contains("youtu.be") || url.contains("www.youtube")) && isAppInstalled(YOUTUBE_PACKAGE_NAME, activity)) {
-
-            openInApp(url, YOUTUBE_PACKAGE_NAME, activity);
-            return true;
-
-        } else if(url.contains("twitter.com") && isAppInstalled(TWITTER_PACKAGE_NAME, activity)) {
-
-            openInApp(url, TWITTER_PACKAGE_NAME, activity);
-            return true;
-
-        }
-
         if (url.startsWith("/?ts=") || url.startsWith("https://blog.fefe.de/?ts=")) {
 
-            intent = new Intent(activity, DetailsActivity.class);
+            Intent intent = new Intent(activity, DetailsActivity.class);
             intent.putExtra(INTENT_URL, url);
             intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
             activity.startActivity(intent);
             return true;
 
-        } else {
+        } else if (new NetworkUtils(activity).isConnectingToInternet()) {
 
-            intent = new Intent(activity, WebActivity.class);
-            intent.putExtra(INTENT_URL, url);
-            if (new NetworkUtils(activity).isConnectingToInternet()) {
-                activity.startActivity(intent);
-                return true;
+            if (url.startsWith("//ptrace.fefe.de")) url = "https:" + url;
+
+            try {
+                startCustomTab(activity, url);
+            } catch (Exception e) {
+
+                e.printStackTrace();
+                startWebActivity(activity, url);
+
             }
-            else return false;
 
+            return true;
         }
 
+        return false;
+
+
+    }
+
+    private static void startWebActivity(Activity activity, String url) {
+
+        if ((url.contains("youtu.be") || url.contains("www.youtube")) && isAppInstalled(YOUTUBE_PACKAGE_NAME, activity)) {
+
+            openInApp(url, YOUTUBE_PACKAGE_NAME, activity);
+
+
+        } else if(url.contains("twitter.com") && isAppInstalled(TWITTER_PACKAGE_NAME, activity)) {
+
+            openInApp(url, TWITTER_PACKAGE_NAME, activity);
+
+
+        } else {
+
+            Intent intent = new Intent(activity, WebActivity.class);
+            intent.putExtra(INTENT_URL, url);
+            activity.startActivity(intent);
+
+        }
+    }
+
+    private static void startCustomTab(Activity activity, String url) {
+        Bitmap iconShare = BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_stat_share);
+        Intent intent = new Intent(activity, CustomTabsBroadcastReceiver.class);
+        intent.putExtra("SHARE_URL", url);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 3212, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setToolbarColor(ContextCompat.getColor(activity, R.color.colorPrimary));
+        builder.setActionButton(iconShare, "Share", pendingIntent);
+        builder.setShowTitle(true);
+
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(activity, Uri.parse(url));
     }
 
     private static void openInApp(String url, String packageName, Activity activity) {
