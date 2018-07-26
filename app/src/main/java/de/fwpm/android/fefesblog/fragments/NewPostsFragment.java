@@ -321,6 +321,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
                     expandedItems.clear();
                     Snackbar bar = Snackbar.make(mNewPostSwipeRefresh, "Neue Posts", Snackbar.LENGTH_LONG)
+                            .setDuration(5000)
                             .setAction("ANZEIGEN", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
