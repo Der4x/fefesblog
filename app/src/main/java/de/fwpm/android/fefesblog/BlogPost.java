@@ -75,7 +75,7 @@ public class BlogPost implements Serializable {
 
         try {
 
-            Date date = new SimpleDateFormat("EEE MMM d yyyy", Locale.GERMAN).parse(dateAsString);
+            Date date = new SimpleDateFormat("EEE MMM d yyyy", Locale.ENGLISH).parse(dateAsString);
 
             Calendar now = Calendar.getInstance();
             Calendar postDate = Calendar.getInstance();
