@@ -87,7 +87,7 @@ public class BlogPost implements Serializable {
 
             } else {
 
-                postDate.set(Calendar.HOUR_OF_DAY, now.get(Calendar.HOUR));
+                postDate.set(Calendar.HOUR_OF_DAY, now.get(Calendar.HOUR_OF_DAY));
                 postDate.set(Calendar.MINUTE, now.get(Calendar.MINUTE));
 
             }
