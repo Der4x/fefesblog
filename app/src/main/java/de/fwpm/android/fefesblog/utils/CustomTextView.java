@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import java.io.Serializable;
 
+import de.fwpm.android.fefesblog.App;
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
@@ -143,7 +144,7 @@ public class CustomTextView {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 3212, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setToolbarColor(ContextCompat.getColor(activity, R.color.colorPrimary));
+        builder.setToolbarColor(ContextCompat.getColor(activity, App.getInstance().isNightModeEnabled() ? R.color.backgroundDark : R.color.backgroundLight));
         builder.setActionButton(iconShare, "Share", pendingIntent);
         builder.setShowTitle(true);
 

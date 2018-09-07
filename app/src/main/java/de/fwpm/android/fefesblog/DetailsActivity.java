@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -82,6 +83,7 @@ public class DetailsActivity extends AppCompatActivity {
     private CoordinatorLayout mContainer;
     private ProgressBar mProgressBar;
     private boolean newPostLoaded;
+    private boolean darkTheme;
 
     private ArrayList<BlogPost> historyList;
     private NetworkUtils networkUtils;
@@ -94,7 +96,11 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (App.getInstance().isNightModeEnabled()) setTheme(R.style.MainActivityThemeDark);
+        if (App.getInstance().isNightModeEnabled()) {
+            setTheme(R.style.MainActivityThemeDark);
+            darkTheme = true;
+
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
@@ -179,10 +185,13 @@ public class DetailsActivity extends AppCompatActivity {
         inflater.inflate(R.menu.detail_menu, menu);
 
         bookmark_item = menu.findItem(R.id.menu_bookmark);
-        bookmark_item.setIcon(blogPost.isBookmarked() ? R.drawable.ic_bookmark_white_24dp : R.drawable.ic_bookmark_border_white_24dp);
+        bookmark_item.setIcon(blogPost.isBookmarked() ? R.drawable.ic_stat_bookmark : R.drawable.ic_stat_bookmark_border);
+
+        bookmark_item.getIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_IN);
 
         share_item = menu.findItem(R.id.menu_share);
-        share_item.setIcon(R.drawable.ic_share_white_24dp);
+        share_item.getIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_IN);
+//        share_item.setIcon(R.drawable.ic_share_white_24dp);
 
         return true;
 
@@ -192,6 +201,7 @@ public class DetailsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_ATOP);
 
     }
 

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.design.widget.CoordinatorLayout
     android:id="@+id/container"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -7,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorPrimary"
     tools:context="de.fwpm.android.fefesblog.SearchActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -18,7 +18,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
+            android:background="?attr/colorPrimary"
+            app:titleTextColor="?attr/primaryTextColor"
             app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
     </android.support.design.widget.AppBarLayout>
@@ -44,8 +45,9 @@
             android:animateLayoutChanges="true"
             android:textSize="16dp"
             android:padding="16dp"
+            android:fontFamily="@font/roboto_medium"
             android:textIsSelectable="true"
-            android:lineSpacingExtra="2dp"
+            android:lineSpacingExtra="3dp"
             android:textColor="?attr/primaryTextColor"
             android:textColorLink="@color/colorAccent" />
 

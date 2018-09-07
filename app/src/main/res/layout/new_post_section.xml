@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/headerBackgroundColor"
     android:orientation="vertical"
     android:paddingLeft="8dp">
 
@@ -10,7 +9,9 @@
         android:id="@+id/section_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:gravity="center"
         android:textColor="?attr/headerTextColor"
-        android:layout_margin="6dp" />
+        android:textStyle="bold" />
 
 </LinearLayout>

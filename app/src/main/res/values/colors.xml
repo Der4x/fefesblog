@@ -2,7 +2,7 @@
 <resources>
 
     <color name="colorPrimary">#1a1a1a</color>
-    <color name="colorPrimaryDark">#0d0d0d</color>
+    <color name="colorPrimaryDark">#000000</color>
     <color name="colorLight">#404040</color>
     <color name="colorAccent">#4A90E2</color>
     <color name="colorLightTransp">#66404040</color>
@@ -19,5 +19,21 @@
 
     <color name="colorBlackLight">#252525</color>
     <color name="black">#0a0a0a</color>
+
+    <!--new colors-->
+
+    <color name="backgroundLight">#FFFFFF</color>
+    <color name="backgroundDark">#202124</color>
+
+    <color name="primaryTextColorLight">#3D4043</color>
+    <color name="secondaryTextColorLight">#606367</color>
+
+    <color name="primaryTextColorDark">#F1F3F4</color>
+    <color name="secondaryTextColorDark">#9BA0A5</color>
+
+
+
+
+
 
 </resources>

@@ -5,12 +5,12 @@
 
     <item android:title="@string/bookmark"
         android:id="@+id/menu_bookmark"
-        android:icon="@drawable/ic_bookmark_border_black_24dp"
+        android:icon="@drawable/ic_stat_bookmark_border"
         app:showAsAction="always"/>
 
     <item android:title="@string/share"
         android:id="@+id/menu_share"
-        android:icon="@drawable/ic_share_black_24dp"
+        android:icon="@drawable/ic_stat_share"
         app:showAsAction="always"/>
 
 

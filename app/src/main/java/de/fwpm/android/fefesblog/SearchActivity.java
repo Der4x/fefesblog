@@ -2,8 +2,11 @@ package de.fwpm.android.fefesblog;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,16 +53,22 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private CoordinatorLayout mContainer;
     private String mQueryString;
     private SearchActivity activity;
+    private boolean darkTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (App.getInstance().isNightModeEnabled()) setTheme(R.style.MainActivityThemeDark);
+        if (App.getInstance().isNightModeEnabled()) {
+            setTheme(R.style.MainActivityThemeDark);
+            darkTheme = true;
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_ATOP);
+        if(darkTheme) toolbar.getContext().setTheme(R.style.AppTheme_Toolbar_Dark);
 
         mContext = this;
         activity = this;
@@ -136,6 +145,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -167,6 +177,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
         // expand searchview on create
         searchItem.expandActionView();
+
+//        searchItem.getIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_IN);
 
         return true;
     }

@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:gravity="center"
-            android:textColor="@android:color/black"
+            android:textColor="?attr/primaryTextColor"
             android:text="Keine Einträge gefunden.\n\nHinweis: Die Suche ist case-sensitive,\nd.h. Fnord != fnord."/>
 
     </LinearLayout>

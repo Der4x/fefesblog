@@ -3,6 +3,7 @@ package de.fwpm.android.fefesblog;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import de.fwpm.android.fefesblog.adapter.StartScreenPagerAdapter;
 import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
@@ -23,7 +26,7 @@ import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJo
 import static de.fwpm.android.fefesblog.fragments.BookmarkFragment.jump_To_Position;
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MAINACTIVITY";
     public static final String FIRST_START = "firststart";
@@ -43,16 +46,24 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        initToolbar();
 
         initView();
 
-        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true)) {
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true)) {
 
             scheduleJob(this);
 
         }
+
+    }
+
+    private void initToolbar() {
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ImageButton settingsButton = (ImageButton) toolbar.findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(this);
+        setSupportActionBar(toolbar);
 
     }
 
@@ -63,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if(themeChanged) {
+        if (themeChanged) {
             themeChanged = false;
             recreate();
             if (adapter != null) {
@@ -76,24 +87,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.menu_settings) {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.settings_button:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+
         }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-
-        MenuItem setting_item = menu.findItem(R.id.menu_settings);
-
-        return true;
-
     }
 
     private void initView() {
@@ -120,11 +123,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
 
-                if(tab.getText().equals(getResources().getString(R.string.newposts))) {
+                if (tab.getText().equals(getResources().getString(R.string.newposts))) {
 
                     jumpToPosition(0);
 
-                } else if(tab.getText().equals(getResources().getString(R.string.bookmarks))) {
+                } else if (tab.getText().equals(getResources().getString(R.string.bookmarks))) {
 
                     jump_To_Position(0);
 
@@ -158,7 +161,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) { }
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+        }
 
         public void onPageScrollStateChanged(int arg0) {
 
@@ -169,5 +173,6 @@ public class MainActivity extends AppCompatActivity {
     public static void setThemeChanged() {
         themeChanged = true;
     }
+
 
 }
