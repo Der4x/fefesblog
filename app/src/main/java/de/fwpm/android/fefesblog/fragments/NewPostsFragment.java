@@ -12,14 +12,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,16 +26,14 @@ import java.util.Locale;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
-import de.fwpm.android.fefesblog.WebActivity;
-import de.fwpm.android.fefesblog.data.DataFetcher;
-import de.fwpm.android.fefesblog.utils.CustomTextView;
-import de.fwpm.android.fefesblog.utils.NetworkUtils;
-import de.fwpm.android.fefesblog.utils.PinnedHeaderItemDecoration;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
+import de.fwpm.android.fefesblog.data.DataFetcher;
 import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.utils.CustomTextView;
+import de.fwpm.android.fefesblog.utils.HeaderItemDecoration;
+import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
-import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.MainActivity.FIRST_START;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
 import static de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter.expandedItems;
@@ -233,7 +229,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
                 },
                 mListWithHeaders);
 
-        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration());
+        mRecyclerView.addItemDecoration(new HeaderItemDecoration(mRecyclerView, (HeaderItemDecoration.StickyHeaderInterface) recyclerViewAdapter));
         mRecyclerView.setAdapter(recyclerViewAdapter);
 
         smoothScroller = new LinearSmoothScroller(context) {

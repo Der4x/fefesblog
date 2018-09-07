@@ -2,7 +2,6 @@ package de.fwpm.android.fefesblog.fragments;
 
 import android.app.job.JobScheduler;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -12,7 +11,6 @@ import android.util.Log;
 
 import de.fwpm.android.fefesblog.App;
 import de.fwpm.android.fefesblog.R;
-import de.fwpm.android.fefesblog.SettingsActivity;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
 

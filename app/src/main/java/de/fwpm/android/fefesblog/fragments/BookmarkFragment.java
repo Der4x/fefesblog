@@ -2,15 +2,12 @@ package de.fwpm.android.fefesblog.fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,20 +15,16 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import java.io.Serializable;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
-import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
-import de.fwpm.android.fefesblog.WebActivity;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
-import static de.fwpm.android.fefesblog.DetailsActivity.INTENT_URL;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;

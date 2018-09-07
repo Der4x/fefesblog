@@ -1,6 +1,5 @@
 package de.fwpm.android.fefesblog.data;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 
 import org.jsoup.Jsoup;
@@ -11,8 +10,6 @@ import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.DetailsActivity;
-import de.fwpm.android.fefesblog.database.AppDatabase;
-import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
 
 import static de.fwpm.android.fefesblog.data.HtmlParser.parseHtml;
 

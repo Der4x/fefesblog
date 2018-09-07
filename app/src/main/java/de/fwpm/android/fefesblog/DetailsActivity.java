@@ -1,58 +1,26 @@
 package de.fwpm.android.fefesblog;
 
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.text.Layout;
-import android.text.Selection;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.method.LinkMovementMethod;
-import android.text.method.Touch;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.webkit.CookieManager;
-import android.webkit.DownloadListener;
-import android.webkit.WebBackForwardList;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,7 +33,6 @@ import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.utils.CustomQuoteSpan.replaceQuoteSpans;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
-import static de.fwpm.android.fefesblog.utils.SharePostUtil.shareLink;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -347,8 +314,8 @@ public class DetailsActivity extends AppCompatActivity {
     private void setBookmarkIcon(boolean isBookmarked) {
 
         if (bookmark_item != null) {
-            if (isBookmarked) bookmark_item.setIcon(R.drawable.ic_bookmark_white_24dp);
-            else bookmark_item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
+            if (isBookmarked) bookmark_item.setIcon(R.drawable.ic_stat_bookmark);
+            else bookmark_item.setIcon(R.drawable.ic_stat_bookmark_border);
 
         }
 

@@ -3,7 +3,6 @@ package de.fwpm.android.fefesblog.adapter;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import de.fwpm.android.fefesblog.R;

@@ -8,7 +8,6 @@ import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.view.View;
-import android.widget.Toast;
 
 import de.fwpm.android.fefesblog.R;
 

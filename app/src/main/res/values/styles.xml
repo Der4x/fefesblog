@@ -42,13 +42,13 @@
         <item name="quoteStripeColor">@color/secondaryTextColorLight</item>
 
         <item name="headerTextColor">@color/secondaryTextColorLight</item>
-        <item name="headerBackgroundColor">@color/backgroundLight</item>
+        <item name="headerBackgroundColor">@color/primaryTextColorDark</item>
 
         <item name="buttonColor">@color/colorSecondaryDark</item>
         <item name="arrowColor">@color/primaryTextColorLight</item>
 
-        <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">@color/backgroundLight</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:navigationBarDividerColor">@color/colorSecondaryDark</item>
 
@@ -68,13 +68,13 @@
         <item name="quoteStripeColor">@color/secondaryTextColorDark</item>
 
         <item name="headerTextColor">@color/secondaryTextColorDark</item>
-        <item name="headerBackgroundColor">@color/backgroundDark</item>
+        <item name="headerBackgroundColor">@color/primaryTextColorLight</item>
 
         <item name="buttonColor">@color/secondaryTextColorDark</item>
         <item name="arrowColor">@color/primaryTextColorDark</item>
 
-        <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
 

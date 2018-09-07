@@ -19,7 +19,7 @@ import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.SettingFragment;
-import de.fwpm.android.fefesblog.utils.PinnedHeaderItemDecoration;
+import de.fwpm.android.fefesblog.utils.HeaderItemDecoration;
 import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
@@ -29,12 +29,12 @@ import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
  * Created by alex on 20.01.18.
  */
 
-public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRecyclerViewAdapter.ViewHolder> implements PinnedHeaderItemDecoration.PinnedHeaderAdapter {
+public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRecyclerViewAdapter.ViewHolder> implements HeaderItemDecoration.StickyHeaderInterface {
 
     private static final String TAG = "NPRecyclerViewAdapter";
     public static int MAX_LINES;
 
-    ArrayList<BlogPost> mData;
+    static ArrayList<BlogPost> mData;
     Context mContext;
     static OnItemClickListener mListener;
     OnBottomReachListener mOnBottomReachListener;
@@ -132,12 +132,32 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     }
 
     @Override
-    public boolean isPinnedViewType(int viewType) {
-        if (viewType == BlogPost.TYPE_SECTION) {
-            return true;
-        } else {
-            return false;
-        }
+    public int getHeaderPositionForItem(int itemPosition) {
+        int headerPosition = 0;
+        do {
+            if (this.isHeader(itemPosition)) {
+                headerPosition = itemPosition;
+                break;
+            }
+            itemPosition -= 1;
+        } while (itemPosition >= 0);
+        return headerPosition;
+    }
+
+    @Override
+    public int getHeaderLayout(int headerPosition) {
+        return R.layout.new_post_section;
+    }
+
+    @Override
+    public void bindHeaderData(View header, int headerPosition) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
+        ((TextView) header.findViewById(R.id.section_label)).setText(dateFormat.format(mData.get(headerPosition).getDate()));
+    }
+
+    @Override
+    public boolean isHeader(int itemPosition) {
+        return mData.get(itemPosition).type == BlogPost.TYPE_SECTION;
     }
 
     static class DataViewHolder extends ViewHolder {
@@ -146,6 +166,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         private ImageButton mExpand;
         private ImageButton mBookmark;
         private ImageButton mShare;
+        private View dividerBottom;
 
 
         public DataViewHolder(View itemView, int viewType) {
@@ -155,6 +176,8 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             mBookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
             mUpdateBanner = (TextView) itemView.findViewById(R.id.update_banner);
             mShare = (ImageButton) itemView.findViewById(R.id.share);
+            dividerBottom = (View) itemView.findViewById(R.id.divider_bottom);
+
 
         }
 
@@ -186,6 +209,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             if(expandedItems.contains(position)) expandContent();
             else closeContent();
             setBookmarkIcon(blogPost.isBookmarked());
+            dividerBottom.setVisibility( mData.get(position+1).type == BlogPost.TYPE_SECTION ? View.GONE : View.VISIBLE );
 
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override

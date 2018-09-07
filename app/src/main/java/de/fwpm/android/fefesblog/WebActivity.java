@@ -13,23 +13,21 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -37,10 +35,7 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import de.fwpm.android.fefesblog.database.AppDatabase;
-
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.shareLink;
-import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 public class WebActivity extends AppCompatActivity {
 

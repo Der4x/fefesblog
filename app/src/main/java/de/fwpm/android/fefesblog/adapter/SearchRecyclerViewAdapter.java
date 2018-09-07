@@ -1,10 +1,8 @@
 package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;

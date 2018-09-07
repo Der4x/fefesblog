@@ -8,8 +8,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import de.fwpm.android.fefesblog.backgroundsync.SyncJobScheduler;
-
 import static de.fwpm.android.fefesblog.fragments.SettingFragment.UPDATE_INTERVALL;
 import static de.fwpm.android.fefesblog.fragments.SettingFragment.UPDATE_ITNVERVALL_DEFAULT;
 

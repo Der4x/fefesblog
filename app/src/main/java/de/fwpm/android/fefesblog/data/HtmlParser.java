@@ -1,7 +1,6 @@
 package de.fwpm.android.fefesblog.data;
 
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
