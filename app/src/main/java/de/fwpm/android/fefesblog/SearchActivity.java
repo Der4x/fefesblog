@@ -1,12 +1,15 @@
 package de.fwpm.android.fefesblog;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -59,13 +62,14 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             darkTheme = true;
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setContentView(darkTheme ? R.layout.activity_search_dark : R.layout.activity_search);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_ATOP);
-        if(darkTheme) toolbar.getContext().setTheme(R.style.AppTheme_Toolbar_Dark);
+
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.toolbar_layout);
+        if(darkTheme) appBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay_Dark);
 
         mContext = this;
         activity = this;
@@ -148,6 +152,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.search_menu, menu);
+
         MenuItem searchItem = menu.findItem(R.id.search);
         searchItem.setVisible(true);
         searchItem.setEnabled(true);
@@ -170,12 +175,16 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         mSearchView.setOnQueryTextListener(this);
         mSearchView.setOnCloseListener(this);
         mSearchView.setVisibility(View.VISIBLE);
+        mSearchView.setQueryHint("Suchbegriff");
         mSearchView.setEnabled(true);
+
+        View v = mSearchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
+        v.setBackgroundColor(Color.parseColor("#00ffffff"));
 
         // expand searchview on create
         searchItem.expandActionView();
 
-//        searchItem.getIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_IN);
+        searchItem.getIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_IN);
 
         return true;
     }

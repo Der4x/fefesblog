@@ -7,9 +7,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <!--<item name="android:navigationBarColor">@color/colorSecondary</item>-->
-        <!--<item name="android:windowLightNavigationBar">true</item>-->
-        <!--<item name="android:navigationBarDividerColor">@color/primaryTextColorDark</item>-->
+        <item name="android:navigationBarColor">@color/colorSecondary</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarDividerColor">@color/primaryTextColorDark</item>
 
     </style>
 
@@ -27,14 +27,14 @@
     <style name="SettingsActivityThemeLight" parent="Theme.AppCompat.Light">
 
         <item name="colorPrimary">@color/backgroundLight</item>
-        <item name="colorPrimaryDark">@color/colorSecondaryDark</item>
+        <item name="colorPrimaryDark">@color/backgroundLight</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/backgroundLight</item>
 
-        <!--<item name="android:navigationBarColor">@color/backgroundLight</item>-->
-        <!--<item name="android:windowLightStatusBar">true</item>-->
-        <!--<item name="android:windowLightNavigationBar">true</item>-->
-        <!--<item name="android:navigationBarDividerColor">@color/primaryTextColorDark</item>-->
+        <item name="android:navigationBarColor">@color/backgroundLight</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarDividerColor">@color/primaryTextColorDark</item>
 
     </style>
 
@@ -45,8 +45,10 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/backgroundDark</item>
 
-        <!--<item name="android:windowLightStatusBar">false</item>-->
-        <!--<item name="android:windowLightNavigationBar">false</item>-->
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
 
     </style>
 
@@ -56,7 +58,7 @@
     <style name="ActivityTheme.Primary.Base.Light" parent="Theme.AppCompat.NoActionBar">
 
         <item name="colorPrimary">@color/backgroundLight</item>
-        <item name="colorPrimaryDark">@color/colorSecondaryDark</item>
+        <item name="colorPrimaryDark">@color/backgroundLight</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="primaryTextColor">@color/primaryTextColorLight</item>
@@ -70,10 +72,10 @@
         <item name="buttonColor">@color/colorSecondaryDark</item>
         <item name="arrowColor">@color/primaryTextColorLight</item>
 
-        <!--<item name="android:navigationBarColor">@color/backgroundLight</item>-->
-        <!--<item name="android:windowLightStatusBar">true</item>-->
-        <!--<item name="android:windowLightNavigationBar">true</item>-->
-        <!--<item name="android:navigationBarDividerColor">@color/primaryTextColorDark</item>-->
+        <item name="android:navigationBarColor">@color/backgroundLight</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarDividerColor">@color/primaryTextColorDark</item>
 
     </style>
 
@@ -96,10 +98,10 @@
         <item name="buttonColor">@color/secondaryTextColorDark</item>
         <item name="arrowColor">@color/primaryTextColorDark</item>
 
-        <!--<item name="android:navigationBarColor">@color/colorPrimaryDark</item>-->
-        <!--<item name="android:windowLightStatusBar">false</item>-->
-        <!--<item name="android:windowLightNavigationBar">false</item>-->
-        <!--<item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>-->
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
 
     </style>
 

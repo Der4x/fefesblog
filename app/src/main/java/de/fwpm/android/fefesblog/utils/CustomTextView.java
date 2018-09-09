@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
@@ -136,14 +139,16 @@ public class CustomTextView {
     }
 
     private static void startCustomTab(Activity activity, String url) {
-        Bitmap iconShare = BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_stat_share);
-        Intent intent = new Intent(activity, CustomTabsBroadcastReceiver.class);
-        intent.putExtra("SHARE_URL", url);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 3212, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        Bitmap iconShare = BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_menu_share);
+//
+//        Intent intent = new Intent(activity, CustomTabsBroadcastReceiver.class);
+//        intent.putExtra("SHARE_URL", url);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 3212, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.addDefaultShareMenuItem();
         builder.setToolbarColor(ContextCompat.getColor(activity, App.getInstance().isNightModeEnabled() ? R.color.backgroundDark : R.color.backgroundLight));
-        builder.setActionButton(iconShare, "Share", pendingIntent);
+//        builder.setActionButton(iconShare, "Share", pendingIntent);
         builder.setShowTitle(true);
 
         CustomTabsIntent customTabsIntent = builder.build();

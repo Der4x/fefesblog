@@ -20,13 +20,11 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="16dp">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/toolbar_title"
@@ -34,14 +32,16 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:textColor="?attr/primaryTextColor"
-                    android:textStyle="bold"
+                    android:fontFamily="@font/roboto_medium"
                     android:textSize="20dp"
                     android:text="Fefes Blog"/>
 
                 <ImageButton
                     android:id="@+id/settings_button"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
                     android:src="@drawable/ic_stat_settings"
                     android:background="@android:color/transparent"
                     android:tint="?attr/primaryTextColor"

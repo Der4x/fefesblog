@@ -317,6 +317,9 @@ public class DetailsActivity extends AppCompatActivity {
             if (isBookmarked) bookmark_item.setIcon(R.drawable.ic_stat_bookmark);
             else bookmark_item.setIcon(R.drawable.ic_stat_bookmark_border);
 
+            bookmark_item.getIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_IN);
+
+
         }
 
     }

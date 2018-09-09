@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;

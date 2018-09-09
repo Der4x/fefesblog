@@ -40,9 +40,6 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/MainActivityThemeLight">
-            <!--<meta-data-->
-                <!--android:name="android.support.PARENT_ACTIVITY"-->
-                <!--android:value="de.fwpm.android.fefesblog.MainActivity" />-->
         </activity>
 
         <activity android:name=".WebActivity"
@@ -67,7 +64,8 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingsActivityThemeLight"/>
 
         <service
             android:name=".backgroundsync.SyncJobScheduler"
