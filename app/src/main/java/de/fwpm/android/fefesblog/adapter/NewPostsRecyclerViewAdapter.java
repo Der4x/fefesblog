@@ -208,7 +208,8 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             if(expandedItems.contains(position)) expandContent();
             else closeContent();
             setBookmarkIcon(blogPost.isBookmarked());
-            dividerBottom.setVisibility( mData.get(position+1).type == BlogPost.TYPE_SECTION ? View.GONE : View.VISIBLE );
+            if(position+1 < mData.size())
+                dividerBottom.setVisibility( mData.get(position+1).type == BlogPost.TYPE_SECTION ? View.GONE : View.VISIBLE );
 
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
