@@ -11,6 +11,7 @@ import android.widget.TextView;
  */
 
 public class PreventScrollTextView extends TextView {
+
     public PreventScrollTextView(Context context) {
         super(context);
     }

@@ -17,12 +17,6 @@ import de.fwpm.android.fefesblog.BlogPost;
 
 public class HtmlParser {
 
-
-    private static final String TAG = "HTMLPARSER";
-
-    private SharedPreferences mPrefs;
-    private SharedPreferences.Editor editor;
-
     public static ArrayList<BlogPost> parseHtml(Document doc, boolean search) {
 
         Elements dates = doc.select("h3");

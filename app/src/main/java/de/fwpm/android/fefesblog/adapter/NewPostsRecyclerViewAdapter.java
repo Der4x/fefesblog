@@ -40,7 +40,6 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     OnBottomReachListener mOnBottomReachListener;
     public static ArrayList<Integer> expandedItems;
 
-
     public NewPostsRecyclerViewAdapter(Context context, final OnItemClickListener listener, final OnBottomReachListener onBottomReachListener ,final ArrayList<BlogPost> data) {
 
         mContext = context;
@@ -188,7 +187,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                 @Override
                 public void onClick(View view) {
                     mListener.onItemClick(position,blogPost);
-                }
+            }
             };
 
             final View.OnClickListener onShareListener = new View.OnClickListener() {

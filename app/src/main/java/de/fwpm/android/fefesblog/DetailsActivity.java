@@ -152,13 +152,13 @@ public class DetailsActivity extends AppCompatActivity {
         inflater.inflate(R.menu.detail_menu, menu);
 
         bookmark_item = menu.findItem(R.id.menu_bookmark);
-        bookmark_item.setIcon(blogPost.isBookmarked() ? R.drawable.ic_stat_bookmark : R.drawable.ic_stat_bookmark_border);
+        if(blogPost != null)
+            bookmark_item.setIcon(blogPost.isBookmarked() ? R.drawable.ic_stat_bookmark : R.drawable.ic_stat_bookmark_border);
 
         bookmark_item.getIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_IN);
 
         share_item = menu.findItem(R.id.menu_share);
         share_item.getIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_IN);
-//        share_item.setIcon(R.drawable.ic_share_white_24dp);
 
         return true;
 
