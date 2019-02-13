@@ -2,6 +2,7 @@ package de.fwpm.android.fefesblog.fragments;
 
 import android.app.job.JobScheduler;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -26,6 +27,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private static final String TAG = "SETTINGFRAGMENT";
 
     public static final String PREVIEW_SIZE = "preview_size";
+    public static final String PREVIEW_SIZE_BACKUP = "preview_size_backup";
     public static final String UPDATE_INTERVALL = "update_intevall";
     public static final int UPDATE_ITNVERVALL_DEFAULT = 3600000;
     public static final String NOTIFICATION_ENABLED = "notification_enabled";
@@ -38,6 +40,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private String updateSeq;
     private String previewSize;
     private String nightMode;
+    private String previewMode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,28 +54,46 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         updateSeq = getString(R.string.pref_update_seq_key);
         previewSize = getString(R.string.pref_preview_size_key);
         nightMode = getString(R.string.pref_theme_key);
+        previewMode = getString(R.string.pref_preview_key);
 
         findPreference(automaticUpdatesKey).setOnPreferenceChangeListener(this);
         findPreference(automaticNotification).setOnPreferenceChangeListener(this);
         findPreference(previewSize).setOnPreferenceChangeListener(this);
         findPreference(updateSeq).setOnPreferenceChangeListener(this);
         findPreference(nightMode).setOnPreferenceChangeListener(this);
+        findPreference(previewMode).setOnPreferenceChangeListener(this);
 
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
+
         String key = preference.getKey();
+
         if (automaticUpdatesKey.equals(key)) {
+
             onAutomaticUpdatesToggle((Boolean) newValue);
+
         } else if (automaticNotification.equals(key)) {
+
             onAutomaticNotificationToggle((Boolean) newValue);
+
         } else if (previewSize.equals(key)) {
+
             setPreviewSize((String) newValue);
+
         } else if (updateSeq.equals(key)) {
+
             setUpdateSeq((String) newValue);
+
         } else if(nightMode.equals(key)) {
+
             onAutomaticNightmodeToggle((Boolean) newValue);
+
+        } else if(previewMode.equals(key)) {
+
+            onPreviewModeToggle((Boolean) newValue);
+
         } else {
             throw new RuntimeException("Unknown preference");
         }
@@ -125,14 +146,39 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         BookmarkRecyclerViewAdapter.MAX_LINES = newValue;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!((SwitchPreference) findPreference(automaticUpdatesKey)).isChecked())
-            findPreference(automaticNotification).setEnabled(false);
-        else {
-            findPreference(automaticNotification).setEnabled(true);
+    private void onPreviewModeToggle(Boolean showFullPost) {
+
+        findPreference(previewSize).setEnabled(!showFullPost);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences.Editor editor = prefs.edit();
+
+        int newValue;
+
+        if(showFullPost) {
+
+            newValue = Integer.MAX_VALUE;
+            editor.putInt(PREVIEW_SIZE_BACKUP, prefs.getInt(PREVIEW_SIZE, 6)).commit();
+            editor.putInt(PREVIEW_SIZE, newValue).commit();
+
+        } else {
+
+            newValue = prefs.getInt(PREVIEW_SIZE_BACKUP, 6);
+            editor.putInt(PREVIEW_SIZE, newValue).commit();
 
         }
+
+        NewPostsRecyclerViewAdapter.MAX_LINES = newValue;
+        BookmarkRecyclerViewAdapter.MAX_LINES = newValue;
+
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+        findPreference(automaticNotification).setEnabled(!((SwitchPreference) findPreference(automaticUpdatesKey)).isChecked());
+        findPreference(previewSize).setEnabled(!((SwitchPreference) findPreference(previewMode)).isChecked());
+
     }
 }

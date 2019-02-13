@@ -30,4 +30,7 @@
     <string name="pref_theme_title">Nachtmodus</string>
     <string name="pref_theme_text">App im dunklen Design verwenden</string>
     <string name="search_hint">Suchbegriff</string>
+    <string name="pref_preview_key">preview_switch_key</string>
+    <string name="pref_preview_title">Vorschau deaktivieren</string>
+    <string name="pref_preview_text">Alle Blog Posts werden komplett angezeigt.</string>
 </resources>

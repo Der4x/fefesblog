@@ -218,7 +218,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                 @Override
                 public boolean onPreDraw() {
                     if(mContent.getLineCount() <= MAX_LINES)
-                        mExpand.setVisibility(View.INVISIBLE);
+                        mExpand.setVisibility(View.GONE);
                     else
                         mExpand.setVisibility(View.VISIBLE);
                     //Todo: Handle new or update posts not expandable

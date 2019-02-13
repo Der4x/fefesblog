@@ -3,4 +3,5 @@
     <bool name="pref_background_update_default">true</bool>
     <bool name="pref_notification_default">true</bool>
     <bool name="pref_theme_default">false</bool>
+    <bool name="pref_preview_default">false</bool>
 </resources>
