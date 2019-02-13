@@ -156,7 +156,10 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
     @Override
     public boolean isHeader(int itemPosition) {
-        return mData.get(itemPosition).type == BlogPost.TYPE_SECTION;
+        if(mData.size() > itemPosition)
+            return mData.get(itemPosition).type == BlogPost.TYPE_SECTION;
+
+        return false;
     }
 
     static class DataViewHolder extends ViewHolder {

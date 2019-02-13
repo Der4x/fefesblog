@@ -74,6 +74,9 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
         } catch (IOException e) {
             e.printStackTrace();
             container.error(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            container.error(e.getMessage());
         }
 
         return null;

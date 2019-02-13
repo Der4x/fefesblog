@@ -62,10 +62,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public static Context getMainContext() {
-        return context;
-    }
-
     @Override
     public void onResume() {
         super.onResume();

@@ -55,7 +55,8 @@ public class Converter {
 
             for (int i = 0; i < keysAndValues.length; i+=2) {
 
-                links.put(keysAndValues[i], keysAndValues[i+1]);
+                if(keysAndValues.length > i+1)
+                    links.put(keysAndValues[i], keysAndValues[i+1]);
 
             }
 

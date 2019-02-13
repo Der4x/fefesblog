@@ -54,6 +54,7 @@ public class HtmlParser {
                 for(Element link : links) {
 
                     if(link.text().equals("[l]")) {
+
                         String tempurl = link.attr("abs:href");
 
                         if(!tempurl.contains("blog.fefe.de")) {
@@ -61,12 +62,8 @@ public class HtmlParser {
                         }
 
                         blogPost.setUrl(tempurl);
-                    } else {
-                        postLinks.put(link.text(), link.attr("abs:href"));
                     }
                 }
-
-                blogPost.setLinks(postLinks);
 
                 allPosts.add(blogPost);
 

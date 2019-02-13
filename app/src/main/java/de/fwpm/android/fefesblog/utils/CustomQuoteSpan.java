@@ -11,9 +11,8 @@ import android.text.style.LineBackgroundSpan;
 import android.text.style.QuoteSpan;
 import android.util.TypedValue;
 
+import de.fwpm.android.fefesblog.App;
 import de.fwpm.android.fefesblog.R;
-
-import static de.fwpm.android.fefesblog.MainActivity.getMainContext;
 
 /**
  * Created by alex on 24.02.18.
@@ -87,7 +86,7 @@ public class CustomQuoteSpan implements LeadingMarginSpan, LineBackgroundSpan {
 
     private static int getQuoteColor() {
         TypedValue typedValue = new TypedValue();
-        if (getMainContext().getTheme().resolveAttribute(R.attr.quoteTextColor, typedValue, true))
+        if (App.getInstance().getTheme().resolveAttribute(R.attr.quoteTextColor, typedValue, true))
             return typedValue.data;
         else
             return Color.GRAY;
@@ -95,7 +94,7 @@ public class CustomQuoteSpan implements LeadingMarginSpan, LineBackgroundSpan {
 
     private static int getQuoteStripeColor() {
         TypedValue typedValue = new TypedValue();
-        if (getMainContext().getTheme().resolveAttribute(R.attr.quoteStripeColor, typedValue, true))
+        if (App.getInstance().getTheme().resolveAttribute(R.attr.quoteStripeColor, typedValue, true))
             return typedValue.data;
         else
             return Color.GRAY;
