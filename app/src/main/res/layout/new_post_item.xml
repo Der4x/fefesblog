@@ -8,8 +8,6 @@
     android:background="?attr/colorPrimary"
     android:orientation="vertical">
 
-    <!--android:background="?attr/colorPrimary"-->
-
     <de.fwpm.android.fefesblog.utils.PreventScrollTextView
         android:id="@+id/post_text"
         android:layout_width="match_parent"
@@ -47,17 +45,15 @@
         android:layout_width="1dp"
         android:layout_height="24dp"
         android:layout_centerVertical="true"
-        android:layout_marginStart="8dp"
         android:background="?attr/buttonColor"
+        app:layout_constraintBottom_toBottomOf="@+id/divider_bottom"
         app:layout_constraintStart_toEndOf="@+id/bookmark"
-        app:layout_constraintTop_toBottomOf="@+id/post_text"
-        app:layout_constraintBottom_toBottomOf="@+id/divider_bottom"/>
+        app:layout_constraintTop_toBottomOf="@+id/post_text" />
 
     <ImageButton
         android:id="@+id/share"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:backgroundTint="@android:color/transparent"
         android:src="@drawable/ic_stat_share"
         android:tint="?attr/buttonColor"
@@ -69,14 +65,14 @@
         android:id="@+id/update_banner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
         android:gravity="center_vertical|end"
         android:text="Update!"
         android:textColor="?attr/buttonColor"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/divider_bottom"
         app:layout_constraintEnd_toStartOf="@+id/expand"
-        app:layout_constraintTop_toBottomOf="@+id/post_text" />
+        app:layout_constraintTop_toBottomOf="@+id/post_text"
+        tools:visibility="visible" />
 
     <ImageButton
         android:id="@+id/expand"

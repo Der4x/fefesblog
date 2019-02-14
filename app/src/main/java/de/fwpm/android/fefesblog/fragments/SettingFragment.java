@@ -177,7 +177,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     public void onResume() {
 
         super.onResume();
-        findPreference(automaticNotification).setEnabled(!((SwitchPreference) findPreference(automaticUpdatesKey)).isChecked());
+        findPreference(automaticNotification).setEnabled(((SwitchPreference) findPreference(automaticUpdatesKey)).isChecked());
         findPreference(previewSize).setEnabled(!((SwitchPreference) findPreference(previewMode)).isChecked());
 
     }

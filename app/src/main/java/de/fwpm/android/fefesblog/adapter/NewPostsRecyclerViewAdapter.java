@@ -2,6 +2,7 @@ package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -24,6 +26,7 @@ import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
+import static de.fwpm.android.fefesblog.utils.PreventScrollTextView.dpToPx;
 
 /**
  * Created by alex on 20.01.18.
@@ -214,13 +217,25 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             if(position+1 < mData.size())
                 dividerBottom.setVisibility( mData.get(position+1).type == BlogPost.TYPE_SECTION ? View.GONE : View.VISIBLE );
 
+
+
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
-                    if(mContent.getLineCount() <= MAX_LINES)
+
+                    int bannerMarginRight = 0;
+
+                    if(mContent.getLineCount() <= MAX_LINES) {
                         mExpand.setVisibility(View.GONE);
-                    else
+                        bannerMarginRight = (int) dpToPx(32);
+                    } else {
                         mExpand.setVisibility(View.VISIBLE);
+                    }
+
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) mUpdateBanner.getLayoutParams();
+                    params.setMargins(0, 0, bannerMarginRight, 0);
+                    mUpdateBanner.setLayoutParams(params);
+
                     //Todo: Handle new or update posts not expandable
                     return true;
                 }
