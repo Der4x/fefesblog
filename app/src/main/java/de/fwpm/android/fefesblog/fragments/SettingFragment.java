@@ -9,6 +9,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.util.Log;
+import android.widget.Toast;
 
 import de.fwpm.android.fefesblog.App;
 import de.fwpm.android.fefesblog.R;
@@ -37,6 +38,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     public static final String NIGHTMODE_ENABLED = "nightmode_enabled";
     public static final String AUTO_NIGHTMODE_ENABLED = "auto_nightmode_enabled";
 
+
     public static final boolean NOTIFICATION_DEFAULT = true;
 
     private String automaticUpdatesKey;
@@ -46,6 +48,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private String previewMode;
     private String nightMode;
     private String autoNightMode;
+    private String sensitivityNightmode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         nightMode = getString(R.string.pref_theme_key);
         previewMode = getString(R.string.pref_preview_key);
         autoNightMode = getString(R.string.pref_auto_theme_key);
+        sensitivityNightmode = getString(R.string.pref_sensitivity_key);
 
         findPreference(automaticUpdatesKey).setOnPreferenceChangeListener(this);
         findPreference(automaticNotification).setOnPreferenceChangeListener(this);
@@ -69,6 +73,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         findPreference(nightMode).setOnPreferenceChangeListener(this);
         findPreference(previewMode).setOnPreferenceChangeListener(this);
         findPreference(autoNightMode).setOnPreferenceChangeListener(this);
+        findPreference(sensitivityNightmode).setOnPreferenceChangeListener(this);
 
     }
 
@@ -115,6 +120,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private void onAutoNightModeToggle(Boolean isEnabled) {
 
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(AUTO_NIGHTMODE_ENABLED, isEnabled).apply();
+        findPreference(sensitivityNightmode).setEnabled(isEnabled);
         if(isEnabled)
             initSensorManager(getActivity());
         else
@@ -131,7 +137,6 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
     private void onNightmodeToggle(Boolean isEnabled) {
 
-        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(NIGHTMODE_ENABLED, isEnabled).apply();
         App.getInstance().setIsNightModeEnabled(isEnabled);
         getActivity().recreate();
         setThemeChanged();
@@ -200,6 +205,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         super.onResume();
         findPreference(automaticNotification).setEnabled(((SwitchPreference) findPreference(automaticUpdatesKey)).isChecked());
         findPreference(previewSize).setEnabled(!((SwitchPreference) findPreference(previewMode)).isChecked());
+        findPreference(sensitivityNightmode).setEnabled(((SwitchPreference) findPreference(autoNightMode)).isChecked());
 
         //Bug: no update on this switch-preference when changed setting programmatically in another activity
         ((SwitchPreference) findPreference(nightMode)).setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(NIGHTMODE_ENABLED, false));

@@ -96,7 +96,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        if(sensorEvent.values[0] > 10) {        //day
+        int sensitivityValue = PreferenceManager.getDefaultSharedPreferences(this).getInt(getString(R.string.pref_sensitivity_key), 10);
+
+        if(sensorEvent.values[0] > sensitivityValue) {          //day
 
             if(App.getInstance().isNightModeEnabled()) {
 
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 recreate();
             }
 
-        } else {                                //night
+        } else {                                                //night
 
             if(!App.getInstance().isNightModeEnabled()) {
 
@@ -114,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         sMgr.unregisterListener(this);
-        Toast.makeText(this, "" + sensorEvent.values[0], Toast.LENGTH_SHORT).show();
 
     }
 

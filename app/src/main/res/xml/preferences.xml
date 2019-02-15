@@ -61,6 +61,12 @@
             android:summary="@string/pref_auto_theme_text"
             android:defaultValue="@bool/pref_auto_theme_default"/>
 
+        <de.fwpm.android.fefesblog.utils.SeekBarPreference
+            android:key="@string/pref_sensitivity_key"
+            android:title="@string/pref_sensitivity_text"
+            android:summary="@string/pref_sensitivity_text"
+            android:defaultValue="10"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

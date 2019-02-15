@@ -299,7 +299,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
     private void updateUI() {
 
-        mHandler.post(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
@@ -308,7 +308,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
                     initAdapter();
 
                 } else {
-                    mRecyclerView.getRecycledViewPool().clear();
+
                     recyclerViewAdapter.notifyDataSetChanged();
                 }
 
