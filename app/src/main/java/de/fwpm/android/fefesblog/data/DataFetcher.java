@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import de.fwpm.android.fefesblog.App;
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
@@ -44,7 +45,7 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
 
         try {
 
-            appDatabase = AppDatabase.getInstance(container.getContext());
+            appDatabase = AppDatabase.getInstance(App.getInstance());
             if(params.length > 0) html = Jsoup.connect(params[0]).get();
             else html = Jsoup.connect(BASIC_URL).get();
 
@@ -87,10 +88,10 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
 
         super.onPostExecute(vVoid);
 
-        if(container!=null && container.getActivity()!=null) {
-            container.populateResult();
-            this.container = null;
-        }
+//        if(container!=null && container.getActivity()!=null) {
+//            container.populateResult();
+//            this.container = null;
+//        }
 
     }
 

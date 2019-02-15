@@ -9,7 +9,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -18,17 +17,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import de.fwpm.android.fefesblog.adapter.StartScreenPagerAdapter;
-import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
-import de.fwpm.android.fefesblog.fragments.SettingFragment;
+import de.fwpm.android.fefesblog.fragments.BookmarkFragment;
+import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
 
 import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
-import static de.fwpm.android.fefesblog.fragments.BookmarkFragment.jump_To_Position;
-import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.fragments.SettingFragment.AUTO_NIGHTMODE_ENABLED;
-import static de.fwpm.android.fefesblog.fragments.SettingFragment.NIGHTMODE_ENABLED;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
@@ -49,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         initToolbar();
-
         initView();
 
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true)) {
@@ -154,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         viewPager = (ViewPager) findViewById(R.id.container);
         adapter = new StartScreenPagerAdapter(this, getSupportFragmentManager());
         viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(pageChangeListener);
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -175,11 +168,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if (tab.getText().equals(getResources().getString(R.string.newposts))) {
 
-                    jumpToPosition(0);
+                    ((NewPostsFragment) adapter.getItem(0)).jumpToPosition(0);
 
                 } else if (tab.getText().equals(getResources().getString(R.string.bookmarks))) {
 
-                    jump_To_Position(0);
+                    ((BookmarkFragment) adapter.getItem(1)).jumpToPosition(0);
 
                 }
             }
@@ -193,32 +186,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-
-    private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
-
-        int currentPosition = 0;
-
-        @Override
-        public void onPageSelected(int newPosition) {
-
-            FragmentLifecycle fragmentToShow = (FragmentLifecycle) adapter.getItem(newPosition);
-            fragmentToShow.onResumeFragment();
-
-            FragmentLifecycle fragmentToHide = (FragmentLifecycle) adapter.getItem(currentPosition);
-            fragmentToHide.onPauseFragment();
-
-            currentPosition = newPosition;
-        }
-
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
-        }
-
-        public void onPageScrollStateChanged(int arg0) {
-
-        }
-
-    };
 
     public static void setThemeChanged() {
         themeChanged = true;

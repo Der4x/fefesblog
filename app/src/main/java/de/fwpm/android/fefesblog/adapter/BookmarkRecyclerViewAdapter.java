@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import de.fwpm.android.fefesblog.BlogPost;
@@ -22,7 +23,6 @@ import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.SettingFragment;
 import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
-import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 
 /**
@@ -33,7 +33,7 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
     private static final String TAG = "BMRecyclerViewAdapter";
     public static int MAX_LINES;
 
-    private ArrayList<BlogPost> mData;
+    private List<BlogPost> mData;
     private Context mContext;
     private OnItemClickListener mListener;
     private static ArrayList<Integer> expandedItems;
@@ -83,10 +83,52 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
                     mListener.onShareClick(position,blogPost);
                 }
             };
+            final View.OnClickListener onBookmarkListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onBookMarkClick(position,blogPost);
+                }
+            };
+            final View.OnClickListener onExpandListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (mContent.getMaxLines() == MAX_LINES) {
+                        expandContent();
+                        expandedItems.add(position);
+                    } else {
+                        closeContent();
+                        expandedItems.remove((Integer) position);
+                        mListener.onExpandListener(position-1);
+
+                    }
+                }
+            };
             mContent.setOnClickListener(onClickListener);
             mDate.setOnClickListener(onClickListener);
             mShare.setOnClickListener(onShareListener);
+            mBookmark.setOnClickListener(onBookmarkListener);
+            mExpand.setOnClickListener(onExpandListener);
         }
+
+        private void expandContent() {
+            mContent.setMaxLines(Integer.MAX_VALUE);
+            mContent.setEllipsize(null);
+            mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_up);
+        }
+
+        private void closeContent() {
+            mContent.setMaxLines(MAX_LINES);
+            mContent.setEllipsize(TextUtils.TruncateAt.END);
+            mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_down);
+        }
+
+    }
+
+    public void dataChanged(List<BlogPost> newData) {
+
+        mData = newData;
+        notifyDataSetChanged();
 
     }
 
@@ -100,8 +142,8 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final BlogPost blogPost = mData.get(position);
 
-        if(expandedItems.contains(position)) expandContent(holder);
-        else closeContent(holder);
+        if(expandedItems.contains(position)) holder.expandContent();
+        else holder.closeContent();
 
         setBookmarkIcon(holder, blogPost);
 
@@ -113,6 +155,11 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
             holder.mContent.setText(blogPost.getText());
             Log.d(TAG, "onBindViewHolder: " + blogPost.getHtmlText());
         }
+
+        holder.setClickListener(position,blogPost);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
+        holder.mDate.setText(dateFormat.format(blogPost.getDate()));
 
         holder.mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
@@ -126,55 +173,38 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
             }
         });
 
-        holder.setClickListener(position,blogPost);
+//        holder.mBookmark.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                blogPost.setBookmarked(blogPost.isBookmarked() ? false : true);
+//                setBookmarkIcon(holder, blogPost);
+//
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        AppDatabase.getInstance(mContext).blogPostDao().updateBlogPost(blogPost);
+//                    }
+//                }).start();
+//
+//            }
+//        });
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
-        holder.mDate.setText(dateFormat.format(blogPost.getDate()));
-
-        holder.mBookmark.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                blogPost.setBookmarked(blogPost.isBookmarked() ? false : true);
-                setBookmarkIcon(holder, blogPost);
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppDatabase.getInstance(mContext).blogPostDao().updateBlogPost(blogPost);
-                    }
-                }).start();
-
-            }
-        });
-
-        holder.mExpand.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (blogPost.isUpdate()) {
-
-                    blogPost.setUpdate(false);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            AppDatabase.getInstance(mContext).blogPostDao().updateBlogPost(blogPost);
-                        }
-                    }).start();
-
-                }
-
-                if (holder.mContent.getMaxLines() == MAX_LINES) {
-                    expandContent(holder);
-                    expandedItems.add(position);
-                } else {
-                    closeContent(holder);
-                    jumpToPosition((position == 0) ? 0 : position - 1);
-                    expandedItems.remove((Integer) position);
-                }
-
-            }
-        });
+//        holder.mExpand.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                if (holder.mContent.getMaxLines() == MAX_LINES) {
+//                    expandContent(holder);
+//                    expandedItems.add(position);
+//                } else {
+//                    closeContent(holder);
+////                    jumpToPosition((position == 0) ? 0 : position - 1);
+//                    expandedItems.remove((Integer) position);
+//                }
+//
+//            }
+//        });
 
     }
 
@@ -183,27 +213,29 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         return mData.size();
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(int position,BlogPost blogPost);
-        void onShareClick(int position, BlogPost blogPost);
-    }
-
     private void setBookmarkIcon(BookmarkRecyclerViewAdapter.ViewHolder holder, BlogPost blogPost) {
         if (blogPost.isBookmarked())
             holder.mBookmark.setImageResource(R.drawable.ic_stat_bookmark);
         else holder.mBookmark.setImageResource(R.drawable.ic_stat_bookmark_border);
     }
 
-    private void expandContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
-        holder.mContent.setMaxLines(Integer.MAX_VALUE);
-        holder.mContent.setEllipsize(null);
-        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_up);
-    }
+//    private void expandContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
+//        holder.mContent.setMaxLines(Integer.MAX_VALUE);
+//        holder.mContent.setEllipsize(null);
+//        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_up);
+//    }
+//
+//    private void closeContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
+//        holder.mContent.setMaxLines(MAX_LINES);
+//        holder.mContent.setEllipsize(TextUtils.TruncateAt.END);
+//        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_down);
+//    }
 
-    private void closeContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
-        holder.mContent.setMaxLines(MAX_LINES);
-        holder.mContent.setEllipsize(TextUtils.TruncateAt.END);
-        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_down);
+    public interface OnItemClickListener {
+        void onItemClick(int position,BlogPost blogPost);
+        void onBookMarkClick(int position, BlogPost blogPost);
+        void onShareClick(int position, BlogPost blogPost);
+        void onExpandListener(int scrollTo);
     }
 
 }

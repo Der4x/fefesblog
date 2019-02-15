@@ -16,16 +16,15 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.R;
-import de.fwpm.android.fefesblog.database.AppDatabase;
-import de.fwpm.android.fefesblog.fragments.SettingFragment;
 import de.fwpm.android.fefesblog.utils.HeaderItemDecoration;
 import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
-import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
+import static de.fwpm.android.fefesblog.fragments.SettingFragment.PREVIEW_SIZE;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 import static de.fwpm.android.fefesblog.utils.PreventScrollTextView.dpToPx;
 
@@ -37,28 +36,36 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
     public static int MAX_LINES;
 
-    static ArrayList<BlogPost> mData;
+    public static List<BlogPost> mData;
     Context mContext;
     static OnItemClickListener mListener;
     OnBottomReachListener mOnBottomReachListener;
     public static ArrayList<Integer> expandedItems;
 
-    public NewPostsRecyclerViewAdapter(Context context, final OnItemClickListener listener, final OnBottomReachListener onBottomReachListener ,final ArrayList<BlogPost> data) {
+    public NewPostsRecyclerViewAdapter(Context context, final OnItemClickListener listener, final OnBottomReachListener onBottomReachListener ,final List<BlogPost> data) {
 
         mContext = context;
         mData = data;
         mListener = listener;
         mOnBottomReachListener = onBottomReachListener;
-        MAX_LINES = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(SettingFragment.PREVIEW_SIZE, 6);
+        MAX_LINES = PreferenceManager.getDefaultSharedPreferences(mContext).getInt(PREVIEW_SIZE, 6);
         expandedItems = new ArrayList<>();
+
+    }
+
+    public void dataChanged(List<BlogPost> newData) {
+
+        mData = newData;
+        notifyDataSetChanged();
 
     }
 
     public interface OnItemClickListener {
 
         void onItemClick(int position, BlogPost blogPost);
-
         void onShareClick(int position, BlogPost blogPost);
+        void onBookmarkClick(int position, BlogPost blogPost);
+        void onStateChangedListener(int position, BlogPost blogPost);
 
     }
 
@@ -199,8 +206,32 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                     mListener.onShareClick(position,blogPost);
                 }
             };
+            final View.OnClickListener onBookmarkListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onBookmarkClick(position,blogPost);
+                }
+            };
+            final View.OnClickListener onExpandListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if(mContent.getMaxLines() == MAX_LINES) {
+                        expandContent();
+                        expandedItems.add(position);
+                        mListener.onStateChangedListener(-1, blogPost);
+                    } else {
+                        closeContent();
+                        expandedItems.remove((Integer) position);
+                        mListener.onStateChangedListener(position-1, blogPost);
+                    }
+                }
+            };
             mContent.setOnClickListener(onClickListener);
             mShare.setOnClickListener(onShareListener);
+            mBookmark.setOnClickListener(onBookmarkListener);
+            mExpand.setOnClickListener(onExpandListener);
+
         }
 
         @Override
@@ -213,8 +244,6 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
             setBookmarkIcon(blogPost.isBookmarked());
             if(position+1 < mData.size())
                 dividerBottom.setVisibility( mData.get(position+1).type == BlogPost.TYPE_SECTION ? View.GONE : View.VISIBLE );
-
-
 
             mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -235,53 +264,6 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
                     //Todo: Handle new or update posts not expandable
                     return true;
-                }
-            });
-
-            mBookmark.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    blogPost.setBookmarked(blogPost.isBookmarked() ? false : true);
-                    setBookmarkIcon(blogPost.isBookmarked());
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            AppDatabase.getInstance(adapter.mContext).blogPostDao().updateBlogPost(blogPost);
-                        }
-                    }).start();
-
-                }
-            });
-
-            mExpand.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    if(blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
-
-                        blogPost.setUpdate(false);
-                        blogPost.setHasBeenRead(true);
-                        setBanner(blogPost);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                AppDatabase.getInstance(adapter.mContext).blogPostDao().updateBlogPost(blogPost);
-                            }
-                        }).start();
-
-                    }
-
-                    if(mContent.getMaxLines() == MAX_LINES) {
-                        expandContent();
-                        expandedItems.add(position);
-                    } else {
-                        closeContent();
-                        jumpToPosition((position == 0) ? 0 : position-1);
-                        expandedItems.remove((Integer) position);
-                    }
-
                 }
             });
 

@@ -1,9 +1,12 @@
 package de.fwpm.android.fefesblog.fragments;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
@@ -16,8 +19,10 @@ import android.widget.LinearLayout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.fwpm.android.fefesblog.BlogPost;
+import de.fwpm.android.fefesblog.BlogPostViewModel;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
@@ -33,16 +38,15 @@ import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
  * Created by alex on 20.01.18.
  */
 
-public class BookmarkFragment extends Fragment implements FragmentLifecycle{
+public class BookmarkFragment extends Fragment{
 
     private static String TAG = "BookmarkFragment";
 
+    private BlogPostViewModel viewModel;
     private RecyclerView mRecyclerView;
     private BookmarkRecyclerViewAdapter recyclerViewAdapter;
-    private ArrayList<BlogPost> mList;
 
     private Context mContext;
-    private Handler mHandler;
     private static RecyclerView.LayoutManager mLayoutManager;
     private static RecyclerView.SmoothScroller smoothScroller;
     private View view;
@@ -65,32 +69,34 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
         view =  inflater.inflate(R.layout.fragment_bookmarks, container, false);
 
-        mHandler = new Handler();
         mContext = getContext();
 
         initView();
-        getData();
+        initViewModel();
 
         return view;
 
     }
 
+    private void initViewModel() {
+
+        viewModel = ViewModelProviders.of(this).get(BlogPostViewModel.class);
+
+        viewModel.getBookmarkedPosts().observe(this, new Observer<List<BlogPost>>() {
+            @Override
+            public void onChanged(@Nullable List<BlogPost> blogPosts) {
+
+                showNoBookmarkScreen(blogPosts.size() == 0);
+                recyclerViewAdapter.dataChanged(blogPosts);
+
+            }
+        });
+
+    }
+
     @Override
     public void onResume() {
-
         super.onResume();
-        this.getData();
-
-    }
-
-    @Override
-    public void onPauseFragment() {
-
-    }
-
-    @Override
-    public void onResumeFragment() {
-        this.getData();
     }
 
     private void initView() {
@@ -117,8 +123,6 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
 
         });
 
-        mList = new ArrayList<>();
-
         recyclerViewAdapter = new BookmarkRecyclerViewAdapter(mContext,
                 new BookmarkRecyclerViewAdapter.OnItemClickListener() {
 
@@ -141,64 +145,41 @@ public class BookmarkFragment extends Fragment implements FragmentLifecycle{
                             startActivity(intent);
                         }
 
+                    }
 
-
+                    @Override
+                    public void onBookMarkClick(int position, BlogPost blogPost) {
+                        blogPost.setBookmarked(!blogPost.isBookmarked());
+                        viewModel.updatePost(blogPost);
                     }
 
                     @Override
                     public void onShareClick(int position, BlogPost blogPost) {
                         sharePost(mContext, blogPost);
                     }
-                },mList);
+
+                    @Override
+                    public void onExpandListener(int scrollTo) {
+                        jumpToPosition(scrollTo);
+                    }
+
+
+                },new ArrayList<BlogPost>());
 
         mRecyclerView.setAdapter(recyclerViewAdapter);
     }
 
-    private void getData() {
+    public void jumpToPosition(int position) {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                if(mList==null){
-                    mList = new ArrayList<>();
-                }else mList.clear();
-
-                mList.addAll((ArrayList<BlogPost>) AppDatabase.getInstance(getContext()).blogPostDao().getAllBookmarkedPosts());
-
-                updateUI();
-
-            }
-        }).start();
-
-    }
-
-    private void updateUI() {
-
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-
-                recyclerViewAdapter.notifyDataSetChanged();
-                if(mList.isEmpty()) showNoBookmarkScreen(true);
-                else showNoBookmarkScreen(false);
-
-            }
-        });
-
-    }
-
-    public static void jump_To_Position(int position) {
-
-        smoothScroller.setTargetPosition(position);
-        mLayoutManager.startSmoothScroll(smoothScroller);
+        if(position >= 0 && ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstVisibleItemPosition() > position) {
+            smoothScroller.setTargetPosition(position);
+            mLayoutManager.startSmoothScroll(smoothScroller);
+        }
 
     }
 
     private void showNoBookmarkScreen(boolean show) {
-
-        ((LinearLayout) view.findViewById(R.id.noBookmarkScreen)).setVisibility(show ? View.VISIBLE : View.GONE);
-
+        view.findViewById(R.id.noBookmarkScreen).setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
 

@@ -1,11 +1,14 @@
 package de.fwpm.android.fefesblog.fragments;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,13 +21,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import de.fwpm.android.fefesblog.BlogPost;
+import de.fwpm.android.fefesblog.BlogPostViewModel;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
@@ -44,7 +50,7 @@ import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
  * Created by alex on 20.01.18.
  */
 
-public class NewPostsFragment extends Fragment implements FragmentLifecycle {
+public class NewPostsFragment extends Fragment {
 
     private static final String TAG = "NewsPostFragment";
     private static final long FIVE_MINUTES = 5 * 60 * 1000;
@@ -53,17 +59,12 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
     private NewPostsRecyclerViewAdapter recyclerViewAdapter;
     private SwipeRefreshLayout mNewPostSwipeRefresh;
     private static LinearLayoutManager mLayoutManager;
-    private static RecyclerView.SmoothScroller smoothScroller;
-
-    private ArrayList<BlogPost> mListWithHeaders;
-    private Handler mHandler;
 
     private Context context;
     private NetworkUtils networkUtils;
-    private DataFetcher dataFetcher;
+    private BlogPostViewModel viewModel;
 
     long lastSyncTimestamp;
-    boolean newPosts;
 
     View view;
 
@@ -85,18 +86,12 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
 
         view = inflater.inflate(R.layout.fragment_newposts, container, false);
 
-        mHandler = new Handler();
-        mListWithHeaders = new ArrayList<>();
         context = getContext();
         networkUtils = new NetworkUtils(context);
 
-        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean firstStart = mPrefs.getBoolean(FIRST_START, true);
-
         initView();
-
-        if (firstStart) mPrefs.edit().putBoolean(FIRST_START, false).apply();
-        else this.getData();
+        initAdapter();
+        initViewModel();
 
         return view;
 
@@ -108,80 +103,11 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         super.onResume();
         if (lastSyncTimestamp == 0 || Math.abs(System.currentTimeMillis() - lastSyncTimestamp) > FIVE_MINUTES)
             startSync();
-        else this.getData();
-
     }
 
     @Override
     public void onDestroy() {
-
         super.onDestroy();
-        if (dataFetcher != null) dataFetcher.cancel(true);
-
-    }
-
-    @Override
-    public void onPauseFragment() {
-
-    }
-
-    @Override
-    public void onResumeFragment() {
-        this.getData();
-    }
-
-    private void startSync() {
-
-        lastSyncTimestamp = System.currentTimeMillis();
-
-        if (networkUtils.isConnectingToInternet()) {
-            dataFetcher = new DataFetcher(this);
-            dataFetcher.execute();
-            setRefresh(true);
-        } else {
-
-            networkUtils.noNetwork(mNewPostSwipeRefresh);
-            setRefresh(false);
-        }
-
-    }
-
-    private void getData() {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                ArrayList<BlogPost> data = (ArrayList<BlogPost>) AppDatabase.getInstance(context).blogPostDao().getAllPosts();
-
-                if (mListWithHeaders.size() > 1 && !data.get(0).getUrl().equals(mListWithHeaders.get(1).getUrl()))
-                    newPosts = true;
-
-                mListWithHeaders.clear();
-
-                Date firstDate = data.get(0).getDate();
-                addHeader(mListWithHeaders, firstDate);
-
-                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd", Locale.GERMANY);
-
-                for (BlogPost blogPost : data) {
-
-                    if (fmt.format(blogPost.getDate()).equals(fmt.format(firstDate))) {
-
-                        mListWithHeaders.add(blogPost);
-
-                    } else {
-
-                        firstDate = blogPost.getDate();
-                        addHeader(mListWithHeaders, firstDate);
-                        mListWithHeaders.add(blogPost);
-
-                    }
-                }
-                updateUI();
-
-            }
-        }).start();
     }
 
     private void initView() {
@@ -200,8 +126,6 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        initAdapter();
-
     }
 
     private void initAdapter() {
@@ -209,6 +133,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         recyclerViewAdapter
                 = new NewPostsRecyclerViewAdapter(getContext(),
                 new NewPostsRecyclerViewAdapter.OnItemClickListener() {
+
                     @Override
                     public void onItemClick(int position, final BlogPost blogPost) {
                         handlePostClick(blogPost);
@@ -218,26 +143,37 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
                     public void onShareClick(int position, BlogPost blogPost) {
                         sharePost(context, blogPost);
                     }
+
+                    @Override
+                    public void onBookmarkClick(int position, BlogPost blogPost) {
+                        blogPost.setBookmarked(!blogPost.isBookmarked());
+                        viewModel.updatePost(blogPost);
+                    }
+
+                    @Override
+                    public void onStateChangedListener(int position, BlogPost blogPost) {
+
+                        if(blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
+
+                            blogPost.setUpdate(false);
+                            blogPost.setHasBeenRead(true);
+                            viewModel.updatePost(blogPost);
+
+                        }
+
+                        jumpToPosition(position);
+                    }
                 },
                 new NewPostsRecyclerViewAdapter.OnBottomReachListener() {
                     @Override
                     public void onBottom(int position) {
-                        Log.d(TAG, "onBottom" + position);
-                        if(!mListWithHeaders.isEmpty()) loadMoreData();
-
+                        loadMoreData();
                     }
                 },
-                mListWithHeaders);
+                new ArrayList<BlogPost>());
 
         mRecyclerView.addItemDecoration(new HeaderItemDecoration(mRecyclerView, (HeaderItemDecoration.StickyHeaderInterface) recyclerViewAdapter));
         mRecyclerView.setAdapter(recyclerViewAdapter);
-
-        smoothScroller = new LinearSmoothScroller(context) {
-            @Override
-            protected int getVerticalSnapPreference() {
-                return LinearSmoothScroller.SNAP_TO_START;
-            }
-        };
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -250,17 +186,66 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         });
     }
 
+    private void initViewModel() {
+
+        viewModel = ViewModelProviders.of(this).get(BlogPostViewModel.class);
+
+        viewModel.getAllPosts().observe(this, new Observer<List<BlogPost>>() {
+            @Override
+            public void onChanged(@Nullable List<BlogPost> blogPosts) {
+
+                if(blogPosts != null && blogPosts.size() > 0) {
+
+                    if(haveNewPosts(blogPosts)) {
+
+                        expandedItems.clear();
+                        if(mLayoutManager.findFirstVisibleItemPosition() > 0)
+                            showSnackbar();
+
+                    }
+
+                    recyclerViewAdapter.dataChanged(addHeaders(blogPosts));
+                    setRefresh(false);
+
+                }
+            }
+        });
+
+    }
+
+    private void startSync() {
+
+        lastSyncTimestamp = System.currentTimeMillis();
+
+        if (networkUtils.isConnectingToInternet()) {
+            viewModel.syncPosts(this);
+            setRefresh(true);
+        } else {
+            networkUtils.noNetwork(mNewPostSwipeRefresh);
+            setRefresh(false);
+        }
+
+    }
+
+    private void loadMoreData() {
+
+        if (networkUtils.isConnectingToInternet()) {
+            viewModel.loadOlderPosts(this);
+            setRefresh(true);
+        } else {
+            networkUtils.noNetwork(mNewPostSwipeRefresh);
+            setRefresh(false);
+        }
+
+    }
+
     private void handlePostClick(final BlogPost blogPost) {
+
         if (blogPost.isUpdate() || !blogPost.isHasBeenRead()) {
 
             blogPost.setUpdate(false);
             blogPost.setHasBeenRead(true);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    AppDatabase.getInstance(context).blogPostDao().updateBlogPost(blogPost);
-                }
-            }).start();
+            viewModel.updatePost(blogPost);
 
         }
 
@@ -282,10 +267,21 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         }
     }
 
-    public static void jumpToPosition(int position) {
+    public void jumpToPosition(int position) {
 
-        smoothScroller.setTargetPosition(position);
-        mLayoutManager.startSmoothScroll(smoothScroller);
+        if (position >= 0 && ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstVisibleItemPosition() > position) {
+
+            LinearSmoothScroller smoothScroller = new LinearSmoothScroller(context) {
+                @Override
+                protected int getVerticalSnapPreference() {
+                    return LinearSmoothScroller.SNAP_TO_START;
+                }
+            };
+
+            smoothScroller.setTargetPosition(position);
+            mLayoutManager.startSmoothScroll(smoothScroller);
+
+        }
 
     }
 
@@ -293,99 +289,49 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
         mNewPostSwipeRefresh.setRefreshing(bool);
     }
 
-    public void populateResult() {
-        getData();
-    }
-
-    private void updateUI() {
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                if (mLayoutManager.findFirstVisibleItemPosition() == 0 && newPosts) {
-
-                    initAdapter();
-
-                } else {
-
-                    recyclerViewAdapter.notifyDataSetChanged();
-                }
-
-                setRefresh(false);
-
-                if (newPosts && mLayoutManager.findFirstVisibleItemPosition() > 0) {
-
-                    expandedItems.clear();
-                    Snackbar bar = Snackbar.make(mNewPostSwipeRefresh, "Neue Posts", Snackbar.LENGTH_LONG)
-                            .setDuration(5000)
-                            .setAction("ANZEIGEN", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    jumpToPosition(0);
-                                }
-                            });
-
-                    bar.show();
-
-                }
-
-                newPosts = false;
-
-            }
-        });
-    }
-
-    private void loadMoreData() {
-
-        String nextUrl = "";
-        int counter;
-
-        if (mListWithHeaders.size() > 1) {
-
-            counter = mListWithHeaders.size() - 1;
-
-            while (nextUrl.equals("")) {
-
-                try {
-
-                    String nextMonthurl = mListWithHeaders.get(counter).getNextUrl();
-
-                    if (mListWithHeaders.get(counter).getNextUrl() != null) {
-
-                        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMM", Locale.GERMANY);
-
-                        Date before = fmt.parse(nextMonthurl.substring(nextMonthurl.length() - 6));
-
-                        Date lastdate = mListWithHeaders.get(counter).getDate();
-
-                        if (before.after((lastdate))) {
-
-                            Calendar nextMonth = Calendar.getInstance();
-                            nextMonth.setTimeInMillis(before.getTime());
-                            nextMonth.add(Calendar.MONTH, -1);
-                            nextUrl = "https://blog.fefe.de//?mon=" + fmt.format(nextMonth.getTime());
-
-                        } else nextUrl = mListWithHeaders.get(counter).getNextUrl();
-
+    private void showSnackbar() {
+        Snackbar bar = Snackbar.make(mNewPostSwipeRefresh, "Neue Posts", Snackbar.LENGTH_LONG)
+                .setDuration(5000)
+                .setAction("ANZEIGEN", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        jumpToPosition(0);
                     }
-                } catch (Exception e) {
-                    Toast.makeText(context, "Fehler 101", Toast.LENGTH_SHORT).show();
-                }
-                counter--;
+                });
+
+        bar.show();
+    }
+
+    private boolean haveNewPosts(List<BlogPost> newData) {
+        if (recyclerViewAdapter.mData.size() > 0) return !recyclerViewAdapter.mData.get(1).getUrl().equals(newData.get(0).getUrl());
+        else return false;
+    }
+
+    private List<BlogPost> addHeaders(List<BlogPost> list) {
+
+        ArrayList<BlogPost> headerList = new ArrayList<>();
+
+        Date firstDate = list.get(0).getDate();
+        addHeader(headerList, firstDate);
+
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd", Locale.GERMANY);
+
+        for (BlogPost blogPost : list) {
+
+            if (fmt.format(blogPost.getDate()).equals(fmt.format(firstDate))) {
+
+                headerList.add(blogPost);
+
+            } else {
+
+                firstDate = blogPost.getDate();
+                addHeader(headerList, firstDate);
+                headerList.add(blogPost);
 
             }
-
         }
 
-        if (networkUtils.isConnectingToInternet()) {
-            dataFetcher = new DataFetcher(this);
-            dataFetcher.execute(nextUrl);
-            setRefresh(true);
-        } else {
-            networkUtils.noNetwork(mNewPostSwipeRefresh);
-            setRefresh(false);
-        }
+        return headerList;
 
     }
 

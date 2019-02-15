@@ -1,5 +1,6 @@
 package de.fwpm.android.fefesblog.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -19,7 +20,7 @@ import de.fwpm.android.fefesblog.BlogPost;
 public interface BlogPostDao {
 
     @Query("SELECT * FROM blogpost ORDER BY date DESC")
-    List<BlogPost> getAllPosts();
+    LiveData<List<BlogPost>> getAllPosts();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertList(ArrayList<BlogPost> listOfPosts);
@@ -37,6 +38,6 @@ public interface BlogPostDao {
     List<BlogPost> searchPosts(String query);
 
     @Query("SELECT * FROM blogpost WHERE bookmarked = 1 ORDER BY date DESC")
-    List<BlogPost> getAllBookmarkedPosts();
+    LiveData<List<BlogPost>> getAllBookmarkedPosts();
 
 }

@@ -23,7 +23,6 @@ import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.SettingFragment;
 import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
-import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
@@ -162,7 +161,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
                     expandContent(holder);
                 } else {
                     closeContent(holder);
-                    jumpToPosition((position == 0) ? 0 : position - 1);
+//                    jumpToPosition((position == 0) ? 0 : position - 1);
                 }
 
             }
