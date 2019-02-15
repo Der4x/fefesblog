@@ -2,6 +2,7 @@ package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -34,7 +35,6 @@ import static de.fwpm.android.fefesblog.utils.PreventScrollTextView.dpToPx;
 
 public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRecyclerViewAdapter.ViewHolder> implements HeaderItemDecoration.StickyHeaderInterface {
 
-    private static final String TAG = "NPRecyclerViewAdapter";
     public static int MAX_LINES;
 
     static ArrayList<BlogPost> mData;
@@ -64,10 +64,6 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
     public interface OnBottomReachListener {
         void onBottom(int position);
-    }
-
-    public interface OnBlogPostClickListener {
-
     }
 
     static abstract class ViewHolder extends RecyclerView.ViewHolder {
@@ -102,8 +98,9 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
         abstract public void setClickListener(final BlogPost blogPost,final int position);
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return ViewHolder.createViewHolder(parent, viewType);
     }
 

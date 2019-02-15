@@ -25,6 +25,7 @@ public class App extends Application {
 
     public void setIsNightModeEnabled(boolean isNightModeEnabled) {
         this.isNightModeEnabled = isNightModeEnabled;
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(NIGHTMODE_ENABLED, isNightModeEnabled).apply();
     }
 
     public static App getInstance() {

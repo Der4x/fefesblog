@@ -55,6 +55,12 @@
             android:summary="@string/pref_theme_text"
             android:defaultValue="@bool/pref_theme_default"/>
 
+        <SwitchPreference
+            android:key="@string/pref_auto_theme_key"
+            android:title="@string/pref_auto_theme_title"
+            android:summary="@string/pref_auto_theme_text"
+            android:defaultValue="@bool/pref_auto_theme_default"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

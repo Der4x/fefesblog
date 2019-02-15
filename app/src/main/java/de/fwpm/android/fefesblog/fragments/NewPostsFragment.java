@@ -308,6 +308,7 @@ public class NewPostsFragment extends Fragment implements FragmentLifecycle {
                     initAdapter();
 
                 } else {
+                    mRecyclerView.getRecycledViewPool().clear();
                     recyclerViewAdapter.notifyDataSetChanged();
                 }
 

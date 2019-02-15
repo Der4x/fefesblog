@@ -15,6 +15,8 @@ import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
 
+import static de.fwpm.android.fefesblog.MainActivity.destroySensorManager;
+import static de.fwpm.android.fefesblog.MainActivity.initSensorManager;
 import static de.fwpm.android.fefesblog.MainActivity.setThemeChanged;
 import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
 
@@ -24,6 +26,7 @@ import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJo
  */
 
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
+
     private static final String TAG = "SETTINGFRAGMENT";
 
     public static final String PREVIEW_SIZE = "preview_size";
@@ -31,7 +34,8 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     public static final String UPDATE_INTERVALL = "update_intevall";
     public static final int UPDATE_ITNVERVALL_DEFAULT = 3600000;
     public static final String NOTIFICATION_ENABLED = "notification_enabled";
-    public static final String NIGHTMODE_ENABLED = "notification_enabled";
+    public static final String NIGHTMODE_ENABLED = "nightmode_enabled";
+    public static final String AUTO_NIGHTMODE_ENABLED = "auto_nightmode_enabled";
 
     public static final boolean NOTIFICATION_DEFAULT = true;
 
@@ -39,8 +43,9 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private String automaticNotification;
     private String updateSeq;
     private String previewSize;
-    private String nightMode;
     private String previewMode;
+    private String nightMode;
+    private String autoNightMode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +60,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         previewSize = getString(R.string.pref_preview_size_key);
         nightMode = getString(R.string.pref_theme_key);
         previewMode = getString(R.string.pref_preview_key);
+        autoNightMode = getString(R.string.pref_auto_theme_key);
 
         findPreference(automaticUpdatesKey).setOnPreferenceChangeListener(this);
         findPreference(automaticNotification).setOnPreferenceChangeListener(this);
@@ -62,6 +68,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         findPreference(updateSeq).setOnPreferenceChangeListener(this);
         findPreference(nightMode).setOnPreferenceChangeListener(this);
         findPreference(previewMode).setOnPreferenceChangeListener(this);
+        findPreference(autoNightMode).setOnPreferenceChangeListener(this);
 
     }
 
@@ -88,17 +95,31 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         } else if(nightMode.equals(key)) {
 
-            onAutomaticNightmodeToggle((Boolean) newValue);
+            onNightmodeToggle((Boolean) newValue);
 
         } else if(previewMode.equals(key)) {
 
             onPreviewModeToggle((Boolean) newValue);
 
-        } else {
-            throw new RuntimeException("Unknown preference");
+        } else if(autoNightMode.equals(key)) {
+
+            onAutoNightModeToggle((Boolean) newValue);
+
         }
+        else throw new RuntimeException("Unknown preference");
+
 
         return true;
+    }
+
+    private void onAutoNightModeToggle(Boolean isEnabled) {
+
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(AUTO_NIGHTMODE_ENABLED, isEnabled).apply();
+        if(isEnabled)
+            initSensorManager(getActivity());
+        else
+            destroySensorManager();
+
     }
 
 
@@ -108,7 +129,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
     }
 
-    private void onAutomaticNightmodeToggle(Boolean isEnabled) {
+    private void onNightmodeToggle(Boolean isEnabled) {
 
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(NIGHTMODE_ENABLED, isEnabled).apply();
         App.getInstance().setIsNightModeEnabled(isEnabled);
@@ -133,7 +154,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
     public void setUpdateSeq(String newValue) {
         int uodateseq = Integer.parseInt(newValue);
-        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt(UPDATE_INTERVALL, uodateseq).commit();
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt(UPDATE_INTERVALL, uodateseq).apply();
         ((JobScheduler) getActivity().getSystemService(Context.JOB_SCHEDULER_SERVICE)).cancel(1234);
         scheduleJob(getActivity());
 
@@ -141,7 +162,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
     public void setPreviewSize(String newValueString) {
         int newValue = Integer.parseInt(newValueString);
-        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt(PREVIEW_SIZE, newValue).commit();
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt(PREVIEW_SIZE, newValue).apply();
         NewPostsRecyclerViewAdapter.MAX_LINES = newValue;
         BookmarkRecyclerViewAdapter.MAX_LINES = newValue;
     }
@@ -158,7 +179,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         if(showFullPost) {
 
             newValue = Integer.MAX_VALUE;
-            editor.putInt(PREVIEW_SIZE_BACKUP, prefs.getInt(PREVIEW_SIZE, 6)).commit();
+            editor.putInt(PREVIEW_SIZE_BACKUP, prefs.getInt(PREVIEW_SIZE, 6)).apply();
             editor.putInt(PREVIEW_SIZE, newValue).commit();
 
         } else {
@@ -180,5 +201,9 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         findPreference(automaticNotification).setEnabled(((SwitchPreference) findPreference(automaticUpdatesKey)).isChecked());
         findPreference(previewSize).setEnabled(!((SwitchPreference) findPreference(previewMode)).isChecked());
 
+        //Bug: no update on this switch-preference when changed setting programmatically in another activity
+        ((SwitchPreference) findPreference(nightMode)).setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(NIGHTMODE_ENABLED, false));
+
     }
+
 }

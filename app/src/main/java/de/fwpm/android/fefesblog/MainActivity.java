@@ -3,8 +3,13 @@ package de.fwpm.android.fefesblog;
 
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.preference.SwitchPreference;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -13,15 +18,19 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import de.fwpm.android.fefesblog.adapter.StartScreenPagerAdapter;
 import de.fwpm.android.fefesblog.fragments.FragmentLifecycle;
+import de.fwpm.android.fefesblog.fragments.SettingFragment;
 
 import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
 import static de.fwpm.android.fefesblog.fragments.BookmarkFragment.jump_To_Position;
 import static de.fwpm.android.fefesblog.fragments.NewPostsFragment.jumpToPosition;
+import static de.fwpm.android.fefesblog.fragments.SettingFragment.AUTO_NIGHTMODE_ENABLED;
+import static de.fwpm.android.fefesblog.fragments.SettingFragment.NIGHTMODE_ENABLED;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
     private static final String TAG = "MAINACTIVITY";
     public static final String FIRST_START = "firststart";
@@ -30,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private StartScreenPagerAdapter adapter;
     public static FloatingActionButton fab;
     public static boolean themeChanged;
+    private static SensorManager sMgr;
 
-    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,41 +48,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        context = this;
-
         initToolbar();
 
         initView();
 
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true)) {
-
             scheduleJob(this);
-
         }
 
-    }
-
-    private void initToolbar() {
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        ImageButton settingsButton = (ImageButton) toolbar.findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(this);
-        setSupportActionBar(toolbar);
+        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(AUTO_NIGHTMODE_ENABLED, false)) {
+            initSensorManager(this);
+        }
 
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
         if (themeChanged) {
             themeChanged = false;
             recreate();
-            if (adapter != null) {
 
+            if (adapter != null)
                 adapter.notifyDataSetChanged();
 
-            }
         }
+
+        if(sMgr != null)
+            registerLightSensor();
 
     }
 
@@ -88,6 +91,61 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+        if(sensorEvent.values[0] > 10) {        //day
+
+            if(App.getInstance().isNightModeEnabled()) {
+
+                App.getInstance().setIsNightModeEnabled(false);
+                recreate();
+            }
+
+        } else {                                //night
+
+            if(!App.getInstance().isNightModeEnabled()) {
+
+                App.getInstance().setIsNightModeEnabled(true);
+                recreate();
+            }
+        }
+
+        sMgr.unregisterListener(this);
+        Toast.makeText(this, "" + sensorEvent.values[0], Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    private void registerLightSensor() {
+        Sensor light;
+        if (sMgr != null && sMgr.getDefaultSensor(Sensor.TYPE_LIGHT) != null) {
+            light = sMgr.getDefaultSensor(Sensor.TYPE_LIGHT);
+            sMgr.registerListener(this, light,SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    public static void initSensorManager(Context context) {
+        sMgr = (SensorManager) context.getSystemService(SENSOR_SERVICE);
+    }
+
+    public static void destroySensorManager() {
+        sMgr = null;
+    }
+
+    private void initToolbar() {
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ImageButton settingsButton = (ImageButton) toolbar.findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(this);
+        setSupportActionBar(toolbar);
+
     }
 
     private void initView() {
@@ -164,6 +222,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static void setThemeChanged() {
         themeChanged = true;
     }
-
 
 }

@@ -33,4 +33,7 @@
     <string name="pref_preview_key">preview_switch_key</string>
     <string name="pref_preview_title">Vorschau deaktivieren</string>
     <string name="pref_preview_text">Alle Blog Posts werden komplett angezeigt.</string>
+    <string name="pref_auto_theme_key">pref_auto_night_mode</string>
+    <string name="pref_auto_theme_title">Automatischer Nachtmodus</string>
+    <string name="pref_auto_theme_text">App-Design wird automatisch der Umgebungshelligkeit angepasst</string>
 </resources>
