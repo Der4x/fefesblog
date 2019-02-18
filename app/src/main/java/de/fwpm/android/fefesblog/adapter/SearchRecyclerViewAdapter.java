@@ -1,11 +1,9 @@
 package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +13,16 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.R;
-import de.fwpm.android.fefesblog.database.AppDatabase;
+import de.fwpm.android.fefesblog.SearchActivity;
 import de.fwpm.android.fefesblog.fragments.SettingFragment;
 import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
-import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 /**
  * Created by alex on 22.01.18.
@@ -32,10 +30,9 @@ import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecyclerViewAdapter.ViewHolder> {
 
-    private static final String TAG = "SVRecyclerViewAdapter";
     private static int MAX_LINES;
 
-    private ArrayList<BlogPost> mData;
+    private List<BlogPost> mData;
     private Context mContext;
     private OnItemClickListener mListener;
 
@@ -50,6 +47,13 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
 
     public interface OnItemClickListener {
         void onItemClick(int position, BlogPost blogPost);
+        void onItemShare(int position, BlogPost blogPost);
+        void onBookmarkClick(int position, BlogPost blogPost);
+    }
+
+    public void dataChanged(List<BlogPost> newData) {
+        mData = newData;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -78,8 +82,56 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
                     mListener.onItemClick(position, blogPost);
                 }
             };
+            final View.OnClickListener onItemShareListener = new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    mListener.onItemShare(position, blogPost);
+                }
+            };
+            final View.OnClickListener onBookmarkListener = new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    mListener.onBookmarkClick(position, blogPost);
+                    setBookmarkIcon(blogPost);
+                }
+            };
+            final View.OnClickListener onExpandListener = new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    if (mContent.getMaxLines() == MAX_LINES) {
+                        expandContent();
+                    } else {
+                        closeContent();
+                        ((SearchActivity) mContext).jumpToPosition(position - 1);
+                    }
+                }
+            };
             mContent.setOnClickListener(onClickListener);
             mDate.setOnClickListener(onClickListener);
+            mShare.setOnClickListener(onItemShareListener);
+            mBookmark.setOnClickListener(onBookmarkListener);
+            mExpand.setOnClickListener(onExpandListener);
+        }
+
+        private void expandContent() {
+            mContent.setMaxLines(Integer.MAX_VALUE);
+            mContent.setEllipsize(null);
+            mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_up);
+        }
+
+        private void closeContent() {
+            mContent.setMaxLines(MAX_LINES);
+            mContent.setEllipsize(TextUtils.TruncateAt.END);
+            mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_down);
+        }
+
+        private void setBookmarkIcon(BlogPost blogPost) {
+            if (blogPost.isBookmarked())
+                mBookmark.setImageResource(R.drawable.ic_stat_bookmark);
+            else mBookmark.setImageResource(R.drawable.ic_stat_bookmark_border);
         }
 
     }
@@ -95,9 +147,9 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
 
         final BlogPost blogPost = mData.get(position);
 
-        closeContent(holder);
+        holder.closeContent();
 
-        setBookmarkIcon(holder, blogPost);
+        holder.setBookmarkIcon(blogPost);
 
         String[] htmltext = blogPost.getHtmlText().split("</a>", 2);
 
@@ -105,7 +157,6 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
             setTextViewHTML(holder.mContent, blogPost.getHtmlText().split("</a>", 2)[1]);
         else {
             holder.mContent.setText(blogPost.getText());
-            Log.d(TAG, "onBindViewHolder: " + blogPost.getHtmlText());
         }
 
         holder.mContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -115,7 +166,6 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
                     holder.mExpand.setVisibility(View.INVISIBLE);
                 else
                     holder.mExpand.setVisibility(View.VISIBLE);
-                //Todo: Handle new or update posts not expandable
                 return true;
             }
         });
@@ -124,78 +174,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         holder.mDate.setText(dateFormat.format(blogPost.getDate()));
         holder.setClickListener(position, blogPost);
 
-        holder.mBookmark.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                blogPost.setBookmarked(!blogPost.isBookmarked());
-                setBookmarkIcon(holder, blogPost);
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppDatabase.getInstance(mContext).blogPostDao().insertBlogPost(blogPost);
-                    }
-                }).start();
-
-            }
-        });
-
-        holder.mExpand.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (blogPost.isUpdate()) {
-
-                    blogPost.setUpdate(false);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            AppDatabase.getInstance(mContext).blogPostDao().insertBlogPost(blogPost);
-                        }
-                    }).start();
-
-                }
-
-                if (holder.mContent.getMaxLines() == MAX_LINES) {
-                    expandContent(holder);
-                } else {
-                    closeContent(holder);
-//                    jumpToPosition((position == 0) ? 0 : position - 1);
-                }
-
-            }
-        });
-
-        holder.mShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                sharePost(mContext, blogPost);
-
-            }
-        });
-
     }
-
-    private void setBookmarkIcon(ViewHolder holder, BlogPost blogPost) {
-        if (blogPost.isBookmarked())
-            holder.mBookmark.setImageResource(R.drawable.ic_stat_bookmark);
-        else holder.mBookmark.setImageResource(R.drawable.ic_stat_bookmark_border);
-    }
-
-    private void expandContent(ViewHolder holder) {
-        holder.mContent.setMaxLines(Integer.MAX_VALUE);
-        holder.mContent.setEllipsize(null);
-        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_up);
-    }
-
-    private void closeContent(ViewHolder holder) {
-        holder.mContent.setMaxLines(MAX_LINES);
-        holder.mContent.setEllipsize(TextUtils.TruncateAt.END);
-        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_down);
-    }
-
 
     @Override
     public int getItemCount() {

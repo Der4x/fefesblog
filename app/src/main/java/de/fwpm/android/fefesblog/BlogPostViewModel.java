@@ -5,8 +5,6 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -15,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.fwpm.android.fefesblog.data.DataFetcher;
+import de.fwpm.android.fefesblog.data.SearchDataFetcher;
 import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
 
@@ -23,7 +22,7 @@ public class BlogPostViewModel extends AndroidViewModel {
     private AppDatabase appDatabase;
     private LiveData<List<BlogPost>> newPostList;
     private LiveData<List<BlogPost>> bookmarkList;
-    private MutableLiveData<List<BlogPost>> searchList;
+    public MutableLiveData<List<BlogPost>> searchList;
 
     public BlogPostViewModel(@NonNull Application application) {
         super(application);
@@ -31,7 +30,7 @@ public class BlogPostViewModel extends AndroidViewModel {
         appDatabase = AppDatabase.getInstance(this.getApplication());
         newPostList = appDatabase.blogPostDao().getAllPosts();
         bookmarkList = appDatabase.blogPostDao().getAllBookmarkedPosts();
-        searchList = new MutableLiveData<List<BlogPost>>();
+        searchList = new MutableLiveData<>();
 
     }
 
@@ -43,7 +42,7 @@ public class BlogPostViewModel extends AndroidViewModel {
         return bookmarkList;
     }
 
-    public LiveData<List<BlogPost>> getSearchList(){
+    public LiveData<List<BlogPost>> getSearchList() {
         return searchList;
     }
 
@@ -52,6 +51,17 @@ public class BlogPostViewModel extends AndroidViewModel {
             @Override
             public void run() {
                 appDatabase.blogPostDao().updateBlogPost(post);
+            }
+        }).start();
+
+    }
+
+    public void insertPost(final BlogPost blogPost) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                appDatabase.blogPostDao().insertBlogPost(blogPost);
             }
         }).start();
 
@@ -108,7 +118,22 @@ public class BlogPostViewModel extends AndroidViewModel {
 
     }
 
+    public void searchPosts(String query) {
 
+        new SearchDataFetcher(this).execute(query);
+
+    }
+
+    public void searchPostsInDatabase(final String query) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                searchList.postValue(appDatabase.blogPostDao().searchPosts("%" + query + "%"));
+            }
+        }).start();
+
+    }
 
 
 }

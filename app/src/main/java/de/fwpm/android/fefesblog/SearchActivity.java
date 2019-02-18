@@ -1,6 +1,8 @@
 package de.fwpm.android.fefesblog;
 
 import android.app.SearchManager;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,11 +10,13 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +29,7 @@ import android.widget.ProgressBar;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.fwpm.android.fefesblog.adapter.SearchRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.data.SearchDataFetcher;
@@ -33,14 +38,14 @@ import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
 import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;
+import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
 
 public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
     private static final String TAG = "SearchActivity";
 
     private Context mContext;
-    private ArrayList<BlogPost> mListOfPosts;
-
+    private BlogPostViewModel viewModel;
     private Handler mHandler;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -52,7 +57,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private LinearLayout noResultLayout;
     private CoordinatorLayout mContainer;
     private String mQueryString;
-    private SearchActivity activity;
     private boolean darkTheme;
 
     @Override
@@ -72,13 +76,27 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         if(darkTheme) appBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay_Dark);
 
         mContext = this;
-        activity = this;
         mHandler = new Handler();
         networkUtils = new NetworkUtils(this);
 
-        mListOfPosts = new ArrayList<>();
-
         initView();
+
+        viewModel = ViewModelProviders.of(this).get(BlogPostViewModel.class);
+        viewModel.getSearchList().observe(this, new Observer<List<BlogPost>>() {
+            @Override
+            public void onChanged(@Nullable List<BlogPost> blogPosts) {
+
+                if(blogPosts != null && blogPosts.size() > 0) {
+
+                    recyclerViewAdapter.dataChanged(blogPosts);
+                    mRecyclerView.scrollToPosition(0);
+
+                } else showNoResultScreen(true);
+
+                showProgressBar(false);
+
+            }
+        });
 
     }
 
@@ -114,13 +132,24 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                             intent.putExtra(DetailsActivity.INTENT_BLOG_POST, (Serializable) blogPost);
                             startActivity(intent);
                         }
+                    }
 
+                    @Override
+                    public void onItemShare(int position, BlogPost blogPost) {
+                        sharePost(mContext, blogPost);
+                    }
 
+                    @Override
+                    public void onBookmarkClick(int position, BlogPost blogPost) {
+                        blogPost.setBookmarked(!blogPost.isBookmarked());
+                        viewModel.insertPost(blogPost);
                     }
                 },
-                mListOfPosts);
+                new ArrayList<BlogPost>());
 
         mRecyclerView.setAdapter(recyclerViewAdapter);
+
+
     }
 
     private void search(final String query) {
@@ -129,19 +158,13 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
         if(networkUtils.isConnectingToInternet()) {
 
-            new SearchDataFetcher(this).execute(query);
+            viewModel.searchPosts(query);
             showProgressBar(true);
 
         } else {
 
             networkUtils.noNetwork(mContainer);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ArrayList<BlogPost> data = (ArrayList<BlogPost>) AppDatabase.getInstance(mContext).blogPostDao().searchPosts("%" + query + "%");
-                    populateResult(data);
-                }
-            }).start();
+            viewModel.searchPostsInDatabase(query);
 
         }
     }
@@ -222,22 +245,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         return false;
     }
 
-    public void populateResult(final ArrayList<BlogPost> allPosts) {
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mListOfPosts.clear();
-                mListOfPosts.addAll(allPosts);
-                recyclerViewAdapter.notifyDataSetChanged();
-                mRecyclerView.scrollToPosition(0);
-                showProgressBar(false);
-
-                if (allPosts.size() == 0) showNoResultScreen(true);
-            }
-        });
-    }
-
     private void showNoResultScreen(boolean show) {
 
         noResultLayout.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -247,6 +254,24 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private void showProgressBar(final boolean show) {
 
         mProgressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+
+    }
+
+    public void jumpToPosition(int position) {
+
+        if (position >= 0 && ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstVisibleItemPosition() > position) {
+
+            LinearSmoothScroller smoothScroller = new LinearSmoothScroller(this) {
+                @Override
+                protected int getVerticalSnapPreference() {
+                    return LinearSmoothScroller.SNAP_TO_START;
+                }
+            };
+
+            smoothScroller.setTargetPosition(position);
+            mLayoutManager.startSmoothScroll(smoothScroller);
+
+        }
 
     }
 

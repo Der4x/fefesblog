@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import de.fwpm.android.fefesblog.BlogPost;
+import de.fwpm.android.fefesblog.BlogPostViewModel;
 import de.fwpm.android.fefesblog.SearchActivity;
 
 import static de.fwpm.android.fefesblog.data.HtmlParser.parseHtml;
@@ -19,15 +20,14 @@ import static de.fwpm.android.fefesblog.data.HtmlParser.parseHtml;
 
 public class SearchDataFetcher extends AsyncTask<String, Void, ArrayList<BlogPost>> {
 
-    private static final String TAG = "SearchDataFetcher";
     private static final String SEARCH_URL = "https://blog.fefe.de/?q=";
 
     private Document html;
-    private SearchActivity container;
+    private BlogPostViewModel viewModel;
 
-    public SearchDataFetcher(SearchActivity activity) {
+    public SearchDataFetcher(BlogPostViewModel viewModel) {
 
-        this.container = activity;
+        this.viewModel = viewModel;
 
     }
 
@@ -58,11 +58,7 @@ public class SearchDataFetcher extends AsyncTask<String, Void, ArrayList<BlogPos
     protected void onPostExecute(ArrayList<BlogPost> allPosts) {
 
         super.onPostExecute(allPosts);
-
-        if(container!=null) {
-            container.populateResult(allPosts);
-            this.container = null;
-        }
+        viewModel.searchList.setValue(allPosts);
 
     }
 
