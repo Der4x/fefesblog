@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             themeChanged = false;
             recreate();
 
-            if (adapter != null)
-                adapter.notifyDataSetChanged();
+//            if (adapter != null)
+////                adapter.notifyDataSetChanged();
 
         }
 

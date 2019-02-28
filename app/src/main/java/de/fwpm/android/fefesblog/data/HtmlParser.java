@@ -26,7 +26,7 @@ public class HtmlParser {
         Elements div = doc.select("body > div");
         String nextUrl = new String();
 
-        if( div.size() != 0 || !search) {
+        if( div.size() != 0 && !div.select("a[href]").isEmpty() && !search) {
             nextUrl = div.select("a[href]").get(0).attr("abs:href");
         }
 
