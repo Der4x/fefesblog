@@ -5,8 +5,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import de.fwpm.android.fefesblog.BlogPostViewModel;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
-import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
@@ -39,8 +37,6 @@ import static de.fwpm.android.fefesblog.utils.SharePostUtil.sharePost;
  */
 
 public class BookmarkFragment extends Fragment{
-
-    private static String TAG = "BookmarkFragment";
 
     private BlogPostViewModel viewModel;
     private RecyclerView mRecyclerView;
@@ -149,8 +145,11 @@ public class BookmarkFragment extends Fragment{
 
                     @Override
                     public void onBookMarkClick(int position, BlogPost blogPost) {
+
+                        if(blogPost.isBookmarked()) showUnbookmarkedSnackbar(blogPost);
                         blogPost.setBookmarked(!blogPost.isBookmarked());
                         viewModel.updatePost(blogPost);
+
                     }
 
                     @Override
@@ -180,6 +179,21 @@ public class BookmarkFragment extends Fragment{
 
     private void showNoBookmarkScreen(boolean show) {
         view.findViewById(R.id.noBookmarkScreen).setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    private void showUnbookmarkedSnackbar(final BlogPost blogPost) {
+
+        Snackbar.make(view, "Lesezeichen entfernt", Snackbar.LENGTH_LONG)
+                .setAction("RÜCKGÄNGIG", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        blogPost.setBookmarked(true);
+                        viewModel.updatePost(blogPost);
+
+                    }
+                }).show();
+
     }
 
 
