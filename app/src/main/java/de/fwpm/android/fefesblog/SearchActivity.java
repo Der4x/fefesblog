@@ -1,8 +1,11 @@
 package de.fwpm.android.fefesblog;
 
-import android.app.SearchManager;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,30 +13,27 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+
+import com.google.android.material.appbar.AppBarLayout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.fwpm.android.fefesblog.adapter.SearchRecyclerViewAdapter;
-import de.fwpm.android.fefesblog.data.SearchDataFetcher;
-import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
@@ -65,6 +65,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             setTheme(R.style.MainActivityThemeDark);
             darkTheme = true;
         }
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
         super.onCreate(savedInstanceState);
         setContentView(darkTheme ? R.layout.activity_search_dark : R.layout.activity_search);
 
@@ -201,7 +203,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         mSearchView.setQueryHint("Suchbegriff");
         mSearchView.setEnabled(true);
 
-        View v = mSearchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
+        View v = mSearchView.findViewById(androidx.appcompat.R.id.search_plate);
         v.setBackgroundColor(Color.parseColor("#00ffffff"));
 
         // expand searchview on create

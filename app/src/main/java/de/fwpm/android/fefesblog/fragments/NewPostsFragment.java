@@ -1,30 +1,26 @@
 package de.fwpm.android.fefesblog.fragments;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -34,13 +30,10 @@ import de.fwpm.android.fefesblog.BlogPostViewModel;
 import de.fwpm.android.fefesblog.DetailsActivity;
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
-import de.fwpm.android.fefesblog.data.DataFetcher;
-import de.fwpm.android.fefesblog.database.AppDatabase;
 import de.fwpm.android.fefesblog.utils.CustomTextView;
 import de.fwpm.android.fefesblog.utils.HeaderItemDecoration;
 import de.fwpm.android.fefesblog.utils.NetworkUtils;
 
-import static de.fwpm.android.fefesblog.MainActivity.FIRST_START;
 import static de.fwpm.android.fefesblog.MainActivity.fab;
 import static de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter.expandedItems;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.handleClickedLink;

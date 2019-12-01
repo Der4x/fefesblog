@@ -22,4 +22,16 @@
         <item>21600000</item>
     </string-array>
 
+    <string-array name="pref_theme_mode_entries">
+        <item>Aus</item>
+        <item>Umgebungsbelichtung</item>
+        <item>System-Einstellung</item>
+    </string-array>
+
+    <string-array name="pref_theme_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
 </resources>

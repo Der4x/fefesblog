@@ -1,0 +1,152 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarDividerColor">@color/primaryTextColorDark</item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+
+    </style>
+
+    <!-- Specific Feed activity theme -->
+    <style name="MainActivityThemeLight" parent="ActivityTheme.Primary.Base.Light">
+        <item name="android:windowBackground">@color/backgroundLight</item>
+    </style>
+
+    <style name="MainActivityThemeDark" parent="ActivityTheme.Primary.Base.Dark">
+        <item name="android:windowBackground">@color/backgroundDark</item>
+    </style>
+
+    <style name="SettingsActivityThemeLight" parent="Theme.AppCompat.Light">
+
+        <item name="colorPrimary">@color/backgroundLight</item>
+        <item name="colorPrimaryDark">@color/backgroundLight</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/backgroundLight</item>
+
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarDividerColor">@color/primaryTextColorDark</item>
+
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+
+    </style>
+
+    <style name="SettingsActivityThemeDark" parent="Theme.AppCompat">
+
+        <item name="colorPrimary">@color/backgroundDark</item>
+        <item name="colorPrimaryDark">@color/backgroundDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/backgroundDark</item>
+
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+
+    </style>
+
+    <!-- Light base activity theme -->
+    <style name="ActivityTheme.Primary.Base.Light" parent="Theme.AppCompat.NoActionBar">
+
+        <item name="colorPrimary">@color/backgroundLight</item>
+        <item name="colorPrimaryDark">@color/backgroundLight</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="primaryTextColor">@color/primaryTextColorLight</item>
+
+        <item name="quoteTextColor">@color/secondaryTextColorLight</item>
+        <item name="quoteStripeColor">@color/secondaryTextColorLight</item>
+
+        <item name="headerTextColor">@color/secondaryTextColorLight</item>
+        <item name="headerBackgroundColor">@color/primaryTextColorDark</item>
+
+        <item name="buttonColor">@color/colorSecondaryDark</item>
+        <item name="arrowColor">@color/primaryTextColorLight</item>
+
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+
+    </style>
+
+
+    <!-- Dark base activity theme -->
+    <style name="ActivityTheme.Primary.Base.Dark"    parent="Theme.AppCompat.NoActionBar">
+
+        <item name="colorPrimary">@color/backgroundDark</item>
+        <item name="colorPrimaryDark">@color/backgroundDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="primaryTextColor">@color/primaryTextColorDark</item>
+
+        <item name="quoteTextColor">@color/secondaryTextColorDark</item>
+        <item name="quoteStripeColor">@color/secondaryTextColorDark</item>
+
+        <item name="headerTextColor">@color/secondaryTextColorDark</item>
+        <item name="headerBackgroundColor">@color/primaryTextColorLight</item>
+
+        <item name="buttonColor">@color/secondaryTextColorDark</item>
+        <item name="arrowColor">@color/primaryTextColorDark</item>
+
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
+
+<!--        <item name="android:statusBarColor">@android:color/transparent</item>-->
+
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+
+    </style>
+
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.AppBarOverlay.Dark" parent="ThemeOverlay.AppCompat" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat" />
+
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Toolbar.SubtitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+
+    <style name="AppTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">16sp</item>
+        <item name="android:nestedScrollingEnabled">true</item>
+        <item name="textAllCaps">false</item>
+
+    </style>
+
+</resources>

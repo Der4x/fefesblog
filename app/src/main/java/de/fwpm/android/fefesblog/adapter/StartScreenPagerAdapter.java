@@ -1,9 +1,9 @@
 package de.fwpm.android.fefesblog.adapter;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.fragments.BookmarkFragment;
