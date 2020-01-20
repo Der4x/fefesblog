@@ -4,12 +4,25 @@ import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.ActionBarOverlayLayout;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreference;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.Toast;
+
+import java.util.Objects;
 
 import de.fwpm.android.fefesblog.App;
 import de.fwpm.android.fefesblog.R;
@@ -26,7 +39,7 @@ import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJo
  * Created by Daniel.Eschenbacher on 25.01.2018.
  */
 
-public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
+public class SettingFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
 
     private static final String TAG = "SETTINGFRAGMENT";
 
@@ -51,8 +64,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     private String sensitivityNightmode;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 
         addPreferencesFromResource(R.xml.preferences);
 

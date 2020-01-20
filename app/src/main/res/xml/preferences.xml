@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="Synchronisierung">
+    <PreferenceCategory android:title="Synchronisierung"
+        app:iconSpaceReserved="false">
 
         <SwitchPreference
             android:key="@string/pref_background_update_key"
             android:title="@string/pref_background_update_title"
             android:summary="@string/pref_background_update_text"
-            android:defaultValue="@bool/pref_background_update_default"/>
+            android:defaultValue="@bool/pref_background_update_default"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:key="@string/pref_notification_key"
             android:title="@string/pref_notification_title"
             android:summary="@string/pref_notification_text"
-            android:defaultValue="@bool/pref_notification_default"/>
+            android:defaultValue="@bool/pref_notification_default"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:key="@string/pref_update_seq_key"
@@ -22,18 +26,21 @@
             android:summary="@string/pref_update_seq_summary"
             android:entries="@array/pref_update_seq_entries"
             android:entryValues="@array/pref_update_seq_values"
-            android:defaultValue="@string/pref_update_seq_default"/>
+            android:defaultValue="@string/pref_update_seq_default"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Übersicht">
+        android:title="Übersicht"
+        app:iconSpaceReserved="false">
 
         <SwitchPreference
             android:key="@string/pref_preview_key"
             android:title="@string/pref_preview_title"
             android:summary="@string/pref_preview_text"
-            android:defaultValue="@bool/pref_preview_default"/>
+            android:defaultValue="@bool/pref_preview_default"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:key="@string/pref_preview_size_key"
@@ -42,30 +49,36 @@
             android:summary="@string/pref_preview_size_summary"
             android:entries="@array/pref_preview_size_entries"
             android:entryValues="@array/pref_preview_size_values"
-            android:defaultValue="@string/pref_preview_size_default"/>
+            android:defaultValue="@string/pref_preview_size_default"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Design">
+        android:title="Design"
+        app:iconSpaceReserved="false">
 
         <SwitchPreference
             android:key="@string/pref_theme_key"
             android:title="@string/pref_theme_title"
             android:summary="@string/pref_theme_text"
-            android:defaultValue="@bool/pref_theme_default"/>
+            android:defaultValue="@bool/pref_theme_default"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:key="@string/pref_auto_theme_key"
             android:title="@string/pref_auto_theme_title"
             android:summary="@string/pref_auto_theme_text"
-            android:defaultValue="@bool/pref_auto_theme_default"/>
+            android:defaultValue="@bool/pref_auto_theme_default"
+            app:iconSpaceReserved="false"/>
 
-        <de.fwpm.android.fefesblog.utils.SeekBarPreference
+        <SeekBarPreference
             android:key="@string/pref_sensitivity_key"
             android:title="@string/pref_sensitivity_text"
             android:summary="@string/pref_sensitivity_text"
-            android:defaultValue="10"/>
+            android:max="100"
+            android:defaultValue="10"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 

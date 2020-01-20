@@ -7,7 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary"
-    android:layout_marginTop="@*android:dimen/status_bar_height"
     android:fitsSystemWindows="true"
     tools:context="de.fwpm.android.fefesblog.DetailsActivity">
 
@@ -36,7 +35,8 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipToPadding="false">
 
         <TextView
             android:id="@+id/blogPostText"

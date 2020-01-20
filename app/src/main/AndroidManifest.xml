@@ -2,12 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.fwpm.android.fefesblog">
 
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".App"
@@ -18,9 +18,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
-            android:value="true" />
 
         <activity
             android:name=".MainActivity"
@@ -39,48 +36,39 @@
             android:name=".SearchActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/MainActivityThemeLight">
-        </activity>
-
-        <activity android:name=".WebActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/MainActivityThemeLight"/>
+
+        <activity
+            android:name=".WebActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainActivityThemeLight" />
 
         <activity
             android:name=".DetailsActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/MainActivityThemeLight" >
-
+            android:theme="@style/MainActivityThemeLight">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="blog.fefe.de" />
-            </intent-filter>
 
+                <data
+                    android:host="blog.fefe.de"
+                    android:scheme="https" />
+            </intent-filter>
         </activity>
 
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/SettingsActivityThemeLight"/>
+            android:theme="@style/SettingsActivityThemeLight" />
 
-        <service
-            android:name=".backgroundsync.SyncJobScheduler"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <receiver
-            android:name=".backgroundsync.SyncReceiver"
-            android:enabled="true"/>
-
-        <receiver
-            android:name=".utils.CustomTabsBroadcastReceiver"
-            android:enabled="true">
-        </receiver>
+        <meta-data
+            android:name="android.webkit.WebView.EnableSafeBrowsing"
+            android:value="true" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -91,6 +79,20 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <receiver
+            android:name=".backgroundsync.SyncReceiver"
+            android:enabled="true" />
+
+        <receiver
+            android:name=".utils.CustomTabsBroadcastReceiver"
+            android:enabled="true"/>
+
+        <service
+            android:name=".backgroundsync.SyncJobScheduler"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
     </application>
 

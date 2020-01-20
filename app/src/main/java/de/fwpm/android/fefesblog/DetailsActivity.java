@@ -3,6 +3,7 @@ package de.fwpm.android.fefesblog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -22,6 +23,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.material.appbar.AppBarLayout;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -51,6 +57,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     private CoordinatorLayout mContainer;
     private ProgressBar mProgressBar;
+    private Toolbar toolbar;
     private boolean newPostLoaded;
     private boolean darkTheme;
 
@@ -70,7 +77,8 @@ public class DetailsActivity extends AppCompatActivity {
             darkTheme = true;
         }
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
@@ -104,6 +112,34 @@ public class DetailsActivity extends AppCompatActivity {
 
             }
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), new OnApplyWindowInsetsListener() {
+                @Override
+                public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+
+                    AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+
+                    int margin = insets.getSystemWindowInsetTop();
+
+                    if(margin > 0) {
+
+                        params.topMargin = margin;
+                        toolbar.setLayoutParams(params);
+
+                    }
+
+                    int paddingBottom = insets.getSystemWindowInsetBottom();
+                    if(paddingBottom > 0) {
+                        ((ScrollView) findViewById(R.id.scrollView)).setPadding(0,0,0,paddingBottom);
+                    }
+
+                    return insets.consumeSystemWindowInsets();
+                }
+            });
+        }
+
     }
 
     @Override
@@ -169,7 +205,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.getNavigationIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_ATOP);
@@ -322,7 +358,6 @@ public class DetailsActivity extends AppCompatActivity {
             else bookmark_item.setIcon(R.drawable.ic_stat_bookmark_border);
 
             bookmark_item.getIcon().setColorFilter(getResources().getColor(darkTheme ? R.color.primaryTextColorDark : R.color.secondaryTextColorLight), PorterDuff.Mode.SRC_IN);
-
 
         }
 

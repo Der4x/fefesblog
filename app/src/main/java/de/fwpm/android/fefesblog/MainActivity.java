@@ -7,16 +7,24 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager.widget.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -44,9 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         if (App.getInstance().isNightModeEnabled()) setTheme(R.style.MainActivityThemeDark);
 
-        getWindow()
-                .setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -61,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(AUTO_NIGHTMODE_ENABLED, false)) {
             initSensorManager(this);
         }
+
+        //startActivity(new Intent(this, SettingsActivity.class));
 
     }
 
@@ -153,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initView() {
 
+        final RelativeLayout mainView = findViewById(R.id.main_content);
         viewPager = (ViewPager) findViewById(R.id.container);
         adapter = new StartScreenPagerAdapter(this, getSupportFragmentManager());
         viewPager.setAdapter(adapter);
@@ -191,6 +201,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getBaseContext(), SearchActivity.class));
+            }
+        });
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), new OnApplyWindowInsetsListener() {
+            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+
+                //v.setPadding(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(), insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
+
+                int margin = insets.getSystemWindowInsetTop();
+
+                if (margin > 0) {
+
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mainView.getLayoutParams();
+                    params.topMargin = margin;
+                    mainView.setLayoutParams(params);
+
+                }
+
+                margin  = insets.getSystemWindowInsetBottom();
+
+                if (margin > 0) {
+                    CoordinatorLayout.LayoutParams fabParams = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
+                    fabParams.bottomMargin = margin;
+                    fab.setLayoutParams(fabParams);
+                }
+
+                //Log.d("TAG", "" + insets.getSystemWindowInsetLeft() + " " + insets.getSystemWindowInsetTop() + " " + insets.getSystemWindowInsetRight() + " " + insets.getSystemWindowInsetBottom());
+
+                return insets.consumeSystemWindowInsets();
             }
         });
     }

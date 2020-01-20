@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -65,17 +68,20 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             setTheme(R.style.MainActivityThemeDark);
             darkTheme = true;
         }
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         super.onCreate(savedInstanceState);
         setContentView(darkTheme ? R.layout.activity_search_dark : R.layout.activity_search);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.toolbar_layout);
         if(darkTheme) appBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay_Dark);
+        else getWindow().setStatusBarColor(Color.WHITE);
 
         mContext = this;
         mHandler = new Handler();
@@ -99,6 +105,28 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), new OnApplyWindowInsetsListener() {
+                @Override
+                public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+
+                    AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+
+                    int margin = insets.getSystemWindowInsetTop();
+
+                    if(margin > 0) {
+
+                        params.topMargin = margin;
+                        toolbar.setLayoutParams(params);
+
+                    }
+
+                    return insets.consumeSystemWindowInsets();
+                }
+            });
+        }
 
     }
 
