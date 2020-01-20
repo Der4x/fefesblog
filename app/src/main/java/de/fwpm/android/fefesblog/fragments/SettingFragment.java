@@ -50,6 +50,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
     public static final String NOTIFICATION_ENABLED = "notification_enabled";
     public static final String NIGHTMODE_ENABLED = "nightmode_enabled";
     public static final String AUTO_NIGHTMODE_ENABLED = "auto_nightmode_enabled";
+    public static final String AMOLED_NIGHTMODE_ENABLED = "amoled_nightmode_enabled";
 
 
     public static final boolean NOTIFICATION_DEFAULT = true;
@@ -61,6 +62,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
     private String previewMode;
     private String nightMode;
     private String autoNightMode;
+    private String amoledNightMode;
     private String sensitivityNightmode;
 
     @Override
@@ -76,6 +78,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         nightMode = getString(R.string.pref_theme_key);
         previewMode = getString(R.string.pref_preview_key);
         autoNightMode = getString(R.string.pref_auto_theme_key);
+        amoledNightMode = getString(R.string.pref_amoled_theme_key);
         sensitivityNightmode = getString(R.string.pref_sensitivity_key);
 
         findPreference(automaticUpdatesKey).setOnPreferenceChangeListener(this);
@@ -86,6 +89,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         findPreference(previewMode).setOnPreferenceChangeListener(this);
         findPreference(autoNightMode).setOnPreferenceChangeListener(this);
         findPreference(sensitivityNightmode).setOnPreferenceChangeListener(this);
+        findPreference(amoledNightMode).setOnPreferenceChangeListener(this);
 
     }
 
@@ -122,6 +126,10 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
 
             onAutoNightModeToggle((Boolean) newValue);
 
+        } else if(amoledNightMode.equals(key)) {
+
+            onAmoledNightModeToggle((Boolean) newValue);
+
         }
         else throw new RuntimeException("Unknown preference");
 
@@ -140,6 +148,13 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
 
     }
 
+    private void onAmoledNightModeToggle(Boolean isEnabled) {
+
+        App.getInstance().setAmoledModeEnabled(isEnabled);
+        getActivity().recreate();
+        setThemeChanged();
+
+    }
 
     private void onAutomaticNotificationToggle(Boolean isEnabled) {
 
@@ -152,6 +167,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         App.getInstance().setIsNightModeEnabled(isEnabled);
         getActivity().recreate();
         setThemeChanged();
+        findPreference(amoledNightMode).setEnabled(isEnabled);
 
     }
 
@@ -218,6 +234,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         findPreference(automaticNotification).setEnabled(((SwitchPreference) findPreference(automaticUpdatesKey)).isChecked());
         findPreference(previewSize).setEnabled(!((SwitchPreference) findPreference(previewMode)).isChecked());
         findPreference(sensitivityNightmode).setEnabled(((SwitchPreference) findPreference(autoNightMode)).isChecked());
+        findPreference(amoledNightMode).setEnabled(((SwitchPreference) findPreference(nightMode)).isChecked());
 
         //Bug: no update on this switch-preference when changed setting programmatically in another activity
         ((SwitchPreference) findPreference(nightMode)).setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(NIGHTMODE_ENABLED, false));

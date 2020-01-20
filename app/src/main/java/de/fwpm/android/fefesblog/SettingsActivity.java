@@ -9,8 +9,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (App.getInstance().isNightModeEnabled()) setTheme(R.style.SettingsActivityThemeDark);
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        if (App.getInstance().isNightModeEnabled()) {
+            if(App.getInstance().isAmoledModeEnabled())
+                setTheme(R.style.SettingsActivityThemeDarkAmoled);
+            else
+                setTheme(R.style.SettingsActivityThemeDark);
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);

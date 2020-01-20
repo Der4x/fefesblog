@@ -66,6 +66,13 @@
             app:iconSpaceReserved="false"/>
 
         <SwitchPreference
+            android:key="@string/pref_amoled_theme_key"
+            android:title="@string/pref_amoled_theme_title"
+            android:summary="@string/pref_amoled_theme_text"
+            android:defaultValue="@bool/pref_amoled_theme_default"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
             android:key="@string/pref_auto_theme_key"
             android:title="@string/pref_auto_theme_title"
             android:summary="@string/pref_auto_theme_text"

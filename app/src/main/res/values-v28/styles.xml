@@ -23,6 +23,9 @@
         <item name="android:windowBackground">@color/backgroundDark</item>
     </style>
 
+    <style name="MainActivityThemeAmoledDark" parent="ActivityTheme.Primary.Base.AmoledDark">
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
+    </style>
 
     <style name="SettingsActivityThemeLight" parent="Theme.AppCompat.Light">
 
@@ -52,7 +55,19 @@
 
     </style>
 
+    <style name="SettingsActivityThemeDarkAmoled" parent="Theme.AppCompat">
 
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
+
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
+
+    </style>
 
     <!-- Light base activity theme -->
     <style name="ActivityTheme.Primary.Base.Light" parent="Theme.AppCompat.NoActionBar">
@@ -99,6 +114,31 @@
         <item name="arrowColor">@color/primaryTextColorDark</item>
 
         <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
+
+    </style>
+
+    <!-- Amolded Dark base activity theme -->
+    <style name="ActivityTheme.Primary.Base.AmoledDark"    parent="Theme.AppCompat.NoActionBar">
+
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="primaryTextColor">@color/primaryTextColorDark</item>
+
+        <item name="quoteTextColor">@color/secondaryTextColorDark</item>
+        <item name="quoteStripeColor">@color/secondaryTextColorDark</item>
+
+        <item name="headerTextColor">@color/secondaryTextColorDark</item>
+        <item name="headerBackgroundColor">@color/primaryTextColorLight</item>
+
+        <item name="buttonColor">@color/secondaryTextColorDark</item>
+        <item name="arrowColor">@color/primaryTextColorDark</item>
+
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>

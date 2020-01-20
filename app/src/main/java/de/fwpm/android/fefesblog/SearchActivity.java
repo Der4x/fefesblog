@@ -65,8 +65,11 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (App.getInstance().isNightModeEnabled()) {
-            setTheme(R.style.MainActivityThemeDark);
             darkTheme = true;
+            if(App.getInstance().isAmoledModeEnabled())
+                setTheme(R.style.MainActivityThemeAmoledDark);
+            else
+                setTheme(R.style.MainActivityThemeDark);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
