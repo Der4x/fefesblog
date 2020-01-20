@@ -82,9 +82,10 @@
         <SeekBarPreference
             android:key="@string/pref_sensitivity_key"
             android:title="@string/pref_sensitivity_text"
-            android:summary="@string/pref_sensitivity_text"
-            android:max="100"
+            android:summary="@string/pref_sensitivity_summary"
+            android:max="150"
             android:defaultValue="10"
+            app:showSeekBarValue="true"
             app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>

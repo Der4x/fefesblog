@@ -130,11 +130,21 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
 
             onAmoledNightModeToggle((Boolean) newValue);
 
+        } else if(sensitivityNightmode.equals(key)) {
+
+            onSensitivityChanged((int) newValue);
+
         }
         else throw new RuntimeException("Unknown preference");
 
 
         return true;
+    }
+
+    private void onSensitivityChanged(int newValue) {
+
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt(getString(R.string.pref_sensitivity_key), newValue).apply();
+
     }
 
     private void onAutoNightModeToggle(Boolean isEnabled) {
