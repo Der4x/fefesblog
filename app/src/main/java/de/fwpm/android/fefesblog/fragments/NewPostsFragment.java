@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,8 +96,17 @@ public class NewPostsFragment extends Fragment {
     public void onResume() {
 
         super.onResume();
-        if (lastSyncTimestamp == 0 || Math.abs(System.currentTimeMillis() - lastSyncTimestamp) > FIVE_MINUTES)
-            startSync();
+        if (lastSyncTimestamp == 0 || Math.abs(System.currentTimeMillis() - lastSyncTimestamp) > FIVE_MINUTES) {
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    startSync();
+                }
+            }, 600);
+
+        }
+
     }
 
     @Override
