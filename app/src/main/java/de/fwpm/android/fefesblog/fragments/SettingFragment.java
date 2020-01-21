@@ -4,25 +4,12 @@ import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.ActionBarOverlayLayout;
-import androidx.core.view.OnApplyWindowInsetsListener;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowInsets;
-import android.widget.Toast;
-
-import java.util.Objects;
 
 import de.fwpm.android.fefesblog.App;
 import de.fwpm.android.fefesblog.R;
@@ -185,7 +172,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         if (isEnabled) {
             Log.d(TAG, "Enable Updates");
             findPreference(automaticNotification).setEnabled(true);
-            scheduleJob(getActivity());
+            scheduleJob();
 
         } else {
             Log.d(TAG, "Disable Updates");
@@ -199,7 +186,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         int uodateseq = Integer.parseInt(newValue);
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt(UPDATE_INTERVALL, uodateseq).apply();
         ((JobScheduler) getActivity().getSystemService(Context.JOB_SCHEDULER_SERVICE)).cancel(1234);
-        scheduleJob(getActivity());
+        scheduleJob();
 
     }
 

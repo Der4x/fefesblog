@@ -83,8 +83,8 @@
             android:key="@string/pref_sensitivity_key"
             android:title="@string/pref_sensitivity_text"
             android:summary="@string/pref_sensitivity_summary"
-            android:max="150"
-            android:defaultValue="10"
+            android:max="200"
+            android:defaultValue="25"
             app:showSeekBarValue="true"
             app:iconSpaceReserved="false"/>
 
