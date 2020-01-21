@@ -68,14 +68,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
 
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FIRST_START, true)) {
-            scheduleJob(this);
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(FIRST_START, false).apply();
+            scheduleJob();
         }
 
         if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(AUTO_NIGHTMODE_ENABLED, false)) {
             initSensorManager(this);
         }
-
-        //startActivity(new Intent(this, SettingsActivity.class));
 
     }
 
@@ -86,10 +85,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (themeChanged) {
             themeChanged = false;
             recreate();
-
-//            if (adapter != null)
-////                adapter.notifyDataSetChanged();
-
         }
 
         if(sMgr != null)
