@@ -36,7 +36,7 @@
     <string name="pref_auto_theme_key">pref_auto_night_mode</string>
     <string name="pref_amoled_theme_key">pref_amoled_night_mode</string>
     <string name="pref_auto_theme_title">Automatischer Nachtmodus</string>
-    <string name="pref_auto_theme_text">App-Design automatisch anpassent</string>
+    <string name="pref_auto_theme_text">App-Design automatisch anpassen</string>
     <string name="pref_sensitivity_key">pref_sensitivity_value</string>
     <string name="pref_sensitiy_title">Sensitivity</string>
     <string name="pref_sensitivity_text">Empfindlichkeit des automatischen Nachtmodus</string>
