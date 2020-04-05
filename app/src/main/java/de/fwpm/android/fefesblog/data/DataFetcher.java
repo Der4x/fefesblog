@@ -61,7 +61,7 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
                     post.setBookmarked(oldEntry.isBookmarked());
                     post.setHasBeenRead(oldEntry.isHasBeenRead());
 
-                    if(!oldEntry.getText().equals(post.getText())) post.setUpdate(true);
+                    if(!oldEntry.getText().equals(post.getText()) && post.getText().contains("Update")) post.setUpdate(true);
                     else post.setUpdate(oldEntry.isUpdate());
 
                 }
