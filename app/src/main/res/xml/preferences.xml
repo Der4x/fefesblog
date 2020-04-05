@@ -58,25 +58,13 @@
         android:title="Design"
         app:iconSpaceReserved="false">
 
-        <SwitchPreference
+        <ListPreference
             android:key="@string/pref_theme_key"
             android:title="@string/pref_theme_title"
-            android:summary="@string/pref_theme_text"
-            android:defaultValue="@bool/pref_theme_default"
-            app:iconSpaceReserved="false"/>
-
-        <SwitchPreference
-            android:key="@string/pref_amoled_theme_key"
-            android:title="@string/pref_amoled_theme_title"
-            android:summary="@string/pref_amoled_theme_text"
-            android:defaultValue="@bool/pref_amoled_theme_default"
-            app:iconSpaceReserved="false"/>
-
-        <SwitchPreference
-            android:key="@string/pref_auto_theme_key"
-            android:title="@string/pref_auto_theme_title"
-            android:summary="@string/pref_auto_theme_text"
-            android:defaultValue="@bool/pref_auto_theme_default"
+            android:summary="%s"
+            android:entryValues="@array/pref_theme_mode_values"
+            android:entries="@array/pref_theme_mode_entries"
+            android:defaultValue="0"
             app:iconSpaceReserved="false"/>
 
         <SeekBarPreference
@@ -86,6 +74,13 @@
             android:max="200"
             android:defaultValue="25"
             app:showSeekBarValue="true"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
+            android:key="@string/pref_amoled_theme_key"
+            android:title="@string/pref_amoled_theme_title"
+            android:summary="@string/pref_amoled_theme_text"
+            android:defaultValue="@bool/pref_amoled_theme_default"
             app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>

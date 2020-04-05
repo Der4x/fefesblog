@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -16,10 +17,9 @@ import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.adapter.BookmarkRecyclerViewAdapter;
 import de.fwpm.android.fefesblog.adapter.NewPostsRecyclerViewAdapter;
 
-import static de.fwpm.android.fefesblog.MainActivity.destroySensorManager;
-import static de.fwpm.android.fefesblog.MainActivity.initSensorManager;
 import static de.fwpm.android.fefesblog.MainActivity.setThemeChanged;
 import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
+import static de.fwpm.android.fefesblog.fragments.SettingFragment.DarkThemeMode.*;
 
 
 /**
@@ -36,9 +36,8 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
     public static final int UPDATE_ITNVERVALL_DEFAULT = 3600000;
     public static final String NOTIFICATION_ENABLED = "notification_enabled";
     public static final String NIGHTMODE_ENABLED = "nightmode_enabled";
-    public static final String AUTO_NIGHTMODE_ENABLED = "auto_nightmode_enabled";
+    public static final String DARKTHEME_MODE = "darktheme_mode";
     public static final String AMOLED_NIGHTMODE_ENABLED = "amoled_nightmode_enabled";
-
 
     public static final boolean NOTIFICATION_DEFAULT = true;
 
@@ -48,7 +47,6 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
     private String previewSize;
     private String previewMode;
     private String nightMode;
-    private String autoNightMode;
     private String amoledNightMode;
     private String sensitivityNightmode;
 
@@ -64,7 +62,6 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         previewSize = getString(R.string.pref_preview_size_key);
         nightMode = getString(R.string.pref_theme_key);
         previewMode = getString(R.string.pref_preview_key);
-        autoNightMode = getString(R.string.pref_auto_theme_key);
         amoledNightMode = getString(R.string.pref_amoled_theme_key);
         sensitivityNightmode = getString(R.string.pref_sensitivity_key);
 
@@ -74,7 +71,6 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         findPreference(updateSeq).setOnPreferenceChangeListener(this);
         findPreference(nightMode).setOnPreferenceChangeListener(this);
         findPreference(previewMode).setOnPreferenceChangeListener(this);
-        findPreference(autoNightMode).setOnPreferenceChangeListener(this);
         findPreference(sensitivityNightmode).setOnPreferenceChangeListener(this);
         findPreference(amoledNightMode).setOnPreferenceChangeListener(this);
 
@@ -103,17 +99,14 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
 
         } else if(nightMode.equals(key)) {
 
-            onNightmodeToggle((Boolean) newValue);
+            onNightmodeChanged(Integer.parseInt(newValue.toString()));
 
         } else if(previewMode.equals(key)) {
 
             onPreviewModeToggle((Boolean) newValue);
 
-        } else if(autoNightMode.equals(key)) {
-
-            onAutoNightModeToggle((Boolean) newValue);
-
-        } else if(amoledNightMode.equals(key)) {
+        }
+        else if(amoledNightMode.equals(key)) {
 
             onAmoledNightModeToggle((Boolean) newValue);
 
@@ -134,23 +127,14 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
 
     }
 
-    private void onAutoNightModeToggle(Boolean isEnabled) {
-
-        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(AUTO_NIGHTMODE_ENABLED, isEnabled).apply();
-        findPreference(sensitivityNightmode).setEnabled(isEnabled);
-        if(isEnabled)
-            initSensorManager(getActivity());
-        else
-            destroySensorManager();
-
-    }
-
     private void onAmoledNightModeToggle(Boolean isEnabled) {
 
         App.getInstance().setAmoledModeEnabled(isEnabled);
-        getActivity().recreate();
-        setThemeChanged();
-
+        if(App.getInstance().isNightModeEnabled()) {
+            getActivity().recreate();
+            setThemeChanged();
+        }
+        
     }
 
     private void onAutomaticNotificationToggle(Boolean isEnabled) {
@@ -159,12 +143,28 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
 
     }
 
-    private void onNightmodeToggle(Boolean isEnabled) {
+    private void onNightmodeChanged(int themeMode) {
 
-        App.getInstance().setIsNightModeEnabled(isEnabled);
+        DarkThemeMode newMode = OFF;
+
+        switch (themeMode) {
+            case 0:
+                newMode = OFF;
+                break;
+            case 1:
+                newMode = ON;
+                break;
+            case 2:
+                newMode = AMBIENT;
+                break;
+            case 3:
+                newMode = SYSTEM;
+                break;
+        }
+
+        App.getInstance().setDarkThemeMode(newMode);
         getActivity().recreate();
         setThemeChanged();
-        findPreference(amoledNightMode).setEnabled(isEnabled);
 
     }
 
@@ -230,12 +230,13 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         super.onResume();
         findPreference(automaticNotification).setEnabled(((SwitchPreference) findPreference(automaticUpdatesKey)).isChecked());
         findPreference(previewSize).setEnabled(!((SwitchPreference) findPreference(previewMode)).isChecked());
-        findPreference(sensitivityNightmode).setEnabled(((SwitchPreference) findPreference(autoNightMode)).isChecked());
-        findPreference(amoledNightMode).setEnabled(((SwitchPreference) findPreference(nightMode)).isChecked());
 
-        //Bug: no update on this switch-preference when changed setting programmatically in another activity
-        ((SwitchPreference) findPreference(nightMode)).setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(NIGHTMODE_ENABLED, false));
+        findPreference(sensitivityNightmode).setEnabled(((ListPreference) findPreference(nightMode)).getValue().equals("2"));
 
+    }
+
+    public enum DarkThemeMode {
+        OFF, ON, AMBIENT, SYSTEM
     }
 
 }

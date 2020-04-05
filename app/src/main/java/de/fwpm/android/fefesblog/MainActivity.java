@@ -34,7 +34,6 @@ import de.fwpm.android.fefesblog.fragments.BookmarkFragment;
 import de.fwpm.android.fefesblog.fragments.NewPostsFragment;
 
 import static de.fwpm.android.fefesblog.backgroundsync.BackgroundTask.scheduleJob;
-import static de.fwpm.android.fefesblog.fragments.SettingFragment.AUTO_NIGHTMODE_ENABLED;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
@@ -50,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         if (App.getInstance().isNightModeEnabled()) {
             if(App.getInstance().isAmoledModeEnabled())
                 setTheme(R.style.MainActivityThemeAmoledDark);
@@ -72,23 +72,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             scheduleJob();
         }
 
-        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(AUTO_NIGHTMODE_ENABLED, false)) {
-            initSensorManager(this);
-        }
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
+        Log.d("FATAL", "ON RESUME!!");
+
         if (themeChanged) {
             themeChanged = false;
             recreate();
+            return;
         }
 
-        if(sMgr != null)
+        if(sMgr != null) {
             registerLightSensor();
+        }
 
     }
 
@@ -110,21 +110,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int sensitivityValue = PreferenceManager.getDefaultSharedPreferences(this).getInt(getString(R.string.pref_sensitivity_key), 10);
 
-        if(sensorEvent.values[0] > sensitivityValue) {          //day
+        if(BuildConfig.DEBUG) Log.d("FATAL", "LIGHTSENSOR VALUE: " + sensorEvent.values[0]);
 
-            if(App.getInstance().isNightModeEnabled()) {
+        boolean ambientDarkModeActive = sensorEvent.values[0] <= sensitivityValue;
 
-                App.getInstance().setIsNightModeEnabled(false);
-                recreate();
-            }
-
-        } else {                                                //night
-
-            if(!App.getInstance().isNightModeEnabled()) {
-
-                App.getInstance().setIsNightModeEnabled(true);
-                recreate();
-            }
+        if(App.getInstance().isNightModeEnabled() != ambientDarkModeActive) {
+            App.getInstance().setIsNightModeEnabled(ambientDarkModeActive);
+            recreate();
         }
 
         sMgr.unregisterListener(this);
