@@ -13,8 +13,10 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
+            manifestPlaceholders = [APP_NAME: "Debug Fefe"]
         }
         release {
+            manifestPlaceholders = [APP_NAME: "Fefes Blog"]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
