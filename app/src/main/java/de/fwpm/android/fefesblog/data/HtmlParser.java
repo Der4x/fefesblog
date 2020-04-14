@@ -73,7 +73,7 @@ public class HtmlParser {
 
         }
 
-        if(!search) allPosts.get(allPosts.size()-1).setNextUrl(nextUrl);
+        if(!search && allPosts.size() > 1) allPosts.get(allPosts.size()-1).setNextUrl(nextUrl);
 
         return allPosts;
     }

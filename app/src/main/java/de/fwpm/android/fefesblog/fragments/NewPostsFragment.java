@@ -289,7 +289,7 @@ public class NewPostsFragment extends Fragment {
 
     }
 
-    private void setRefresh(boolean bool) {
+    public void setRefresh(boolean bool) {
         mNewPostSwipeRefresh.setRefreshing(bool);
     }
 

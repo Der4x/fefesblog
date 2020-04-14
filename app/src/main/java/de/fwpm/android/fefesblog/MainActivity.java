@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         super.onResume();
 
-        Log.d("FATAL", "ON RESUME!!");
-
         if (themeChanged) {
             themeChanged = false;
             recreate();

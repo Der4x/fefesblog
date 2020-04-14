@@ -68,7 +68,9 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
 
             }
 
-            appDatabase.blogPostDao().insertList(allPosts);
+            if(allPosts.size() > 0) {
+                appDatabase.blogPostDao().insertList(allPosts);
+            } else container.setRefresh(false);
 
             return null;
 
@@ -85,6 +87,7 @@ public class DataFetcher extends AsyncTask<String, Void, Void> {
 
     @Override
     protected void onPostExecute(Void vVoid) {
+
 
         super.onPostExecute(vVoid);
 
