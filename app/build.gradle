@@ -1,13 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/Users/alexanderaries/Documents/Keystores/Keystore_FefeApp/keystore_fefesapp')
+            storePassword 'pw4fefesapp'
+            keyPassword 'pw4fefesapp'
+            keyAlias = 'key_fefesapp'
+        }
+    }
     compileSdkVersion 29
     defaultConfig {
         applicationId "de.fwpm.android.fefesblog"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 16
-        versionName "1.8"
+        versionCode 17
+        versionName "1.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -19,6 +27,7 @@ android {
             manifestPlaceholders = [APP_NAME: "Fefes Blog"]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -32,7 +41,7 @@ dependencies {
     // Android Support Libraries
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.browser:browser:1.2.0'
     implementation 'androidx.preference:preference:1.1.0'
@@ -42,12 +51,12 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.11.3'
 
     // Room
-    implementation 'androidx.room:room-runtime:2.2.3'
-    annotationProcessor 'androidx.room:room-compiler:2.2.3'
+    implementation 'androidx.room:room-runtime:2.2.5'
+    annotationProcessor 'androidx.room:room-compiler:2.2.5'
 
     //Live Data
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
-    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.2.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
