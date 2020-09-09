@@ -84,7 +84,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.toolbar_layout);
         if(darkTheme) appBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay_Dark);
-        else getWindow().setStatusBarColor(Color.WHITE);
 
         mContext = this;
         mHandler = new Handler();

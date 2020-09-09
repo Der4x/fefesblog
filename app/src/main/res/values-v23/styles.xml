@@ -26,19 +26,19 @@
 
     <style name="SettingsActivityThemeLight" parent="Theme.AppCompat.Light">
 
-        <item name="colorPrimary">@color/backgroundLight</item>
-        <item name="colorPrimaryDark">@color/backgroundLight</item>
+        <item name="colorPrimary">@color/colorSecondary</item>
+        <item name="colorPrimaryDark">@color/colorSecondary</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/backgroundLight</item>
 
+        <item name="android:windowBackground">@color/backgroundLight</item>
         <item name="android:windowLightStatusBar">true</item>
 
     </style>
 
     <style name="SettingsActivityThemeDark" parent="Theme.AppCompat">
 
-        <item name="colorPrimary">@color/backgroundDark</item>
-        <item name="colorPrimaryDark">@color/backgroundDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/backgroundDark</item>
 
@@ -62,7 +62,7 @@
     <style name="ActivityTheme.Primary.Base.Light" parent="Theme.AppCompat.NoActionBar">
 
         <item name="colorPrimary">@color/backgroundLight</item>
-        <item name="colorPrimaryDark">@color/backgroundLight</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="primaryTextColor">@color/primaryTextColorLight</item>
@@ -85,7 +85,7 @@
     <style name="ActivityTheme.Primary.Base.Dark"    parent="Theme.AppCompat.NoActionBar">
 
         <item name="colorPrimary">@color/backgroundDark</item>
-        <item name="colorPrimaryDark">@color/backgroundDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="primaryTextColor">@color/primaryTextColorDark</item>
