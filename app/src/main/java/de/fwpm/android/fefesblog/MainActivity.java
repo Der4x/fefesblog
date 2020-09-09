@@ -3,6 +3,7 @@ package de.fwpm.android.fefesblog;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager.widget.ViewPager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
@@ -195,10 +197,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), new OnApplyWindowInsetsListener() {
-            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
-                //v.setPadding(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(), insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (OnApplyWindowInsetsListener) (v, insets) -> {
 
                 int margin = insets.getSystemWindowInsetTop();
 
@@ -213,20 +214,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 margin  = insets.getSystemWindowInsetBottom();
 
                 if (margin > 0) {
+                    Log.d(TAG, "onApplyWindowInsets: margin = " + margin);
                     CoordinatorLayout.LayoutParams fabParams = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-                    fabParams.bottomMargin = margin;
+                    fabParams.bottomMargin = margin + convertToDevicePixel(16);
                     fab.setLayoutParams(fabParams);
                 }
 
-                //Log.d("TAG", "" + insets.getSystemWindowInsetLeft() + " " + insets.getSystemWindowInsetTop() + " " + insets.getSystemWindowInsetRight() + " " + insets.getSystemWindowInsetBottom());
-
                 return insets.consumeSystemWindowInsets();
-            }
-        });
+
+            });
+
+        }
+
     }
 
     public static void setThemeChanged() {
         themeChanged = true;
+    }
+
+    public int convertToDevicePixel(int pixel) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pixel, getResources().getDisplayMetrics());
     }
 
 }

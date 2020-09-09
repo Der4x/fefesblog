@@ -48,7 +48,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
 
     // HtmlParser
-    implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'org.jsoup:jsoup:1.13.1'
 
     // Room
     implementation 'androidx.room:room-runtime:2.2.5'

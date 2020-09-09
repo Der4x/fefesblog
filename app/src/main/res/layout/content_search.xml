@@ -26,15 +26,16 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:src="@drawable/null_icon"/>
+            android:src="@drawable/noresult"
+            app:tint="?attr/primaryTextColor"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="32sp"
+            android:textSize="24sp"
             android:gravity="center"
             android:textColor="?attr/primaryTextColor"
             android:text="Keine Einträge gefunden.\n\nHinweis: Die Suche ist case-sensitive,\nd.h. Fnord != fnord."/>

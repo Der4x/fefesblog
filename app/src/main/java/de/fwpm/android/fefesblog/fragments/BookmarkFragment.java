@@ -80,7 +80,7 @@ public class BookmarkFragment extends Fragment{
 
         viewModel = ViewModelProviders.of(this).get(BlogPostViewModel.class);
 
-        viewModel.getBookmarkedPosts().observe(this, new Observer<List<BlogPost>>() {
+        viewModel.getBookmarkedPosts().observe(getViewLifecycleOwner(), new Observer<List<BlogPost>>() {
             @Override
             public void onChanged(@Nullable List<BlogPost> blogPosts) {
 
@@ -186,14 +186,11 @@ public class BookmarkFragment extends Fragment{
     private void showUnbookmarkedSnackbar(final BlogPost blogPost) {
 
         Snackbar.make(view, "Lesezeichen entfernt", Snackbar.LENGTH_LONG)
-                .setAction("RÜCKGÄNGIG", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                .setAction("RÜCKGÄNGIG", v -> {
 
-                        blogPost.setBookmarked(true);
-                        viewModel.updatePost(blogPost);
+                    blogPost.setBookmarked(true);
+                    viewModel.updatePost(blogPost);
 
-                    }
                 }).show();
 
     }

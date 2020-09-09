@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    android:id="@+id/bookmarkFragment"
+<FrameLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bookmarkFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bookmark_recyclerview"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
@@ -18,25 +17,27 @@
         android:id="@+id/noBookmarkScreen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone"
         android:padding="64dp"
-        android:gravity="center">
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_bookmark_border_black_24dp"/>
+            app:tint="?attr/primaryTextColor"
+            android:src="@drawable/no_bookmark_big" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
             android:gravity="center"
-            android:textColor="@android:color/black"
-            android:text="Keine Lesezeichen gespeichert."/>
+            android:text="Keine Lesezeichen gespeichert"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="24sp" />
 
     </LinearLayout>
 

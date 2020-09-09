@@ -13,9 +13,9 @@
     <!--new colors-->
 
     <color name="backgroundLight">#FFFFFF</color>
-    <color name="backgroundDark">#202124</color>
+    <color name="backgroundDark">#171717</color>
 
-    <color name="primaryTextColorLight">#3D4043</color>
+    <color name="primaryTextColorLight">#2F2F2F</color>
     <color name="secondaryTextColorLight">#606367</color>
 
     <color name="primaryTextColorDark">#F1F3F4</color>
