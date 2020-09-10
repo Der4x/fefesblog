@@ -1,6 +1,7 @@
 package de.fwpm.android.fefesblog.fragments;
 
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import de.fwpm.android.fefesblog.BlogPost;
 import de.fwpm.android.fefesblog.BlogPostViewModel;
@@ -168,13 +170,10 @@ public class NewPostsFragment extends Fragment {
                         jumpToPosition(position);
                     }
                 },
-                new NewPostsRecyclerViewAdapter.OnBottomReachListener() {
-                    @Override
-                    public void onBottom(int position) {
-                        loadMoreData();
-                    }
-                },
+                position -> loadMoreData(),
                 new ArrayList<BlogPost>());
+
+        recyclerViewAdapter.setHasStableIds(true);
 
         mRecyclerView.addItemDecoration(new HeaderItemDecoration(mRecyclerView, (HeaderItemDecoration.StickyHeaderInterface) recyclerViewAdapter));
         mRecyclerView.setAdapter(recyclerViewAdapter);
@@ -192,26 +191,23 @@ public class NewPostsFragment extends Fragment {
 
     private void initViewModel() {
 
-        viewModel = ViewModelProviders.of(this).get(BlogPostViewModel.class);
+        viewModel = new ViewModelProvider(this).get(BlogPostViewModel.class);
 
-        viewModel.getAllPosts().observe(this, new Observer<List<BlogPost>>() {
-            @Override
-            public void onChanged(@Nullable List<BlogPost> blogPosts) {
+        viewModel.getAllPosts().observe(getViewLifecycleOwner(), blogPosts -> {
 
-                if(blogPosts != null && blogPosts.size() > 0) {
+            if(blogPosts != null && blogPosts.size() > 0) {
 
-                    if(haveNewPosts(blogPosts)) {
+                if(haveNewPosts(blogPosts)) {
 
-                        expandedItems.clear();
-                        if(mLayoutManager.findFirstVisibleItemPosition() > 0)
-                            showSnackbar();
-
-                    }
-
-                    recyclerViewAdapter.dataChanged(addHeaders(blogPosts));
-                    setRefresh(false);
+                    expandedItems.clear();
+                    if(mLayoutManager.findFirstVisibleItemPosition() > 0)
+                        showSnackbar();
 
                 }
+
+                recyclerViewAdapter.dataChanged(addHeaders(blogPosts));
+                setRefresh(false);
+
             }
         });
 
@@ -340,7 +336,9 @@ public class NewPostsFragment extends Fragment {
     }
 
     private void addHeader(ArrayList<BlogPost> listWithHeaders, Date firstDate) {
-        listWithHeaders.add(new BlogPost(firstDate, BlogPost.TYPE_SECTION));
+        BlogPost headerPost = new BlogPost(firstDate, BlogPost.TYPE_SECTION);
+        headerPost.setUrl("" + headerPost.getDate().getTime());
+        listWithHeaders.add(headerPost);
     }
 
     public void error(final String message) {

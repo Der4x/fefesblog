@@ -24,6 +24,7 @@ import de.fwpm.android.fefesblog.R;
 import de.fwpm.android.fefesblog.utils.HeaderItemDecoration;
 import de.fwpm.android.fefesblog.utils.PreventScrollTextView;
 
+import static de.fwpm.android.fefesblog.BlogPost.TYPE_DATA;
 import static de.fwpm.android.fefesblog.fragments.SettingFragment.PREVIEW_SIZE;
 import static de.fwpm.android.fefesblog.utils.CustomTextView.setTextViewHTML;
 import static de.fwpm.android.fefesblog.utils.PreventScrollTextView.dpToPx;
@@ -91,7 +92,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
                     root = inflater.inflate(R.layout.new_post_section, parent, false);
                     return new SectionViewHolder(root, viewType);
 
-                case BlogPost.TYPE_DATA:
+                case TYPE_DATA:
                     root = inflater.inflate(R.layout.new_post_item, parent, false);
                     return new DataViewHolder(root, viewType);
 
@@ -132,9 +133,14 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
     public int getItemViewType(int position) {
 
         if(mData.size() > position) return mData.get(position).type;
-        else return BlogPost.TYPE_DATA;
+        else return TYPE_DATA;
         //TODO: Debug error
 
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mData.get(position).getUrl().hashCode();
     }
 
     @Override
@@ -192,39 +198,19 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
         public void setClickListener(final BlogPost blogPost,final int position) {
 
-            final View.OnClickListener onClickListener = new View.OnClickListener() {
+            final View.OnClickListener onClickListener = view -> mListener.onItemClick(position,blogPost);
+            final View.OnClickListener onShareListener = v -> mListener.onShareClick(position,blogPost);
+            final View.OnClickListener onBookmarkListener = v -> mListener.onBookmarkClick(position,blogPost);
+            final View.OnClickListener onExpandListener = v -> {
 
-                @Override
-                public void onClick(View view) {
-                    mListener.onItemClick(position,blogPost);
-            }
-            };
-
-            final View.OnClickListener onShareListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.onShareClick(position,blogPost);
-                }
-            };
-            final View.OnClickListener onBookmarkListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.onBookmarkClick(position,blogPost);
-                }
-            };
-            final View.OnClickListener onExpandListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if(mContent.getMaxLines() == MAX_LINES) {
-                        expandContent();
-                        expandedItems.add(position);
-                        mListener.onStateChangedListener(-1, blogPost);
-                    } else {
-                        closeContent();
-                        expandedItems.remove((Integer) position);
-                        mListener.onStateChangedListener(position-1, blogPost);
-                    }
+                if(mContent.getMaxLines() == MAX_LINES) {
+                    expandContent();
+                    expandedItems.add(position);
+                    mListener.onStateChangedListener(-1, blogPost);
+                } else {
+                    closeContent();
+                    expandedItems.remove((Integer) position);
+                    mListener.onStateChangedListener(position-1, blogPost);
                 }
             };
             mContent.setOnClickListener(onClickListener);

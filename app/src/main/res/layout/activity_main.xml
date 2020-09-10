@@ -97,7 +97,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/magnify" />
+            app:srcCompat="@drawable/magnify"
+            app:backgroundTint="@color/colorAccent"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

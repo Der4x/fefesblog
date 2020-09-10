@@ -174,39 +174,6 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
             }
         });
 
-//        holder.mBookmark.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                blogPost.setBookmarked(blogPost.isBookmarked() ? false : true);
-//                setBookmarkIcon(holder, blogPost);
-//
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        AppDatabase.getInstance(mContext).blogPostDao().updateBlogPost(blogPost);
-//                    }
-//                }).start();
-//
-//            }
-//        });
-
-//        holder.mExpand.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                if (holder.mContent.getMaxLines() == MAX_LINES) {
-//                    expandContent(holder);
-//                    expandedItems.add(position);
-//                } else {
-//                    closeContent(holder);
-////                    jumpToPosition((position == 0) ? 0 : position - 1);
-//                    expandedItems.remove((Integer) position);
-//                }
-//
-//            }
-//        });
-
     }
 
     @Override
@@ -214,23 +181,16 @@ public class BookmarkRecyclerViewAdapter extends RecyclerView.Adapter<BookmarkRe
         return mData.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return mData.get(position).getUrl().hashCode();
+    }
+
     private void setBookmarkIcon(BookmarkRecyclerViewAdapter.ViewHolder holder, BlogPost blogPost) {
         if (blogPost.isBookmarked())
             holder.mBookmark.setImageResource(R.drawable.ic_stat_bookmark);
         else holder.mBookmark.setImageResource(R.drawable.ic_stat_bookmark_border);
     }
-
-//    private void expandContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
-//        holder.mContent.setMaxLines(Integer.MAX_VALUE);
-//        holder.mContent.setEllipsize(null);
-//        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_up);
-//    }
-//
-//    private void closeContent(BookmarkRecyclerViewAdapter.ViewHolder holder) {
-//        holder.mContent.setMaxLines(MAX_LINES);
-//        holder.mContent.setEllipsize(TextUtils.TruncateAt.END);
-//        holder.mExpand.setImageResource(R.drawable.ic_stat_keyboard_arrow_down);
-//    }
 
     public interface OnItemClickListener {
         void onItemClick(int position,BlogPost blogPost);

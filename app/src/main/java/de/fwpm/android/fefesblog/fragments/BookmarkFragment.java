@@ -167,6 +167,7 @@ public class BookmarkFragment extends Fragment{
 
                 },new ArrayList<BlogPost>());
 
+        recyclerViewAdapter.setHasStableIds(true);
         mRecyclerView.setAdapter(recyclerViewAdapter);
     }
 
