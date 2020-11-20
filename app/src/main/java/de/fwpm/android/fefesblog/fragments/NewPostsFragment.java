@@ -199,7 +199,7 @@ public class NewPostsFragment extends Fragment {
 
                 if(haveNewPosts(blogPosts)) {
 
-                    expandedItems.clear();
+                    //expandedItems.clear();
                     if(mLayoutManager.findFirstVisibleItemPosition() > 0)
                         showSnackbar();
 

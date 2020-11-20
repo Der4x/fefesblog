@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         release {
-            storeFile file('/Users/alexanderaries/Documents/Keystores/Keystore_FefeApp/keystore_fefesapp')
+            storeFile file('../keystore/keystore_fefesapp')
             storePassword 'pw4fefesapp'
             keyPassword 'pw4fefesapp'
             keyAlias = 'key_fefesapp'

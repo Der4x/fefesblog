@@ -205,11 +205,11 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
                 if(mContent.getMaxLines() == MAX_LINES) {
                     expandContent();
-                    expandedItems.add(position);
+                    expandedItems.add(blogPost.getUrl().hashCode());
                     mListener.onStateChangedListener(-1, blogPost);
                 } else {
                     closeContent();
-                    expandedItems.remove((Integer) position);
+                    expandedItems.remove((Integer) blogPost.getUrl().hashCode());
                     mListener.onStateChangedListener(position-1, blogPost);
                 }
             };
@@ -225,7 +225,7 @@ public class NewPostsRecyclerViewAdapter extends RecyclerView.Adapter<NewPostsRe
 
             setTextViewHTML(mContent, blogPost.getHtmlText().split("</a>", 2)[1]);
             setBanner(blogPost);
-            if(expandedItems.contains(position)) expandContent();
+            if(expandedItems.contains(blogPost.getUrl().hashCode())) expandContent();
             else closeContent();
             setBookmarkIcon(blogPost.isBookmarked());
             if(position+1 < mData.size())
